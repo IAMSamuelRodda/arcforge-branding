@@ -1,0 +1,56 @@
+# ArchForge Branding - Git Ignore
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+.directory
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Design tool cache
+*.sketch
+*.fig
+*.xd
+*.psd
+*.ai
+~$*
+
+# Python cache (from generation scripts)
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+
+# Build outputs
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Keep these folders but ignore their contents initially
+# (Remove these lines as you add production assets)
+# /assets/*
+# /design/logos/*
+
+# Environment variables (if you add any)
+.env
+.env.local
