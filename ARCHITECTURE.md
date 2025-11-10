@@ -194,6 +194,7 @@ class PromptEngine:
 - **Jinja2 templating**: Industry-standard, supports loops/conditionals
 - **YAML frontmatter**: Metadata in template files (model preferences, weights)
 - **Version control**: Templates are markdown files in git for easy diffing
+- **Model-specific knowledge base**: Embedded prompt engineering expertise for each model (see Model Knowledge Base section below)
 
 ### 2. Multi-Model Generation Pipeline
 
@@ -393,6 +394,360 @@ class ExportPipeline:
 - **rembg**: U2-Net model with 95%+ accuracy on logos
 - **potrace**: Industry-standard raster→vector conversion
 - **Multi-color SVG**: 3-layer tracing for brand colors (not single-path)
+
+---
+
+## Model Knowledge Base
+
+### Overview
+
+Prompt engineering expertise is critical for generating high-quality brand assets. Each AI model (Stable Diffusion 3.5, Flux Schnell, DALL-E 3) has unique strengths, parameter requirements, and prompt syntax patterns. This knowledge base encodes expert-level prompting strategies directly into the system.
+
+### Architecture Pattern: Embedded Knowledge
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                   Model Knowledge Base                        │
+├──────────────────────────────────────────────────────────────┤
+│                                                               │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │  automation/src/prompt_engine/model_knowledge/        │  │
+│  │                                                        │  │
+│  │  ├── stable_diffusion_35.yaml  (SD 3.5 expertise)    │  │
+│  │  ├── flux_schnell.yaml         (Flux expertise)      │  │
+│  │  ├── dalle_3.yaml              (DALL-E expertise)    │  │
+│  │  └── base_knowledge.yaml       (Shared patterns)     │  │
+│  └────────────────────────────────────────────────────────┘  │
+│                          │                                    │
+│                          ▼                                    │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │         ModelKnowledgeAdapter                          │  │
+│  │  • Loads model-specific rules                         │  │
+│  │  • Applies prompt transformations                     │  │
+│  │  • Validates parameter constraints                    │  │
+│  │  • Suggests optimizations                             │  │
+│  └────────────────────────────────────────────────────────┘  │
+│                          │                                    │
+│                          ▼                                    │
+│            PromptEngine (uses adapted prompts)               │
+│                                                               │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### Knowledge Base Structure
+
+Each model's knowledge is stored as structured YAML with the following schema:
+
+```yaml
+model_name: "Stable Diffusion 3.5"
+version: "1.0"
+provider: "Stability AI"
+
+# Model Capabilities
+capabilities:
+  max_resolution: "1 megapixel (1024x1024)"
+  strengths:
+    - "Detailed, high-resolution images"
+    - "Strong adherence to complex text prompts"
+    - "Natural language understanding"
+    - "Flexible style control"
+  weaknesses:
+    - "Can over-interpret long prompts"
+    - "Color accuracy varies without hex codes"
+
+# Prompt Engineering Rules
+prompt_engineering:
+  style: "natural_language"  # vs "keyword_soup"
+  max_length: 200  # tokens
+  optimal_length: "50-100 tokens"
+
+  structure:
+    recommended: "Subject → Action → Environment → Lighting → Style"
+    example: "A minimalist geometric logo featuring an anvil shape, metallic silver finish, orange accent highlights, studio lighting, vector art style"
+
+  best_practices:
+    - rule: "Use natural, descriptive language"
+      example: "A sleek anvil with circuit traces" (GOOD)
+      anti_example: "anvil, circuit, tech, modern, logo" (BAD - keyword soup)
+
+    - rule: "Specify style explicitly"
+      categories: ["illustration", "photography", "digital art", "vector art", "painting"]
+      example: "vector art style, clean lines, minimal detail"
+
+    - rule: "Include lighting and mood"
+      example: "studio lighting, soft shadows, professional product photography"
+
+    - rule: "Use hex codes for brand colors"
+      example: "primary color #FF6B35 (spark orange), accent #4A90E2 (vector blue)"
+      note: "Colors may vary slightly, adjust in post-production"
+
+  weight_syntax:
+    supported: true
+    format: "(keyword:1.5)"  # 1.0 = normal, >1.0 = emphasis, <1.0 = de-emphasis
+    example: "(metallic finish:1.3), (orange highlights:1.2), background:0.8"
+
+  negative_prompts:
+    supported: true
+    purpose: "Remove unwanted features explicitly"
+    common_negatives:
+      - "blurry, low quality, pixelated"
+      - "text, watermark, signature"
+      - "distorted proportions, asymmetrical"
+      - "extra elements, cluttered composition"
+
+# Parameter Configuration
+parameters:
+  cfg_scale:
+    default: 7.0
+    range: [1.0, 20.0]
+    recommendation: "7-10 for brand assets (balanced creativity/accuracy)"
+
+  steps:
+    default: 50
+    range: [20, 100]
+    recommendation: "40-60 for production quality"
+
+  seed:
+    purpose: "Reproducibility"
+    strategy: "Save seeds of approved images for refinement variations"
+
+  aspect_ratio:
+    supported: ["square", "landscape_4_3", "landscape_16_9", "portrait_4_3", "portrait_16_9"]
+    recommendation: "square (1024x1024) for logos"
+
+# Brand Asset Optimization
+brand_asset_tips:
+  logos:
+    - "Use 'vector art style, clean lines, minimal shading'"
+    - "Specify 'icon design, flat color, professional branding'"
+    - "Add 'white background' or 'transparent background-ready'"
+
+  color_accuracy:
+    - "Always include hex codes: #1A1A1A, #FF6B35, #4A90E2"
+    - "Use color names as backup: 'forge black, spark orange, vector blue'"
+    - "Expect ±10% variance, refine in post-production"
+
+  composition:
+    - "Specify 'centered composition' for logo symmetry"
+    - "Add 'negative space around subject' for breathing room"
+    - "Use 'isometric view' or 'front-facing' for clarity"
+
+# Common Issues & Fixes
+troubleshooting:
+  - issue: "Output too complex/detailed"
+    fix: "Add 'minimal detail, simple design, clean aesthetic'"
+
+  - issue: "Wrong colors"
+    fix: "Use hex codes + increase CFG scale to 9-10"
+
+  - issue: "Inconsistent style across variations"
+    fix: "Lock seed, adjust only specific keywords with weights"
+```
+
+### Implementation Classes
+
+```python
+from dataclasses import dataclass
+from typing import Dict, List, Optional
+import yaml
+
+@dataclass
+class PromptRule:
+    """Single prompt engineering rule."""
+    rule: str
+    example: Optional[str] = None
+    anti_example: Optional[str] = None
+    weight: float = 1.0  # Importance weight
+
+@dataclass
+class ModelKnowledge:
+    """Model-specific prompt engineering expertise."""
+    model_name: str
+    provider: str
+    capabilities: Dict
+    prompt_engineering: Dict
+    parameters: Dict
+    brand_asset_tips: Dict
+    troubleshooting: List[Dict]
+
+class ModelKnowledgeLoader:
+    """Loads and caches model knowledge bases."""
+
+    def __init__(self, knowledge_dir: Path):
+        self.knowledge_dir = knowledge_dir
+        self._cache: Dict[str, ModelKnowledge] = {}
+
+    def load(self, model: str) -> ModelKnowledge:
+        """Load knowledge for specific model."""
+        if model in self._cache:
+            return self._cache[model]
+
+        filepath = self.knowledge_dir / f"{model}.yaml"
+        with open(filepath) as f:
+            data = yaml.safe_load(f)
+
+        knowledge = ModelKnowledge(**data)
+        self._cache[model] = knowledge
+        return knowledge
+
+class ModelKnowledgeAdapter:
+    """Adapts prompts using model-specific knowledge."""
+
+    def __init__(self, model: str, knowledge_loader: ModelKnowledgeLoader):
+        self.model = model
+        self.knowledge = knowledge_loader.load(model)
+
+    def adapt_prompt(self, base_prompt: str, brand_context: Dict) -> str:
+        """Transform prompt using model expertise."""
+        adapted = base_prompt
+
+        # Apply model-specific structure
+        if self.knowledge.prompt_engineering['style'] == 'natural_language':
+            adapted = self._ensure_natural_language(adapted)
+
+        # Inject brand colors with hex codes
+        adapted = self._inject_brand_colors(adapted, brand_context)
+
+        # Add model-specific best practices
+        adapted = self._apply_best_practices(adapted)
+
+        # Add recommended negative prompts
+        negative = self._generate_negative_prompt()
+
+        return adapted, negative
+
+    def validate_parameters(self, params: Dict) -> Dict:
+        """Validate and adjust parameters for model."""
+        validated = params.copy()
+
+        # Check CFG scale
+        cfg_config = self.knowledge.parameters['cfg_scale']
+        if validated['cfg_scale'] < cfg_config['range'][0]:
+            validated['cfg_scale'] = cfg_config['default']
+
+        # Check steps
+        steps_config = self.knowledge.parameters['steps']
+        if validated['steps'] < steps_config['range'][0]:
+            validated['steps'] = steps_config['default']
+
+        return validated
+
+    def suggest_optimizations(self, prompt: str, context: str) -> List[str]:
+        """Suggest prompt improvements based on context."""
+        suggestions = []
+
+        # Check for common issues
+        for issue in self.knowledge.troubleshooting:
+            if self._detect_issue(prompt, issue['issue']):
+                suggestions.append(issue['fix'])
+
+        # Check for brand asset tips
+        if context == 'logo':
+            suggestions.extend(self.knowledge.brand_asset_tips['logos'])
+
+        return suggestions
+```
+
+### Usage in Prompt Engine
+
+```python
+class PromptEngine:
+    """Main orchestrator with model knowledge integration."""
+
+    def __init__(self, config: PromptConfig):
+        self.templates = self._load_templates()
+        self.brand_context = self._load_design_brief()
+
+        # Load model knowledge
+        knowledge_loader = ModelKnowledgeLoader(
+            Path("automation/src/prompt_engine/model_knowledge")
+        )
+        self.adapters = {
+            'sd35': ModelKnowledgeAdapter('stable_diffusion_35', knowledge_loader),
+            'flux': ModelKnowledgeAdapter('flux_schnell', knowledge_loader),
+            'dalle': ModelKnowledgeAdapter('dalle_3', knowledge_loader)
+        }
+
+    def generate_for_model(self, template: str, model: str) -> GenerationRequest:
+        """Generate model-specific prompt."""
+        # Render base template
+        base_prompt = self._render_template(template, self.brand_context)
+
+        # Adapt using model knowledge
+        adapter = self.adapters[model]
+        adapted_prompt, negative_prompt = adapter.adapt_prompt(
+            base_prompt,
+            self.brand_context
+        )
+
+        # Get optimized parameters
+        base_params = self._get_base_parameters(model)
+        validated_params = adapter.validate_parameters(base_params)
+
+        # Get suggestions for refinement
+        suggestions = adapter.suggest_optimizations(adapted_prompt, 'logo')
+
+        return GenerationRequest(
+            prompt=adapted_prompt,
+            negative_prompt=negative_prompt,
+            model=model,
+            params=validated_params,
+            suggestions=suggestions
+        )
+```
+
+### Knowledge Base Maintenance
+
+**Versioning Strategy**:
+- Knowledge files tracked in git
+- Versioned by model version (e.g., `stable_diffusion_35_v1.yaml`)
+- Migration scripts for knowledge updates
+
+**Update Triggers**:
+1. **Model API changes**: New parameters, deprecated features
+2. **Performance analysis**: Quality score correlation reveals prompt patterns
+3. **Community best practices**: New prompt engineering discoveries
+4. **Brand-specific learning**: Feedback from human approval checkpoints
+
+**Testing Knowledge**:
+```python
+# tests/unit/test_model_knowledge.py
+def test_sd35_prompt_adaptation():
+    """Test SD 3.5 knowledge applies natural language rules."""
+    adapter = ModelKnowledgeAdapter('stable_diffusion_35', loader)
+
+    # Keyword soup input
+    base = "anvil, circuit, tech, modern, logo"
+
+    # Should transform to natural language
+    adapted, _ = adapter.adapt_prompt(base, brand_context)
+
+    assert "anvil" in adapted.lower()
+    assert len(adapted.split()) > len(base.split())  # More natural
+    assert any(word in adapted for word in ["featuring", "with", "design"])
+
+def test_flux_weight_syntax_removal():
+    """Test Flux adapter removes unsupported weight syntax."""
+    adapter = ModelKnowledgeAdapter('flux_schnell', loader)
+
+    # Prompt with weights (not supported by Flux)
+    base = "A logo (metallic:1.5) with (orange:1.3) highlights"
+
+    adapted, _ = adapter.adapt_prompt(base, brand_context)
+
+    # Should remove weight syntax
+    assert ":1.5" not in adapted
+    assert "metallic" in adapted  # Keyword preserved
+```
+
+### Benefits of This Approach
+
+1. **Centralized Expertise**: All prompt engineering knowledge in one place
+2. **Model-Agnostic Templates**: Base templates work across models, adapter handles specifics
+3. **Testable**: Knowledge base changes can be unit tested
+4. **Evolvable**: Easy to update as models improve or new best practices emerge
+5. **Transparent**: Developers can read YAML to understand model quirks
+6. **AI-Assisted Maintenance**: LLMs can help update knowledge bases as APIs change
 
 ---
 
