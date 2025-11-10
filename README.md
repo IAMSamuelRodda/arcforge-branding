@@ -1,213 +1,288 @@
-# ArchForge Branding Repository
+# ArcForge Branding Automation
 
-Complete brand identity, design system, and logo concepts for ArchForge.au - AI-powered efficiency for Australian SMBs.
+![GitHub Issues](https://img.shields.io/github/issues/IAMSamuelRodda/arcforge-branding)
+![GitHub Project](https://img.shields.io/badge/project-roadmap-blue)
+![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue)
+![Status](https://img.shields.io/badge/status-planning-yellow)
 
-**Created:** November 2025
-**Owner:** Samuel Rodda
-**Status:** Active Development
-
----
-
-## 📁 Repository Structure
+**Fully automated branding development system** that generates 300+ brand asset variations from design briefs with multi-model AI pipelines, quality scoring, and human checkpoints.
 
 ```
-archforge-branding/
-├── docs/                          # Brand documentation and guidelines
-│   ├── ArchForge Business Launch Plan.md
-│   ├── ArchForge-Brand-Strategy.md
-│   ├── ArchForge-Design-System.md
-│   └── ArchForge-Brand-Assets-Library.md
-├── design/                        # Design files and concepts
-│   ├── concepts/                  # Logo concept explorations (PDF)
-│   ├── logos/                     # Production logo files (SVG, PNG)
-│   └── philosophy/                # Design philosophy documents
-├── assets/                        # Brand assets (colors, fonts, icons)
-└── README.md                      # This file
+Design Brief → AI Generation → Quality Scoring → Human Approval → Production Export
 ```
 
 ---
 
-## 📚 Documentation Guide
+## Overview
 
-### Business Foundation
-**`docs/ArchForge Business Launch Plan.md`**
-- Financial model (Hormozi-inspired value ladder)
-- Revenue projections & CAC strategy
-- Target market & GTM approach
-- Business plan for credit card applications
+ArcForge Branding Automation eliminates manual iteration in brand asset development by:
 
-### Brand Strategy
-**`docs/ArchForge-Brand-Strategy.md`**
-- Mission, vision, brand promise
-- Target audience psychographics
-- Brand personality (Trustworthy Craftsman, Playful Alchemist, Australian Pragmatist)
-- Voice & tone matrix
-- Visual identity system (colors, typography, imagery)
-- UI/UX principles
-- Psychological design hooks (Cialdini, Hormozi, Sutherland)
-- Brand guardrails (always do / never do)
+- **Generating 500-1000 variations/month** across 3 AI models (Stable Diffusion 3.5, Flux Schnell, DALL-E 3)
+- **Scoring quality automatically** with 4-dimensional weighted system (95%+ brand color accuracy)
+- **Reducing human time to <10 min/checkpoint** across 3 approval stages
+- **Delivering production-ready assets** with upscaling, background removal, vectorization
+- **Operating within $30-60/month budget** using cost-optimized model allocation
 
-### Design System
-**`docs/ArchForge-Design-System.md`**
-- **Color System:** Primary palette (Forge Black, Spark Orange, Vector Blue) with Hex/RGB/CMYK/Pantone values
-- **Typography:** Inter (primary), Raleway (accent), complete type scale
-- **Spacing & Grid:** 8px base unit system, responsive breakpoints
-- **Components:** Buttons, forms, cards, navigation with ready-to-use CSS
-- **Iconography:** Style guidelines, required icon set
-- **Motion & Animation:** Timing functions, signature animations (spark particles, parallax)
-- **Implementation:** CSS custom properties, accessibility checklist, performance optimization
+### Architecture
 
-### Asset Library
-**`docs/ArchForge-Brand-Assets-Library.md`**
-- Copy-paste ready code snippets
-- Color swatches (Hex, RGB, CMYK)
-- Typography imports (Google Fonts)
-- Pre-made components (buttons, cards, forms)
-- Layout utilities & spacing classes
-- Brand voice examples & copy templates
-- Email signature HTML
-- LinkedIn post templates
-- Week 1 launch checklist
-
----
-
-## 🎨 Design Concepts
-
-### Initial Exploration (4 Concepts)
-**`design/concepts/ArchForge-Logo-Concepts.pdf`**
-
-1. **Geometric Forge** - Industrial anvil with orange spark accents
-2. **Neural Network** - AI-forward blue nodes forming anvil shape
-3. **Wordmark Forge** - Typography-led with 'A' as anvil
-4. **Transformation** - Cube → flowing energy → intelligent network
-
-**Status:** Initial exploration complete. Concept 04 selected for refinement.
-
-### Refined Exploration (4 Advanced Concepts)
-**`design/concepts/ArchForge-Refined-Concepts.pdf`**
-
-Based on **Kinetic Alchemy** design philosophy (transformation as visual process):
-
-1. **04 REFINED - Transformation** - Elevated execution with sophisticated hexagonal network, particle flow system
-2. **05 NEW - Spark Trajectory** - Kinetic moment of hammer strike, sparks becoming vector paths ⭐ **RECOMMENDED**
-3. **06 NEW - Dissolution** - Solid form dissolving into particles, reforming as network
-4. **07 NEW - Energy Interface** - Traditional craft (angular) meets AI (flowing curves) at orange energy junction
-
-**Current Recommendation:** Concept 05 (Spark Trajectory)
-- Best scalability (9/10)
-- Strongest story clarity (9/10)
-- Perfect craft + AI balance (9/10)
-- Unique positioning vs competitors
-- Excellent animation potential
-
----
-
-## 🧠 Design Philosophy
-
-### Forged Minimalism
-**`design/philosophy/archforge-logo-philosophy.md`**
-
-Initial design philosophy emphasizing:
-- Form emerging from tension between industrial weight and digital lightness
-- Essential gestures over decoration
-- Space as amplification (not absence)
-- Color as accent, never decoration
-- Typography carrying architectural weight
-- Process embodied in result (iterative refinement visible)
-
-### Kinetic Alchemy
-**`design/philosophy/archforge-refined-philosophy.md`**
-
-Advanced philosophy for transformation-driven identity:
-- Transformation as trajectory (not moment)
-- Capturing mid-transformation states (sparks mid-flight, particles reorganizing)
-- Geometric precision anchoring organic flow
-- Color as state indicator (cool = potential, warm = transformation energy)
-- Asymmetry as evidence of living process
-- Paradox: inevitable yet evolving
-
----
-
-## 🎯 Brand Identity Summary
-
-### Core Colors
 ```
-Forge Black:   #1A1A1A (70% usage - authority, depth)
-Spark Orange:  #FF6B35 (20% usage - energy, transformation)
-Vector Blue:   #4A90E2 (10% usage - intelligence, trust)
+┌────────────────────────────────────────────────────────────────┐
+│                    AUTOMATION PIPELINE                          │
+├────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌─────────────────┐                                           │
+│  │  Design Briefs  │  (DESIGN-BRIEF.md)                        │
+│  │  Prompt Temps   │  (MIDJOURNEY-PROMPTS-*.md)                │
+│  └────────┬────────┘                                           │
+│           │                                                     │
+│           ▼                                                     │
+│  ┌─────────────────┐                                           │
+│  │ Prompt Engine   │  (Template processor + variable subst)    │
+│  └────────┬────────┘                                           │
+│           │                                                     │
+│           ▼                                                     │
+│  ┌─────────────────────────────────────────────────┐           │
+│  │      Multi-Model Generation Pipeline            │           │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌────────┐│           │
+│  │  │ SD 3.5 (70%) │  │ Flux (20%)   │  │ DALL-E ││           │
+│  │  │ $0.004/img   │  │ $0.003/img   │  │ (10%)  ││           │
+│  │  └──────┬───────┘  └──────┬───────┘  └────┬───┘│           │
+│  └─────────┼──────────────────┼───────────────┼────┘           │
+│           ▼                  ▼               ▼                 │
+│  ┌─────────────────────────────────────────────────┐           │
+│  │         Quality Scoring System                  │           │
+│  │  • CLIP similarity (30%)                        │           │
+│  │  • Brand color adherence (25%)                  │           │
+│  │  • Aesthetic prediction (25%)                   │           │
+│  │  • Composition analysis (20%)                   │           │
+│  └────────┬────────────────────────────────────────┘           │
+│           │                                                     │
+│           ▼                                                     │
+│  ┌─────────────────┐                                           │
+│  │ Human Approval  │  (3 checkpoints: concept → direction      │
+│  │   Interface     │   → final approval)                       │
+│  └────────┬────────┘                                           │
+│           │                                                     │
+│           ▼                                                     │
+│  ┌─────────────────────────────────────────────────┐           │
+│  │      Production Export Pipeline                 │           │
+│  │  • Real-ESRGAN upscaling (4K)                   │           │
+│  │  • rembg background removal                     │           │
+│  │  • potrace vectorization (SVG)                  │           │
+│  └─────────────────────────────────────────────────┘           │
+│                                                                 │
+└────────────────────────────────────────────────────────────────┘
 ```
 
-### Typography
-- **Primary:** Inter (400, 500, 600, 700)
-- **Accent:** Raleway (700) for CTAs
+---
 
-### Brand Voice
-- **Inspiring:** "Forge Your Future"
-- **Playful:** "AI handles the grunt work—you dream the dreams"
-- **Clean:** "40% faster Xero reconciliation. Guaranteed."
-- **Australian:** Relatable banter, no-nonsense value
+## Technology Stack
 
-### Design Principles
-1. **Trustworthy Craftsman** - Anvil-solid reliability
-2. **Playful Alchemist** - Joyful surprise without complexity
-3. **Australian Pragmatist** - Clear facts over hype
-4. **Empowering Builder** - Tools that make users architects of their future
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **Language** | Python 3.11+ | AsyncIO orchestration, API integration |
+| **Package Manager** | uv | 10-100x faster than pip |
+| **AI Models** | Stable Diffusion 3.5, Flux Schnell, DALL-E 3 | Multi-model generation for quality/cost balance |
+| **Quality Scoring** | CLIP, scikit-learn, OpenCV | Semantic similarity, color analysis, composition |
+| **Database** | SQLite | Metadata tracking, lineage, approval status |
+| **Web UI** | Flask/Streamlit | Human approval interface |
+| **Production Export** | Real-ESRGAN, rembg, potrace | Upscaling, background removal, vectorization |
+| **Progress Tracking** | GitHub Issues + Projects | Hierarchical sub-issues with automatic roll-up |
 
 ---
 
-## 📋 Current Status
+## Installation
 
-### ✅ Completed
-- [x] Brand strategy & positioning
-- [x] Design system documentation
-- [x] Asset library with code snippets
-- [x] Initial logo concepts (4)
-- [x] Refined logo concepts (4)
-- [x] Design philosophy documents
+### Prerequisites
 
-### 🔄 In Progress
-- [ ] Final logo selection
-- [ ] Production logo files (SVG, PNG, variations)
-- [ ] Website design & development
-- [ ] Marketing collateral (LinkedIn graphics, business cards)
+- Python 3.11+
+- uv package manager (`curl -LsSf https://astral.sh/uv/install.sh | sh`)
+- Git
+- GitHub CLI (`gh`) with `project` and `read:project` scopes
 
-### 📅 Next Steps
-1. Select final logo concept (leaning toward Concept 05 - Spark Trajectory)
-2. Create production logo files in multiple formats
-3. Build landing page in Framer/Webflow
-4. Create marketing assets for Week 1 launch
+### Quick Start
 
----
+```bash
+# Clone repository
+git clone https://github.com/IAMSamuelRodda/arcforge-branding.git
+cd arcforge-branding
 
-## 🚀 Week 1 Launch Requirements
+# Create virtual environment
+python3 -m venv automation/.venv
+source automation/.venv/bin/activate
 
-**Critical Path:**
-1. Logo finalized → SVG/PNG exports
-2. Landing page live → archforge.au domain
-3. LinkedIn profile updated → brand assets
-4. Email signature → HTML version
-5. First 3 LinkedIn posts → copy templates ready
+# Install dependencies (when available)
+uv pip install -r automation/requirements.txt
 
-**Target:** Launch within 7 days for $25k Month 1 revenue goal
+# Configure API keys
+cp automation/config/config.example.yaml automation/config/config.yaml
+# Edit config.yaml with your API keys
+
+# Run generation pipeline (when implemented)
+python automation/src/main.py
+```
 
 ---
 
-## 🔗 Related Resources
+## Usage
 
-- **Domain:** archforge.au (to be registered)
-- **ABN:** [Your ABN]
-- **Target Market:** Australian SMBs (<10 employees) in finance, dental, construction
-- **Value Proposition:** 40% time savings via private AI agents for Xero/bookkeeping automation
+### 6-Stage Workflow
+
+1. **Design Input**: Load brand specifications from `design/DESIGN-BRIEF.md` and prompt templates from `design/MIDJOURNEY-PROMPTS-*.md`
+
+2. **Prompt Generation**: Process templates with brand palette and visual direction variables
+
+3. **Multi-Model Generation**: Generate 70% via Stable Diffusion 3.5, 20% via Flux Schnell, 10% via DALL-E 3
+
+4. **Quality Scoring**: Score all outputs with weighted 4-dimensional system (target: 80+ correlation with human judgment)
+
+5. **Human Approval**: Review top-scoring variations at 3 checkpoints:
+   - **Concept Selection** (top 50 from 300+ generations)
+   - **Direction Selection** (top 20 from refinements)
+   - **Final Approval** (top 3-5 for production)
+
+6. **Production Export**: Upscale to 4K, remove backgrounds, vectorize to SVG
+
+### Configuration
+
+Edit `automation/config/config.yaml`:
+
+```yaml
+models:
+  stable_diffusion:
+    enabled: true
+    api_key: "your-api-key"
+    allocation: 0.70  # 70% of generations
+  flux:
+    enabled: true
+    api_key: "your-api-key"
+    allocation: 0.20  # 20% of generations
+  dalle:
+    enabled: true
+    api_key: "your-openai-key"
+    allocation: 0.10  # 10% of generations
+
+quality_scoring:
+  weights:
+    semantic_similarity: 0.30
+    brand_color_adherence: 0.25
+    aesthetic_prediction: 0.25
+    composition_analysis: 0.20
+  thresholds:
+    minimum_score: 0.65
+    brand_color_accuracy: 0.95
+
+budget:
+  monthly_limit: 60.00  # USD
+  generation_target: 500  # images/month
+```
 
 ---
 
-## 📞 Contact
+## Project Structure
 
-**Samuel Rodda**
-Founder, ArchForge.au
-[your@email.com]
+```
+arcforge-branding/
+├── automation/
+│   ├── config/
+│   │   └── config.yaml              # API keys, model settings, weights
+│   ├── src/
+│   │   ├── prompt_engine/           # Template processing
+│   │   ├── generation/              # Multi-model API integration
+│   │   ├── scoring/                 # Quality scoring system
+│   │   ├── refinement/              # Iterative img2img
+│   │   └── export/                  # Production export pipeline
+│   ├── web/
+│   │   └── approval_interface/      # Flask/Streamlit UI
+│   ├── results/                     # Generated images (gitignored)
+│   ├── data/                        # SQLite database (gitignored)
+│   └── requirements.txt             # Python dependencies
+├── design/
+│   ├── DESIGN-BRIEF.md              # Brand specifications (1,157 lines)
+│   └── MIDJOURNEY-PROMPTS-*.md      # 6 engineered prompt templates
+├── assets/
+│   └── approved/                    # Production-ready exports
+├── specs/
+│   └── BLUEPRINT.yaml               # Complete technical spec (1,824 lines)
+├── CONTRIBUTING.md                  # Agent workflow guide
+├── STATUS.md                        # Current milestone progress
+├── CHANGELOG.md                     # Version history
+├── DEVELOPMENT.md                   # Development setup & testing
+└── README.md                        # This file
+```
 
 ---
 
-**Last Updated:** November 6, 2025
-**Version:** 1.0 (Active Development)
+## Success Metrics
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| **Generations/Month** | 500-1000 | API call logs |
+| **Brand Color Accuracy** | 95%+ | Color distance (ΔE < 5) |
+| **Quality Score Correlation** | ρ > 0.70 | Spearman's rank vs human judgment |
+| **Human Time/Checkpoint** | <10 min | UI interaction logs |
+| **Production Assets** | 3-5 logos | Final export count |
+| **Monthly Cost** | $30-60 | API billing reports |
+
+---
+
+## Development
+
+See [DEVELOPMENT.md](DEVELOPMENT.md) for:
+- Development environment setup
+- Testing strategy
+- Code style guidelines
+- Pre-commit checklist
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for:
+- GitHub Issues workflow
+- Progress tracking with gh CLI
+- Epic-milestone mapping
+- Agent coordination
+
+---
+
+## Roadmap
+
+### Milestone 1: v1.0 Foundation & Core Pipeline (Weeks 1-4)
+- [ ] Epic #1: Project Foundation & Infrastructure
+- [ ] Epic #11: Basic Generation Pipeline (Single Model)
+- [ ] Epic #24: Quality Scoring & Filtering System
+- [ ] Epic #39: Human Approval Interface
+
+### Milestone 2: v1.1 Multi-Model & Iterative Refinement (Weeks 5-8)
+- [ ] Epic #50: Multi-Model Generation Pipeline
+- [ ] Epic #64: Iterative Refinement Pipeline
+- [ ] Epic #75: Production Finalization & Export
+
+### Milestone 3: v1.2 Production Polish & Documentation (Weeks 9-10)
+- [ ] Epic #91: Testing & Quality Assurance
+- [ ] Epic #102: Performance Optimization
+- [ ] Epic #112: Documentation & User Experience
+
+**Current Status**: Planning phase (Milestone 1 not started)
+
+**View Progress**: https://github.com/users/IAMSamuelRodda/projects/6
+
+---
+
+## License
+
+Proprietary - All rights reserved.
+
+**Owner**: Samuel Rodda
+**Created**: November 2025
+**Status**: Active Development
+
+---
+
+## Links
+
+- **GitHub Repository**: https://github.com/IAMSamuelRodda/arcforge-branding
+- **Project Board**: https://github.com/users/IAMSamuelRodda/projects/6
+- **Issues**: https://github.com/IAMSamuelRodda/arcforge-branding/issues
+- **Blueprint**: [specs/BLUEPRINT.yaml](specs/BLUEPRINT.yaml)
+
+---
+
+**Last Updated**: November 10, 2025

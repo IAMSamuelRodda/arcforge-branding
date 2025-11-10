@@ -1,56 +1,194 @@
-# ArchForge Branding - Git Ignore
+# ArcForge Branding Automation - .gitignore
+
+# ============================================================================
+# Python
+# ============================================================================
+
+# Virtual environments
+automation/.venv/
+.venv/
+venv/
+ENV/
+env/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# ============================================================================
+# Generated Assets & Results
+# ============================================================================
+
+# Generated images (keep structure, ignore content)
+automation/results/*
+!automation/results/.gitkeep
+
+# Approved production assets (tracked separately in assets/)
+automation/results/approved/
+
+# ============================================================================
+# Data & Databases
+# ============================================================================
+
+# SQLite databases
+automation/data/*.db
+automation/data/*.sqlite
+automation/data/*.sqlite3
+!automation/data/.gitkeep
+
+# CSV exports
+automation/data/*.csv
+
+# JSON exports
+automation/data/exports/*.json
+
+# ============================================================================
+# Configuration & Secrets
+# ============================================================================
+
+# API keys and secrets
+automation/config/config.yaml
+automation/config/secrets.yaml
+.env
+.env.local
+*.key
+*.pem
+
+# Keep example configs
+!automation/config/config.example.yaml
+
+# ============================================================================
+# Logs
+# ============================================================================
+
+# Application logs
+automation/logs/*.log
+*.log
+
+# Keep logs directory
+!automation/logs/.gitkeep
+
+# ============================================================================
+# IDEs & Editors
+# ============================================================================
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+
+# Cursor
+.cursor/
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ============================================================================
+# Operating System
+# ============================================================================
 
 # macOS
 .DS_Store
 .AppleDouble
 .LSOverride
+._*
 
 # Linux
 *~
 .directory
+.Trash-*
 
 # Windows
 Thumbs.db
+Thumbs.db:encryptable
 ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
 Desktop.ini
+$RECYCLE.BIN/
 
-# Design tool cache
-*.sketch
-*.fig
-*.xd
-*.psd
-*.ai
-~$*
+# ============================================================================
+# Temporary Files
+# ============================================================================
 
-# Python cache (from generation scripts)
-__pycache__/
-*.py[cod]
-*$py.class
-.venv/
-venv/
+# Temporary processing files
+automation/temp/*
+!automation/temp/.gitkeep
 
-# Temporary files
-*.tmp
-*.bak
-*.swp
-*.swo
-*~
+# Cache directories
+.cache/
+*.cache
 
-# Build outputs
-dist/
-build/
+# ============================================================================
+# Project-Specific
+# ============================================================================
 
-# IDE
-.vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
+# Model checkpoints (if self-hosting)
+automation/models/*.ckpt
+automation/models/*.safetensors
+automation/models/*.pt
+!automation/models/.gitkeep
 
-# Keep these folders but ignore their contents initially
-# (Remove these lines as you add production assets)
-# /assets/*
-# /design/logos/*
+# Experiment results
+automation/experiments/*
+!automation/experiments/.gitkeep
 
-# Environment variables (if you add any)
-.env
-.env.local
+# Benchmark data
+automation/benchmarks/results/*.json
+!automation/benchmarks/results/.gitkeep

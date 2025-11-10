@@ -1,0 +1,469 @@
+# Development Guide
+
+**ArcForge Branding Automation** - Development environment setup, testing strategy, and contribution guidelines.
+
+---
+
+## Table of Contents
+
+1. [Development Environment Setup](#development-environment-setup)
+2. [Project Architecture](#project-architecture)
+3. [Code Style Guidelines](#code-style-guidelines)
+4. [Testing Strategy](#testing-strategy)
+5. [Pre-Commit Checklist](#pre-commit-checklist)
+6. [Debugging Guide](#debugging-guide)
+7. [Performance Optimization](#performance-optimization)
+
+---
+
+## Development Environment Setup
+
+### Prerequisites
+
+- **Python**: 3.11 or higher
+- **uv**: Fast Python package manager (`curl -LsSf https://astral.sh/uv/install.sh | sh`)
+- **Git**: Version control
+- **GitHub CLI**: `gh` with `project` and `read:project` scopes
+- **Optional**: Docker (for containerized testing)
+
+### Initial Setup
+
+```bash
+# Clone repository
+git clone https://github.com/IAMSamuelRodda/arcforge-branding.git
+cd arcforge-branding
+
+# Create virtual environment
+python3 -m venv automation/.venv
+source automation/.venv/bin/activate  # On Windows: automation\.venv\Scripts\activate
+
+# Verify uv is installed
+uv --version  # Should show version 0.1.0+
+
+# Install dependencies (when requirements.txt is available)
+uv pip install -r automation/requirements.txt
+
+# Install development dependencies
+uv pip install pytest pytest-asyncio pytest-cov black ruff mypy
+
+# Verify installation
+python -c "import sys; print(f'Python {sys.version}')"
+```
+
+### Configuration Setup
+
+```bash
+# Copy example configuration
+cp automation/config/config.example.yaml automation/config/config.yaml
+
+# Edit configuration with your API keys
+nano automation/config/config.yaml  # or vim, code, etc.
+```
+
+**Required API Keys**:
+- Stable Diffusion API key (Stability AI or self-hosted)
+- Flux API key (Replicate or BFL)
+- OpenAI API key (for DALL-E 3)
+
+### GitHub CLI Setup
+
+```bash
+# Check authentication
+gh auth status
+
+# Add project management scopes if missing
+gh auth refresh -h github.com -s project,read:project
+
+# Verify project access
+gh project view 6 --owner IAMSamuelRodda
+```
+
+---
+
+## Project Architecture
+
+### Directory Structure
+
+```
+automation/
+├── config/
+│   ├── config.yaml              # Runtime configuration (gitignored)
+│   └── config.example.yaml      # Template with defaults
+├── src/
+│   ├── __init__.py
+│   ├── main.py                  # Entry point
+│   ├── prompt_engine/
+│   │   ├── __init__.py
+│   │   ├── template_loader.py   # Load MIDJOURNEY-PROMPTS-*.md
+│   │   └── variable_subst.py    # Brand palette substitution
+│   ├── generation/
+│   │   ├── __init__.py
+│   │   ├── orchestrator.py      # AsyncIO multi-model coordinator
+│   │   ├── stable_diffusion.py  # SD 3.5 API client
+│   │   ├── flux_client.py       # Flux Schnell client
+│   │   └── dalle_client.py      # DALL-E 3 client
+│   ├── scoring/
+│   │   ├── __init__.py
+│   │   ├── scorer.py            # Weighted scoring orchestrator
+│   │   ├── clip_similarity.py   # Semantic similarity (30%)
+│   │   ├── color_adherence.py   # Brand color checker (25%)
+│   │   ├── aesthetic_pred.py    # Aesthetic predictor (25%)
+│   │   └── composition.py       # Composition analyzer (20%)
+│   ├── refinement/
+│   │   ├── __init__.py
+│   │   ├── img2img.py           # Iterative refinement
+│   │   └── param_explore.py     # Parameter space exploration
+│   ├── export/
+│   │   ├── __init__.py
+│   │   ├── upscaler.py          # Real-ESRGAN upscaling
+│   │   ├── bg_removal.py        # rembg background removal
+│   │   └── vectorizer.py        # potrace SVG conversion
+│   └── db/
+│       ├── __init__.py
+│       ├── models.py            # SQLAlchemy models
+│       └── queries.py           # Database operations
+├── web/
+│   ├── app.py                   # Flask/Streamlit entry
+│   ├── templates/               # HTML templates
+│   └── static/                  # CSS, JS, assets
+├── tests/
+│   ├── unit/                    # Unit tests
+│   ├── integration/             # Integration tests
+│   └── e2e/                     # End-to-end tests
+├── results/                     # Generated images (gitignored)
+├── data/                        # SQLite DB (gitignored)
+└── logs/                        # Application logs (gitignored)
+```
+
+### Component Dependencies
+
+```
+┌──────────────────────────────────────────────────────────┐
+│                      main.py                             │
+│              (Orchestration Entry Point)                 │
+└────────────────┬─────────────────────────────────────────┘
+                 │
+    ┌────────────┼────────────┬──────────────┐
+    │            │            │              │
+    ▼            ▼            ▼              ▼
+┌────────┐  ┌──────────┐  ┌─────────┐  ┌──────────┐
+│ Prompt │  │ Generate │  │ Scoring │  │  Export  │
+│ Engine │→ │ Pipeline │→ │ System  │→ │ Pipeline │
+└────────┘  └──────────┘  └─────────┘  └──────────┘
+    │            │            │              │
+    ▼            ▼            ▼              ▼
+┌────────┐  ┌──────────┐  ┌─────────┐  ┌──────────┐
+│ Design │  │   APIs   │  │  CLIP   │  │Real-ESRG│
+│ Briefs │  │ (SD/Flux)│  │  Color  │  │  rembg  │
+└────────┘  └──────────┘  └─────────┘  └──────────┘
+```
+
+---
+
+## Code Style Guidelines
+
+### Python Style
+
+Follow **PEP 8** with these additions:
+
+```python
+# Line length: 100 characters (not 79)
+# Use type hints for all functions
+def generate_prompt(template: str, palette: dict[str, str]) -> str:
+    """
+    Generate prompt from template with brand palette substitution.
+
+    Args:
+        template: Prompt template with {{variable}} placeholders
+        palette: Brand color palette (name -> hex)
+
+    Returns:
+        Processed prompt string with variables substituted
+    """
+    pass
+
+# Use dataclasses for configuration
+from dataclasses import dataclass
+
+@dataclass
+class ModelConfig:
+    api_key: str
+    allocation: float
+    enabled: bool = True
+
+# Use async/await for I/O operations
+async def generate_batch(prompts: list[str]) -> list[Image]:
+    """Generate images concurrently across multiple models."""
+    tasks = [generate_single(p) for p in prompts]
+    return await asyncio.gather(*tasks)
+
+# Use pathlib for file operations (not os.path)
+from pathlib import Path
+
+results_dir = Path("automation/results")
+results_dir.mkdir(parents=True, exist_ok=True)
+```
+
+### Code Formatting
+
+```bash
+# Format code with Black (100 char line length)
+black --line-length 100 automation/src/
+
+# Lint with Ruff (faster than flake8 + pylint)
+ruff check automation/src/
+
+# Type check with mypy
+mypy automation/src/
+```
+
+### Import Order
+
+```python
+# Standard library
+import asyncio
+import logging
+from pathlib import Path
+
+# Third-party
+import numpy as np
+import torch
+from PIL import Image
+
+# Local application
+from automation.src.generation import StableDiffusionClient
+from automation.src.scoring import WeightedScorer
+```
+
+---
+
+## Testing Strategy
+
+### Test Levels
+
+1. **Unit Tests** (`tests/unit/`): Test individual functions/classes in isolation
+2. **Integration Tests** (`tests/integration/`): Test component interactions
+3. **End-to-End Tests** (`tests/e2e/`): Test complete workflows
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=automation.src --cov-report=html
+
+# Run specific test file
+pytest tests/unit/test_prompt_engine.py
+
+# Run tests matching pattern
+pytest -k "test_color_adherence"
+
+# Run async tests
+pytest -v tests/integration/test_generation_pipeline.py
+```
+
+### Test Examples
+
+#### Unit Test
+```python
+# tests/unit/test_color_adherence.py
+import pytest
+from automation.src.scoring.color_adherence import check_brand_colors
+
+def test_exact_brand_color_match():
+    """Test exact brand color detection."""
+    image_colors = ["#1A1A1A", "#FF6B35", "#4A90E2"]
+    brand_palette = {"forge_black": "#1A1A1A", "spark_orange": "#FF6B35"}
+
+    score = check_brand_colors(image_colors, brand_palette)
+    assert score >= 0.95, "Exact matches should score 95%+"
+```
+
+#### Integration Test
+```python
+# tests/integration/test_generation_pipeline.py
+import pytest
+from automation.src.generation import MultiModelOrchestrator
+
+@pytest.mark.asyncio
+async def test_multi_model_generation():
+    """Test concurrent generation across multiple models."""
+    orchestrator = MultiModelOrchestrator()
+    prompts = ["test prompt 1", "test prompt 2"]
+
+    results = await orchestrator.generate_batch(prompts)
+    assert len(results) == 2
+    assert all(r.model in ["sd35", "flux", "dalle"] for r in results)
+```
+
+### Test Coverage Targets
+
+| Component | Target | Status |
+|-----------|--------|--------|
+| Prompt Engine | 90%+ | Not implemented |
+| Generation Pipeline | 80%+ | Not implemented |
+| Scoring System | 95%+ | Not implemented |
+| Export Pipeline | 85%+ | Not implemented |
+
+---
+
+## Pre-Commit Checklist
+
+Before committing code, ensure:
+
+```bash
+# 1. Format code
+black --line-length 100 automation/src/
+ruff check --fix automation/src/
+
+# 2. Type check
+mypy automation/src/
+
+# 3. Run tests
+pytest
+
+# 4. Check coverage
+pytest --cov=automation.src --cov-report=term-missing
+
+# 5. Verify no sensitive data
+git diff --cached | grep -i "api_key\|secret\|password"
+
+# 6. Update documentation if needed
+# - Update docstrings
+# - Update README.md if API changes
+# - Update CHANGELOG.md
+
+# 7. Commit with descriptive message
+git add .
+git commit -m "feat: add CLIP semantic similarity scoring
+
+- Implemented CLIP model loading and preprocessing
+- Added cosine similarity calculation against prompt embeddings
+- Cached model weights for performance (30% weight in scoring)
+- Added unit tests with 95% coverage
+
+Relates to #25 (Epic #24)
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+
+# 8. Update GitHub issue status
+gh issue comment 25 --body "Implemented CLIP similarity scoring" --repo IAMSamuelRodda/arcforge-branding
+gh issue close 25 --comment "Feature complete: CLIP semantic similarity implemented and tested" --repo IAMSamuelRodda/arcforge-branding
+gh issue edit 25 --add-label "status: completed" --repo IAMSamuelRodda/arcforge-branding
+```
+
+---
+
+## Debugging Guide
+
+### Logging Configuration
+
+```python
+# automation/src/utils/logging_config.py
+import logging
+from pathlib import Path
+
+def setup_logging(level: str = "INFO"):
+    """Configure application logging."""
+    log_dir = Path("automation/logs")
+    log_dir.mkdir(parents=True, exist_ok=True)
+
+    logging.basicConfig(
+        level=getattr(logging, level.upper()),
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[
+            logging.FileHandler(log_dir / "app.log"),
+            logging.StreamHandler()
+        ]
+    )
+```
+
+### Common Issues
+
+#### Issue: API Rate Limiting
+**Symptoms**: 429 HTTP errors from generation APIs
+**Solution**: Implement exponential backoff
+```python
+import asyncio
+import aiohttp
+
+async def generate_with_retry(prompt: str, max_retries: int = 3):
+    for attempt in range(max_retries):
+        try:
+            return await api_client.generate(prompt)
+        except aiohttp.ClientResponseError as e:
+            if e.status == 429:
+                wait_time = 2 ** attempt
+                await asyncio.sleep(wait_time)
+            else:
+                raise
+```
+
+#### Issue: Out of Memory During Batch Processing
+**Symptoms**: Process killed, system slowdown
+**Solution**: Process in smaller batches
+```python
+async def generate_in_batches(prompts: list[str], batch_size: int = 10):
+    for i in range(0, len(prompts), batch_size):
+        batch = prompts[i:i+batch_size]
+        yield await generate_batch(batch)
+```
+
+---
+
+## Performance Optimization
+
+### Profiling
+
+```bash
+# Profile CPU usage
+python -m cProfile -o profile.stats automation/src/main.py
+python -m pstats profile.stats
+
+# Profile memory usage
+pip install memory_profiler
+python -m memory_profiler automation/src/main.py
+
+# Profile async code
+pip install yappi
+# Add yappi instrumentation to async functions
+```
+
+### Optimization Targets
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| Generation throughput | 50+ images/hour | API logs |
+| Scoring latency | <5s per image | Performance tests |
+| Memory usage | <4GB peak | memory_profiler |
+| API cost | <$0.10 per image | Budget tracker |
+
+### Best Practices
+
+1. **AsyncIO for I/O**: Use async/await for all API calls
+2. **Batch Processing**: Process images in batches of 10-20
+3. **Caching**: Cache CLIP model weights, brand palette calculations
+4. **Connection Pooling**: Reuse HTTP connections with aiohttp ClientSession
+5. **Progress Tracking**: Log progress every 10% for long-running tasks
+
+---
+
+## Additional Resources
+
+- **Blueprint**: [specs/BLUEPRINT.yaml](specs/BLUEPRINT.yaml) - Complete technical spec
+- **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md) - GitHub workflow guide
+- **Status**: [STATUS.md](STATUS.md) - Current milestone progress
+- **Changelog**: [CHANGELOG.md](CHANGELOG.md) - Version history
+
+---
+
+## Questions or Issues?
+
+- **GitHub Issues**: https://github.com/IAMSamuelRodda/arcforge-branding/issues
+- **Project Board**: https://github.com/users/IAMSamuelRodda/projects/6
+
+---
+
+**Last Updated**: November 10, 2025
