@@ -1,0 +1,1824 @@
+project_overview:
+  brief: "Build a fully automated branding development system that transforms design briefs into production-ready brand assets through iterative AI-driven design processes with human approval checkpoints, eliminating manual prompt input and image transfer workflows."
+  core_objectives:
+    - "Generate 300+ brand asset variations from design briefs with 95%+ brand color accuracy"
+    - "Reduce human intervention to <10 minutes per checkpoint across 3 approval stages"
+    - "Deliver 3-5 production-ready logos with multi-format exports within $30-60/month budget"
+    - "Achieve zero manual prompt copying or image downloads through full API automation"
+  complexity: "complex"
+  existing_assets:
+    - path: "design/DESIGN-BRIEF.md"
+      size: "1157 lines"
+      purpose: "Comprehensive design system specification"
+    - path: "design/MIDJOURNEY-PROMPTS-*.md"
+      count: 6
+      purpose: "Engineered prompt templates for 3 visual directions"
+    - path: "design/philosophy/"
+      purpose: "Brand strategy and design philosophy documentation"
+
+architecture:
+  pattern: "vertical-slice"
+  rationale: "Each feature (generation pipeline, scoring system, approval interface) operates as independent slice with complete stack from input to output, enabling parallel agent development and isolated testing without cross-slice dependencies"
+  components:
+    - name: "Brand Agent Orchestrator"
+      purpose: "Central coordinator managing generation queues, iteration chains, and workflow stages"
+      boundaries: "IN: design brief parsing, prompt distribution, state tracking; OUT: business logic, UI rendering"
+      dependencies: []
+      token_estimate: "<15k"
+
+    - name: "Prompt Generation Engine"
+      purpose: "Converts design briefs and templates into model-specific prompts with variation generation"
+      boundaries: "IN: template processing, parameter variation; OUT: image generation, scoring"
+      dependencies: ["Brand Agent Orchestrator"]
+      token_estimate: "<10k"
+
+    - name: "Multi-Model Generation Pipeline"
+      purpose: "Handles concurrent API calls to Stable Diffusion, Flux, DALL-E with queue management"
+      boundaries: "IN: API integration, rate limiting, error handling; OUT: scoring, approval logic"
+      dependencies: ["Prompt Generation Engine"]
+      token_estimate: "<20k"
+
+    - name: "Quality Scoring System"
+      purpose: "Analyzes generated images using CLIP, color detection, aesthetic models with weighted ranking"
+      boundaries: "IN: image analysis, scoring algorithms; OUT: UI presentation, orchestration"
+      dependencies: ["Multi-Model Generation Pipeline"]
+      token_estimate: "<15k"
+
+    - name: "Iterative Refinement Pipeline"
+      purpose: "Uses top-scored images as img2img seeds for parameter exploration and quality improvement"
+      boundaries: "IN: refinement logic, parameter variation; OUT: final exports"
+      dependencies: ["Quality Scoring System", "Multi-Model Generation Pipeline"]
+      token_estimate: "<12k"
+
+    - name: "Human Approval Interface"
+      purpose: "CLI and web dashboards for image review, batch operations, and feedback capture"
+      boundaries: "IN: UI rendering, user input; OUT: orchestration, database writes"
+      dependencies: ["Quality Scoring System"]
+      token_estimate: "<18k"
+
+    - name: "Post-Processing Service"
+      purpose: "Upscaling, background removal, vector conversion, multi-format exports"
+      boundaries: "IN: image transformations; OUT: file system writes"
+      dependencies: ["Iterative Refinement Pipeline"]
+      token_estimate: "<10k"
+
+    - name: "Metadata Tracking Database"
+      purpose: "SQLite storage for prompt→image→score→approval chains with analytics queries"
+      boundaries: "IN: CRUD operations, query interface; OUT: application state"
+      dependencies: []
+      token_estimate: "<8k"
+
+milestones:
+  milestone_1:
+    name: "v1.0 Foundation & Core Pipeline"
+    timeline_weeks: "1-4"
+    description: "Establish project infrastructure, implement basic generation pipeline with single model, build scoring and approval systems"
+    success_criteria:
+      - "Successfully generate 50+ images from design brief using Stable Diffusion API"
+      - "Quality scoring system ranks images with 80%+ accuracy vs human judgment"
+      - "CLI approval interface allows batch review in <5 minutes for 50 images"
+      - "Database tracks complete lineage from prompt to approved image"
+
+    epics:
+      epic_1:
+        name: "Project Foundation & Infrastructure"
+        weeks: "1"
+        milestone: "Development environment configured with all dependencies, project structure established, existing design assets integrated"
+
+        feature_1_1:
+          name: "Project Structure & Environment Setup"
+          complexity:
+            composite: 1.8
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 1
+              uncertainty: 2
+              risk: 1
+              testing: 3
+          estimated_days: 2
+          deliverables:
+            - "Python 3.11+ virtual environment with uv package manager"
+            - "Directory structure: automation/{config,src,web,results,data}"
+            - "Git repository initialized with .gitignore for results/ and data/"
+            - "Requirements specification file with pinned ML library versions"
+
+          task_1_1_1:
+            name: "Initialize Python environment and directory structure"
+            complexity:
+              composite: 1.5
+            estimated_days: 1
+            deliverables:
+              - "Virtual environment at automation/.venv with Python 3.11+"
+              - "Directory structure created with README placeholders"
+              - "Git initialized with comprehensive .gitignore (results/, data/, .venv/)"
+
+          task_1_1_2:
+            name: "Install core dependencies and verify compatibility"
+            complexity:
+              composite: 2.0
+            estimated_days: 1
+            deliverables:
+              - "requirements.txt with pinned versions: torch, transformers, Pillow, flask, rich, asyncio"
+              - "Dependency compatibility verified across Linux environment"
+              - "Quick smoke test script confirming import success"
+
+        feature_1_2:
+          name: "Design Asset Integration"
+          complexity:
+            composite: 2.2
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 3
+              uncertainty: 2
+              risk: 2
+              testing: 2
+          estimated_days: 3
+          deliverables:
+            - "Parser for DESIGN-BRIEF.md extracting color palette, typography, visual directions"
+            - "Loader for 6 MIDJOURNEY-PROMPTS-*.md files with template variable detection"
+            - "Configuration files mapping design brief elements to prompt parameters"
+            - "Validation tests confirming successful extraction of brand criteria"
+
+          task_1_2_1:
+            name: "Build design brief parser"
+            complexity:
+              composite: 2.0
+            estimated_days: 1.5
+            deliverables:
+              - "Parser extracting color palette (#1A1A1A, #FF6B35, #4A90E2)"
+              - "Typography extraction (Inter, Raleway)"
+              - "Visual direction classification (Technical Blueprint, Sci-Fi, Grounded Fantasy)"
+
+          task_1_2_2:
+            name: "Implement prompt template loader"
+            complexity:
+              composite: 2.3
+            estimated_days: 1.5
+            deliverables:
+              - "Loader for all 6 MIDJOURNEY-PROMPTS-*.md files"
+              - "Template variable detection ({style}, {color_scheme}, etc.)"
+              - "Template validation ensuring required variables present"
+
+        feature_1_3:
+          name: "Configuration Management System"
+          complexity:
+            composite: 2.0
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 2
+          estimated_days: 2
+          deliverables:
+            - "YAML configuration files for model endpoints, API keys (gitignored)"
+            - "Brand criteria thresholds (color tolerance, aesthetic minimums)"
+            - "Scoring weights configuration (CLIP: 30%, color: 25%, aesthetic: 25%, composition: 20%)"
+            - "Budget tracking parameters ($30-60/month, alert thresholds)"
+
+          task_1_3_1:
+            name: "Create model configuration schema"
+            complexity:
+              composite: 1.8
+            estimated_days: 1
+            deliverables:
+              - "config/models.yaml with Stable Diffusion, Flux, DALL-E endpoints"
+              - "API key placeholders with environment variable fallbacks"
+              - "Rate limiting configurations per model"
+
+          task_1_3_2:
+            name: "Define brand criteria and scoring weights"
+            complexity:
+              composite: 2.2
+            estimated_days: 1
+            deliverables:
+              - "config/brand-criteria.yaml with color tolerance ranges"
+              - "config/scoring-weights.yaml with adjustable dimension weights"
+              - "Budget tracking config with monthly limits and alert thresholds"
+
+      epic_2:
+        name: "Basic Generation Pipeline (Single Model)"
+        weeks: "1-2"
+        milestone: "Functional end-to-end pipeline generating images from design brief using Stable Diffusion with basic metadata tracking"
+
+        feature_2_1:
+          name: "Prompt Generation Engine"
+          complexity:
+            composite: 2.8
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 3
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Template processor converting MIDJOURNEY-PROMPTS-*.md to model-specific prompts"
+            - "Variable substitution engine for {style}, {color_scheme}, {composition} placeholders"
+            - "Variation generator creating 50 unique prompts per template (300 total)"
+            - "Prompt history tracking and effectiveness scoring"
+
+          task_2_1_1:
+            name: "Build template processor with variable substitution"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "PromptTemplate class loading from MIDJOURNEY-PROMPTS-*.md"
+              - "Variable substitution for brand palette, typography, visual direction"
+              - "Model-specific formatting (Stable Diffusion vs DALL-E prompt syntax)"
+
+          task_2_1_2:
+            name: "Implement variation generator"
+            complexity:
+              composite: 3.0
+            estimated_days: 2
+            deliverables:
+              - "Parameter variation logic (style emphasis, color prominence, composition angle)"
+              - "50 unique prompt variations per template without repetition"
+              - "Variation tracking to avoid duplicate generations"
+
+          task_2_1_3:
+            name: "Add prompt history and effectiveness tracking"
+            complexity:
+              composite: 2.5
+            estimated_days: 1
+            deliverables:
+              - "Prompt storage linking to generated image metadata"
+              - "Effectiveness scoring (approved images per prompt template)"
+              - "Query interface for 'show best performing prompts'"
+
+        feature_2_2:
+          name: "Stable Diffusion API Integration"
+          complexity:
+            composite: 2.6
+            dimensions:
+              technical_complexity: 3
+              scope_size: 2
+              dependencies: 3
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "API client for Stable Diffusion 3.5 (self-hosted or Stability AI API)"
+            - "Async batch generation handling 50+ concurrent requests"
+            - "Error handling for timeouts, rate limits, model availability"
+            - "Cost tracking per generation with budget alerts"
+
+          task_2_2_1:
+            name: "Research and select Stable Diffusion deployment method"
+            complexity:
+              composite: 3.5
+            estimated_days: 1.5
+            needs_decomposition: true
+            decomposition_depth: 3
+            decomposition_reason: "High uncertainty (4.0) around self-hosted vs API tradeoffs and setup complexity"
+            deliverables:
+              - "Decision document: self-hosted (free, slower) vs Stability AI API (paid, faster)"
+              - "Cost analysis: compute vs API fees for 500-1000 images/month"
+              - "Performance benchmarks for image generation latency"
+
+          task_2_2_2:
+            name: "Implement API client with async batch handling"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "StableDiffusionClient class with async generate() method"
+              - "Batch queue management for 50+ concurrent generations"
+              - "Progress tracking with rich progress bars"
+
+          task_2_2_3:
+            name: "Add error handling and cost tracking"
+            complexity:
+              composite: 2.0
+            estimated_days: 0.5
+            deliverables:
+              - "Retry logic for transient failures (exponential backoff)"
+              - "Cost accumulator tracking generations per session/month"
+              - "Budget alerts when approaching $30-60 threshold"
+
+        feature_2_3:
+          name: "Image Storage & Metadata Database"
+          complexity:
+            composite: 2.4
+            dimensions:
+              technical_complexity: 2
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 3
+          deliverables:
+            - "SQLite database schema for generations (prompt, model, params, image_path, score, approval)"
+            - "File system storage at automation/results/{session_id}/{image_id}.png"
+            - "CRUD operations for image metadata with relationship tracking"
+            - "Query interface for 'show refinements of image X' lineage"
+
+          task_2_3_1:
+            name: "Design and implement SQLite database schema"
+            complexity:
+              composite: 2.3
+            estimated_days: 1.5
+            deliverables:
+              - "Tables: generations, prompts, scores, approvals, refinements"
+              - "Foreign keys linking prompt→generation→score→approval chains"
+              - "Indexes on frequently queried fields (approval_status, score, session_id)"
+
+          task_2_3_2:
+            name: "Build image storage manager"
+            complexity:
+              composite: 2.0
+            estimated_days: 1
+            deliverables:
+              - "Directory structure: results/{session_id}/{stage}/{image_id}.png"
+              - "Atomic file writes preventing corruption"
+              - "Cleanup utilities for old sessions (30-day retention)"
+
+          task_2_3_3:
+            name: "Implement query interface for lineage tracking"
+            complexity:
+              composite: 2.5
+            estimated_days: 0.5
+            deliverables:
+              - "get_refinements(image_id) returning parent→child chains"
+              - "get_top_scored(session_id, limit=20) for checkpoint review"
+              - "get_prompt_effectiveness() for template performance analytics"
+
+      epic_3:
+        name: "Quality Scoring & Filtering System"
+        weeks: "2-3"
+        milestone: "Automated quality scoring system ranking generated images with 80%+ accuracy vs human judgment, filtering top 20% for review"
+
+        feature_3_1:
+          name: "CLIP-Based Semantic Similarity Scoring"
+          complexity:
+            composite: 3.2
+            dimensions:
+              technical_complexity: 4
+              scope_size: 3
+              dependencies: 3
+              uncertainty: 4
+              risk: 3
+              testing: 3
+          estimated_days: 6
+          deliverables:
+            - "CLIP model integration (OpenAI ViT-L/14) for text-image similarity"
+            - "Design brief embedding generation from DESIGN-BRIEF.md"
+            - "Semantic similarity scoring (0-1 scale) per generated image"
+            - "Batch processing with GPU acceleration if available"
+
+          task_3_1_1:
+            name: "Install and configure CLIP model"
+            complexity:
+              composite: 3.0
+            estimated_days: 2
+            deliverables:
+              - "CLIP ViT-L/14 model downloaded and cached locally"
+              - "GPU detection and fallback to CPU with performance warnings"
+              - "Model warm-up on sample images for latency benchmarking"
+
+          task_3_1_2:
+            name: "Generate design brief embeddings"
+            complexity:
+              composite: 2.5
+            estimated_days: 1.5
+            deliverables:
+              - "Text embeddings from DESIGN-BRIEF.md key sections (visual direction, brand essence)"
+              - "Multiple embedding variants for 3 visual directions"
+              - "Embedding cache for reuse across sessions"
+
+          task_3_1_3:
+            name: "Implement semantic similarity scorer"
+            complexity:
+              composite: 3.5
+            estimated_days: 2
+            deliverables:
+              - "Image embedding generation with CLIP image encoder"
+              - "Cosine similarity calculation vs design brief embeddings"
+              - "Batch scoring with progress tracking (300 images in <5 minutes)"
+
+          task_3_1_4:
+            name: "Validate CLIP scoring accuracy"
+            complexity:
+              composite: 3.5
+            estimated_days: 0.5
+            deliverables:
+              - "Human validation: manual ranking of 30 images vs CLIP scores"
+              - "Correlation analysis (target Spearman's ρ > 0.7)"
+              - "Tuning recommendations if accuracy < 80%"
+
+        feature_3_2:
+          name: "Brand Color Palette Adherence Detection"
+          complexity:
+            composite: 2.6
+            dimensions:
+              technical_complexity: 3
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Color extraction from generated images using K-means clustering"
+            - "Palette comparison vs brand colors (#1A1A1A, #FF6B35, #4A90E2)"
+            - "Adherence scoring (0-1 scale) with tolerance thresholds"
+            - "Visual debug output showing extracted vs expected colors"
+
+          task_3_2_1:
+            name: "Implement color extraction with K-means"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "Dominant color extraction (top 5 colors per image)"
+              - "K-means clustering with opencv or sklearn"
+              - "Color histogram generation for distribution analysis"
+
+          task_3_2_2:
+            name: "Build brand color comparison engine"
+            complexity:
+              composite: 2.7
+            estimated_days: 2
+            deliverables:
+              - "Delta E (CIE 2000) color distance calculation"
+              - "Tolerance thresholds from config/brand-criteria.yaml"
+              - "Adherence score: % of brand colors present within tolerance"
+              - "Debug visualization overlaying extracted colors on images"
+
+        feature_3_3:
+          name: "Aesthetic Quality & Composition Analysis"
+          complexity:
+            composite: 3.0
+            dimensions:
+              technical_complexity: 4
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 4
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Aesthetic predictor model (LAION Aesthetics V2 or similar)"
+            - "Composition quality metrics (rule of thirds, balance, contrast)"
+            - "Combined aesthetic+composition score (0-1 scale)"
+            - "Low-score filtering rejecting bottom 50% immediately"
+
+          task_3_3_1:
+            name: "Integrate aesthetic prediction model"
+            complexity:
+              composite: 3.5
+            estimated_days: 2.5
+            deliverables:
+              - "LAION Aesthetics V2 model or CLIP-based aesthetic predictor"
+              - "Aesthetic score generation (trained on human preference data)"
+              - "Batch processing with GPU optimization"
+
+          task_3_3_2:
+            name: "Implement composition quality analyzer"
+            complexity:
+              composite: 2.5
+            estimated_days: 2.5
+            deliverables:
+              - "Rule of thirds grid overlay detection (interest point placement)"
+              - "Visual balance analysis (weight distribution, symmetry)"
+              - "Contrast ratio calculation (foreground vs background)"
+              - "Combined composition score weighted across metrics"
+
+        feature_3_4:
+          name: "Weighted Scoring & Ranking System"
+          complexity:
+            composite: 2.2
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 4
+              uncertainty: 2
+              risk: 2
+              testing: 2
+          estimated_days: 3
+          deliverables:
+            - "Composite scoring algorithm combining CLIP, color, aesthetic, composition"
+            - "Configurable weights from config/scoring-weights.yaml"
+            - "Ranked output with top 20% flagged for human review"
+            - "Scoring analytics dashboard (distribution histograms, threshold tuning)"
+
+          task_3_4_1:
+            name: "Build composite scoring algorithm"
+            complexity:
+              composite: 2.0
+            estimated_days: 1.5
+            deliverables:
+              - "Weighted average: CLIP(30%) + color(25%) + aesthetic(25%) + composition(20%)"
+              - "Normalization ensuring all scores on 0-1 scale"
+              - "Database storage of individual and composite scores"
+
+          task_3_4_2:
+            name: "Implement ranking and filtering logic"
+            complexity:
+              composite: 2.3
+            estimated_days: 1.5
+            deliverables:
+              - "Top 20% selection (60 images from 300 generations)"
+              - "Configurable percentile thresholds"
+              - "Automatic low-score rejection (bottom 50% immediately discarded)"
+              - "Ranked list output for approval interface"
+
+      epic_4:
+        name: "Human Approval Interface"
+        weeks: "3"
+        milestone: "Functional CLI and web interfaces enabling batch review of 50+ images in <10 minutes with approval tracking"
+
+        feature_4_1:
+          name: "CLI Gallery Viewer with Rich"
+          complexity:
+            composite: 2.4
+            dimensions:
+              technical_complexity: 2
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Terminal-based image gallery using rich library"
+            - "Keyboard navigation (arrows, space=approve, x=reject, q=quit)"
+            - "Batch operations (a=approve all similar, r=reject direction)"
+            - "Real-time approval count and progress tracking"
+
+          task_4_1_1:
+            name: "Build rich-based terminal gallery"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "Grid layout displaying thumbnails (via terminal image protocols)"
+              - "Metadata overlay (score, model, prompt snippet)"
+              - "Keyboard event handling for navigation"
+
+          task_4_1_2:
+            name: "Implement approval workflow logic"
+            complexity:
+              composite: 2.3
+            estimated_days: 2
+            deliverables:
+              - "Approve/reject state management"
+              - "Batch operations with confirmation prompts"
+              - "Database writes on approval/rejection"
+              - "Session resume capability (save progress, continue later)"
+
+        feature_4_2:
+          name: "Flask Web Dashboard"
+          complexity:
+            composite: 2.8
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Flask application serving image gallery at localhost:5000"
+            - "Tailwind CSS responsive grid layout"
+            - "Side-by-side comparison view for detailed analysis"
+            - "Feedback capture (tags: too dark, wrong colors, needs detail)"
+
+          task_4_2_1:
+            name: "Create Flask app with gallery endpoint"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "Flask routes: /gallery, /approve, /reject, /compare"
+              - "Image serving from automation/results/ directory"
+              - "Database query for top-scored images"
+
+          task_4_2_2:
+            name: "Build Tailwind CSS responsive UI"
+            complexity:
+              composite: 3.0
+            estimated_days: 2.5
+            deliverables:
+              - "Grid layout with lazy loading for 50+ images"
+              - "Modal popup for full-size viewing"
+              - "Side-by-side comparison panel (select 2-4 images)"
+              - "Mobile-responsive design (optional but recommended)"
+
+          task_4_2_3:
+            name: "Add feedback capture system"
+            complexity:
+              composite: 2.5
+            estimated_days: 0.5
+            deliverables:
+              - "Feedback tags: too dark, wrong colors, composition issues, needs detail"
+              - "Free-text comment field"
+              - "Feedback storage in database for prompt refinement"
+
+        feature_4_3:
+          name: "Approval State Management"
+          complexity:
+            composite: 2.0
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 2
+          estimated_days: 2
+          deliverables:
+            - "Database approval status tracking (pending, approved, rejected)"
+            - "Checkpoint stage management (concept, refinement, production)"
+            - "Query interface for 'show approved images from Stage 1'"
+            - "Approval analytics (approval rate per model, prompt, score threshold)"
+
+          task_4_3_1:
+            name: "Implement approval status database schema"
+            complexity:
+              composite: 1.8
+            estimated_days: 1
+            deliverables:
+              - "Approval table with status, stage, timestamp, user_feedback"
+              - "Foreign keys linking to generations table"
+              - "Indexes for fast querying by status and stage"
+
+          task_4_3_2:
+            name: "Build approval analytics queries"
+            complexity:
+              composite: 2.2
+            estimated_days: 1
+            deliverables:
+              - "Approval rate calculations per model/prompt/score_threshold"
+              - "Stage completion tracking (10/15 approved for Stage 1)"
+              - "Effectiveness reports for prompt template tuning"
+
+  milestone_2:
+    name: "v1.1 Multi-Model & Iterative Refinement"
+    timeline_weeks: "5-8"
+    description: "Expand to multi-model generation (Flux, DALL-E), implement img2img refinement pipeline, add parameter exploration for quality improvement"
+    success_criteria:
+      - "3 models (Stable Diffusion, Flux, DALL-E) generating concurrently with unified queue"
+      - "Refinement pipeline producing 10 variations per approved image with higher scores"
+      - "Cost tracking shows <$60/month for 500-1000 total generations"
+      - "End-to-end workflow from Stage 1 concept → Stage 3 production completes successfully"
+
+    epics:
+      epic_5:
+        name: "Multi-Model Generation Pipeline"
+        weeks: "5-6"
+        milestone: "Flux Schnell and DALL-E 3 integrated alongside Stable Diffusion with unified queue management and cost optimization"
+
+        feature_5_1:
+          name: "Flux Schnell API Integration"
+          complexity:
+            composite: 2.4
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 3
+          deliverables:
+            - "API client for Flux Schnell (via Replicate or Black Forest Labs)"
+            - "Prompt format conversion from Stable Diffusion syntax"
+            - "Cost tracking at $0.003/image"
+            - "Quality comparison tests vs Stable Diffusion outputs"
+
+          task_5_1_1:
+            name: "Implement Flux API client"
+            complexity:
+              composite: 2.3
+            estimated_days: 2
+            deliverables:
+              - "FluxClient class with async generate() method"
+              - "Replicate API integration or Black Forest Labs direct API"
+              - "Error handling and retry logic"
+
+          task_5_1_2:
+            name: "Add Flux-specific prompt formatting"
+            complexity:
+              composite: 2.5
+            estimated_days: 1
+            deliverables:
+              - "Prompt converter handling Flux parameter differences"
+              - "Style modifier mapping for Flux model"
+              - "Quality comparison report: Flux vs SD3.5 on 20 test prompts"
+
+        feature_5_2:
+          name: "DALL-E 3 API Integration"
+          complexity:
+            composite: 2.2
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 3
+          deliverables:
+            - "OpenAI API client for DALL-E 3"
+            - "Prompt simplification for DALL-E's natural language preference"
+            - "Cost tracking at $0.04/image (HD quality)"
+            - "Text-heavy design fallback strategy (DALL-E excels at text rendering)"
+
+          task_5_2_1:
+            name: "Implement DALL-E API client"
+            complexity:
+              composite: 2.0
+            estimated_days: 2
+            deliverables:
+              - "DALLEClient class using OpenAI Python SDK"
+              - "Image download and storage from temporary URLs"
+              - "Rate limiting (50 requests/minute)"
+
+          task_5_2_2:
+            name: "Build prompt simplification engine"
+            complexity:
+              composite: 2.4
+            estimated_days: 1
+            deliverables:
+              - "Prompt converter removing technical jargon for DALL-E"
+              - "Natural language rephrasing (Studio lighting → well-lit)"
+              - "Text-rendering fallback detection (logo with text → use DALL-E)"
+
+        feature_5_3:
+          name: "Unified Generation Queue Manager"
+          complexity:
+            composite: 3.0
+            dimensions:
+              technical_complexity: 4
+              scope_size: 3
+              dependencies: 4
+              uncertainty: 3
+              risk: 3
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Queue system distributing prompts across 3 models"
+            - "Load balancing based on cost and speed constraints"
+            - "Concurrent execution with asyncio (10+ parallel generations)"
+            - "Unified progress tracking and error aggregation"
+
+          task_5_3_1:
+            name: "Design queue architecture"
+            complexity:
+              composite: 3.2
+            estimated_days: 2
+            deliverables:
+              - "Queue data structure with priority and model assignment"
+              - "Load balancing algorithm (70% SD3.5, 20% Flux, 10% DALL-E)"
+              - "Cost optimization logic (prefer SD3.5 until quality threshold)"
+
+          task_5_3_2:
+            name: "Implement async concurrent execution"
+            complexity:
+              composite: 3.0
+            estimated_days: 2
+            deliverables:
+              - "AsyncIO task management for parallel API calls"
+              - "Connection pooling and rate limit coordination"
+              - "Progress aggregation across all models"
+
+          task_5_3_3:
+            name: "Add error handling and retry strategies"
+            complexity:
+              composite: 2.5
+            estimated_days: 1
+            deliverables:
+              - "Model-specific error handling (API timeouts, rate limits)"
+              - "Automatic model fallback (if Flux fails, try SD3.5)"
+              - "Error logging and alert system"
+
+        feature_5_4:
+          name: "Cost Optimization & Budget Monitoring"
+          complexity:
+            composite: 2.4
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 3
+              uncertainty: 2
+              risk: 3
+              testing: 2
+          estimated_days: 3
+          deliverables:
+            - "Real-time cost accumulator across all models"
+            - "Budget alerts at 50%, 75%, 90% of $60 monthly limit"
+            - "Cost-per-approved-image metric for ROI tracking"
+            - "Automatic model throttling when approaching budget cap"
+
+          task_5_4_1:
+            name: "Build cost tracking system"
+            complexity:
+              composite: 2.2
+            estimated_days: 1.5
+            deliverables:
+              - "Cost database table with per-generation charges"
+              - "Monthly rollup calculations"
+              - "Per-model cost breakdown reports"
+
+          task_5_4_2:
+            name: "Implement budget alerts and throttling"
+            complexity:
+              composite: 2.6
+            estimated_days: 1.5
+            deliverables:
+              - "Threshold monitors triggering email/CLI alerts"
+              - "Automatic queue throttling (disable expensive models)"
+              - "Cost-effectiveness reports (cost per approved image)"
+
+      epic_6:
+        name: "Iterative Refinement Pipeline"
+        weeks: "6-7"
+        milestone: "img2img refinement system generating improved variations from top-scored images with parameter exploration"
+
+        feature_6_1:
+          name: "img2img Generation Engine"
+          complexity:
+            composite: 3.2
+            dimensions:
+              technical_complexity: 4
+              scope_size: 3
+              dependencies: 3
+              uncertainty: 4
+              risk: 3
+              testing: 3
+          estimated_days: 6
+          deliverables:
+            - "img2img support for Stable Diffusion (init_image + prompt)"
+            - "Approved images as seeds for refinement"
+            - "Strength parameter exploration (0.3-0.7 range for variation)"
+            - "10 refinement variations per approved image"
+
+          task_6_1_1:
+            name: "Implement SD img2img API calls"
+            complexity:
+              composite: 3.0
+            estimated_days: 2.5
+            deliverables:
+              - "img2img method in StableDiffusionClient"
+              - "Init_image encoding and upload"
+              - "Strength parameter control (denoising level)"
+
+          task_6_1_2:
+            name: "Build refinement seed selector"
+            complexity:
+              composite: 2.5
+            estimated_days: 1.5
+            deliverables:
+              - "Query for top-approved images from Stage 1"
+              - "Seed prioritization (highest score + user feedback)"
+              - "Duplicate prevention (don't refine twice)"
+
+          task_6_1_3:
+            name: "Implement parameter exploration"
+            complexity:
+              composite: 3.5
+            estimated_days: 2
+            deliverables:
+              - "Strength variation grid (0.3, 0.4, 0.5, 0.6, 0.7)"
+              - "CFG scale exploration (7, 10, 13)"
+              - "10 unique parameter combinations per seed"
+              - "Metadata tracking: seed_image_id → refinement_id"
+
+        feature_6_2:
+          name: "Refinement Quality Re-Scoring"
+          complexity:
+            composite: 2.4
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 3
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 3
+          deliverables:
+            - "Automatic re-scoring of refined images using existing scoring system"
+            - "Improvement tracking (refined_score - seed_score)"
+            - "Best refinement selection per seed image"
+            - "Refinement success rate analytics (% improving over seed)"
+
+          task_6_2_1:
+            name: "Apply scoring pipeline to refined images"
+            complexity:
+              composite: 2.0
+            estimated_days: 1.5
+            deliverables:
+              - "Batch scoring of 100-150 refinements"
+              - "Database storage with seed_image_id foreign key"
+              - "Score comparison queries"
+
+          task_6_2_2:
+            name: "Build refinement analytics"
+            complexity:
+              composite: 2.8
+            estimated_days: 1.5
+            deliverables:
+              - "Improvement rate calculation (% refined > seed)"
+              - "Best parameter identification (which strength values work best)"
+              - "Success metrics for checkpoint reporting"
+
+        feature_6_3:
+          name: "Multi-Stage Workflow Orchestration"
+          complexity:
+            composite: 2.6
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 4
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "State machine managing Stage 1 (concept) → Stage 2 (refinement) → Stage 3 (production)"
+            - "Automatic progression after human approval checkpoints"
+            - "Stage-specific configuration (different scoring weights, filtering thresholds)"
+            - "Rollback capability if Stage 2 results unsatisfactory"
+
+          task_6_3_1:
+            name: "Design stage state machine"
+            complexity:
+              composite: 2.8
+            estimated_days: 2
+            deliverables:
+              - "Stage enum and transition logic"
+              - "Checkpoint detection (wait for human approval before advancing)"
+              - "Stage-specific configurations loaded dynamically"
+
+          task_6_3_2:
+            name: "Implement automatic progression logic"
+            complexity:
+              composite: 2.4
+            estimated_days: 2
+            deliverables:
+              - "Trigger refinement pipeline after Stage 1 approvals"
+              - "Trigger production finalization after Stage 2 approvals"
+              - "Progress persistence (resume workflow after interruption)"
+
+      epic_7:
+        name: "Production Finalization & Export"
+        weeks: "7-8"
+        milestone: "Approved images automatically upscaled, background-removed, vectorized, and exported in multiple formats to assets/ directory"
+
+        feature_7_1:
+          name: "Image Upscaling with Real-ESRGAN"
+          complexity:
+            composite: 3.4
+            dimensions:
+              technical_complexity: 4
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 4
+              risk: 3
+              testing: 3
+          estimated_days: 6
+          deliverables:
+            - "Real-ESRGAN integration for 4x upscaling"
+            - "GPU acceleration with CPU fallback"
+            - "Batch processing of 3-5 final approved images"
+            - "Quality validation ensuring no artifacts"
+
+          task_7_1_1:
+            name: "Install and configure Real-ESRGAN"
+            complexity:
+              composite: 3.5
+            estimated_days: 2.5
+            deliverables:
+              - "Real-ESRGAN model downloaded (RealESRGAN_x4plus)"
+              - "GPU detection and CUDA/ROCm configuration"
+              - "CPU fallback with performance warnings"
+
+          task_7_1_2:
+            name: "Implement upscaling pipeline"
+            complexity:
+              composite: 3.2
+            estimated_days: 2.5
+            deliverables:
+              - "Upscale function: 512x512 → 2048x2048"
+              - "Batch processing with progress bars"
+              - "Output to automation/results/production/"
+
+          task_7_1_3:
+            name: "Add quality validation"
+            complexity:
+              composite: 3.5
+            estimated_days: 1
+            deliverables:
+              - "Artifact detection (blurring, noise, distortion)"
+              - "Side-by-side comparison viewer for human review"
+              - "Re-upscale logic with different parameters if artifacts detected"
+
+        feature_7_2:
+          name: "Background Removal with rembg"
+          complexity:
+            composite: 2.6
+            dimensions:
+              technical_complexity: 3
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "rembg integration for automatic background removal"
+            - "Transparent PNG exports"
+            - "Quality validation for clean edges"
+            - "Original + transparent variants saved"
+
+          task_7_2_1:
+            name: "Integrate rembg library"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "rembg installed with u2net model"
+              - "Batch background removal processing"
+              - "Alpha channel preservation in PNG output"
+
+          task_7_2_2:
+            name: "Implement edge quality validation"
+            complexity:
+              composite: 2.7
+            estimated_days: 2
+            deliverables:
+              - "Edge detection to check for rough/pixelated borders"
+              - "Manual review flag for low-quality removals"
+              - "Fallback to manual editing instructions if automatic fails"
+
+        feature_7_3:
+          name: "Vector Conversion with potrace"
+          complexity:
+            composite: 3.0
+            dimensions:
+              technical_complexity: 4
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 4
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Automatic PNG to SVG conversion using potrace"
+            - "Multi-color SVG generation (trace by color layer)"
+            - "Quality assessment flagging images needing manual vectorization"
+            - "SVG optimization (simplify paths, reduce file size)"
+
+          task_7_3_1:
+            name: "Implement potrace PNG to SVG conversion"
+            complexity:
+              composite: 3.2
+            estimated_days: 2.5
+            deliverables:
+              - "potrace installed and configured"
+              - "Bitmap preprocessing (threshold, despeckle)"
+              - "Basic monochrome SVG generation"
+
+          task_7_3_2:
+            name: "Add multi-color layer tracing"
+            complexity:
+              composite: 3.5
+            estimated_days: 2
+            deliverables:
+              - "Color separation algorithm (trace each brand color separately)"
+              - "Layer composition into single multi-color SVG"
+              - "Brand color mapping (#1A1A1A, #FF6B35, #4A90E2)"
+
+          task_7_3_3:
+            name: "Build quality assessment and flagging"
+            complexity:
+              composite: 2.5
+            estimated_days: 0.5
+            deliverables:
+              - "Path count heuristic (>1000 paths = too complex)"
+              - "Manual vectorization flag for complex images"
+              - "Instructions for manual Illustrator/Inkscape refinement"
+
+        feature_7_4:
+          name: "Multi-Format Export System"
+          complexity:
+            composite: 2.4
+            dimensions:
+              technical_complexity: 2
+              scope_size: 3
+              dependencies: 3
+              uncertainty: 2
+              risk: 2
+              testing: 2
+          estimated_days: 3
+          deliverables:
+            - "Export to /home/samuel/repos/arcforge-branding/assets/logos/"
+            - "Format variants: SVG, PNG @1x/2x/3x, WebP"
+            - "Light/dark background adaptations"
+            - "Organized directory structure by visual direction"
+
+          task_7_4_1:
+            name: "Build export directory structure"
+            complexity:
+              composite: 2.0
+            estimated_days: 1
+            deliverables:
+              - "Directory layout: assets/logos/{visual_direction}/{format}/"
+              - "Naming convention: arcforge-logo-{direction}-{variant}.{ext}"
+              - "Manifest file listing all exported assets"
+
+          task_7_4_2:
+            name: "Implement format conversion pipeline"
+            complexity:
+              composite: 2.5
+            estimated_days: 1.5
+            deliverables:
+              - "PNG at 1x (original), 2x, 3x resolutions"
+              - "WebP conversion with quality 90%"
+              - "Background color variants (white, dark, transparent)"
+
+          task_7_4_3:
+            name: "Create brand asset package"
+            complexity:
+              composite: 2.5
+            estimated_days: 0.5
+            deliverables:
+              - "Complete package: all formats, sizes, variants"
+              - "README documenting usage guidelines"
+              - "Preview HTML page showing all exported assets"
+
+  milestone_3:
+    name: "v1.2 Production Polish & Documentation"
+    timeline_weeks: "9-10"
+    description: "Comprehensive testing, performance optimization, user documentation, workflow automation scripts"
+    success_criteria:
+      - "End-to-end test suite with 80%+ code coverage"
+      - "Full user documentation enabling new users to run complete workflow"
+      - "Performance optimizations reducing Stage 1 generation time to <30 minutes for 300 images"
+      - "Successful generation of 3-5 production-ready ArcForge logos meeting all brand criteria"
+
+    epics:
+      epic_8:
+        name: "Testing & Quality Assurance"
+        weeks: "9"
+        milestone: "Comprehensive test suite covering unit tests, integration tests, and end-to-end workflow validation"
+
+        feature_8_1:
+          name: "Unit Test Suite"
+          complexity:
+            composite: 2.6
+            dimensions:
+              technical_complexity: 2
+              scope_size: 4
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 4
+          estimated_days: 5
+          deliverables:
+            - "pytest-based test suite for all modules"
+            - "80%+ code coverage across scoring, generation, approval modules"
+            - "Mock API calls preventing real charges during testing"
+            - "CI/CD integration with GitHub Actions"
+
+          task_8_1_1:
+            name: "Write tests for prompt generation engine"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "Test template loading and variable substitution"
+              - "Test variation generation producing unique prompts"
+              - "Test model-specific formatting converters"
+
+          task_8_1_2:
+            name: "Write tests for scoring system"
+            complexity:
+              composite: 2.8
+            estimated_days: 2
+            deliverables:
+              - "Test CLIP scoring with sample embeddings"
+              - "Test color extraction and brand palette comparison"
+              - "Test composite scoring algorithm and ranking"
+
+          task_8_1_3:
+            name: "Write tests for database operations"
+            complexity:
+              composite: 2.5
+            estimated_days: 1
+            deliverables:
+              - "Test CRUD operations on all tables"
+              - "Test lineage tracking queries"
+              - "Test approval state transitions"
+
+        feature_8_2:
+          name: "Integration & End-to-End Tests"
+          complexity:
+            composite: 3.0
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 4
+              uncertainty: 3
+              risk: 3
+              testing: 4
+          estimated_days: 5
+          deliverables:
+            - "Integration tests for multi-model generation queue"
+            - "End-to-end workflow test (Stage 1 → Stage 3)"
+            - "Performance benchmarks for generation and scoring"
+            - "Error recovery testing (API failures, network timeouts)"
+
+          task_8_2_1:
+            name: "Build integration test harness"
+            complexity:
+              composite: 3.0
+            estimated_days: 2.5
+            deliverables:
+              - "Mock API servers for SD, Flux, DALL-E"
+              - "Test complete generation → scoring → approval flow"
+              - "Verify database consistency across workflow"
+
+          task_8_2_2:
+            name: "Write end-to-end workflow tests"
+            complexity:
+              composite: 3.0
+            estimated_days: 2.5
+            deliverables:
+              - "E2E test: 10 prompts → generation → scoring → top 3 → refinement"
+              - "Performance benchmarks (time per stage)"
+              - "Error injection tests (handle API failures gracefully)"
+
+        feature_8_3:
+          name: "Quality Validation Testing"
+          complexity:
+            composite: 2.8
+            dimensions:
+              technical_complexity: 3
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 3
+              risk: 2
+              testing: 4
+          estimated_days: 4
+          deliverables:
+            - "Human validation study: 50 images scored by system vs 3 human raters"
+            - "Correlation analysis (target Spearman's ρ > 0.7)"
+            - "Brand color accuracy measurement (95%+ adherence)"
+            - "Tuning recommendations for scoring weights"
+
+          task_8_3_1:
+            name: "Conduct human validation study"
+            complexity:
+              composite: 3.0
+            estimated_days: 2.5
+            deliverables:
+              - "50 image sample across score ranges"
+              - "3 human raters scoring on 1-5 scale"
+              - "System scores for same 50 images"
+
+          task_8_3_2:
+            name: "Analyze correlation and tune weights"
+            complexity:
+              composite: 2.6
+            estimated_days: 1.5
+            deliverables:
+              - "Spearman correlation calculation"
+              - "Per-dimension correlation analysis"
+              - "Updated scoring weights if ρ < 0.7"
+
+      epic_9:
+        name: "Performance Optimization"
+        weeks: "9-10"
+        milestone: "System optimizations reducing generation time, improving scoring throughput, minimizing costs"
+
+        feature_9_1:
+          name: "Generation Pipeline Optimization"
+          complexity:
+            composite: 2.8
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 3
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Batch size optimization for API calls"
+            - "Connection pooling reducing HTTP overhead"
+            - "Caching for repeated prompt generations"
+            - "Target: 300 images generated in <30 minutes"
+
+          task_9_1_1:
+            name: "Optimize async concurrency parameters"
+            complexity:
+              composite: 2.8
+            estimated_days: 2
+            deliverables:
+              - "Tune semaphore limits (10, 20, 50 concurrent)"
+              - "Connection pool size optimization"
+              - "Latency profiling identifying bottlenecks"
+
+          task_9_1_2:
+            name: "Implement prompt caching"
+            complexity:
+              composite: 2.8
+            estimated_days: 2
+            deliverables:
+              - "LRU cache for repeated prompts"
+              - "Cache hit rate tracking"
+              - "Cache invalidation strategy"
+
+        feature_9_2:
+          name: "Scoring System Optimization"
+          complexity:
+            composite: 3.0
+            dimensions:
+              technical_complexity: 4
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "GPU batch processing for CLIP embeddings"
+            - "Multi-threading for color extraction"
+            - "Lazy loading for aesthetic models"
+            - "Target: 300 images scored in <5 minutes"
+
+          task_9_2_1:
+            name: "Implement GPU batch processing"
+            complexity:
+              composite: 3.5
+            estimated_days: 3
+            deliverables:
+              - "Batch CLIP embedding generation (32 images at once)"
+              - "GPU memory management preventing OOM"
+              - "CPU fallback for non-GPU environments"
+
+          task_9_2_2:
+            name: "Add multi-threading for CPU-bound tasks"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "ThreadPoolExecutor for color extraction"
+              - "Parallel composition analysis"
+              - "Thread count optimization (4, 8, 16 cores)"
+
+        feature_9_3:
+          name: "Cost Optimization Strategies"
+          complexity:
+            composite: 2.4
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 3
+              uncertainty: 3
+              risk: 3
+              testing: 2
+          estimated_days: 3
+          deliverables:
+            - "Adaptive model selection (use SD3.5 first, Flux only for top 20%)"
+            - "Resolution optimization (generate at 512x512, upscale only approved)"
+            - "Aggressive filtering (discard bottom 50% early)"
+            - "Target: Stay under $40/month for 1000 generations"
+
+          task_9_3_1:
+            name: "Implement adaptive model selection"
+            complexity:
+              composite: 2.5
+            estimated_days: 1.5
+            deliverables:
+              - "Initial generation: 90% SD3.5, 10% Flux for comparison"
+              - "Refinement: Use Flux only for highest-scored seeds"
+              - "DALL-E reserved for text-heavy designs"
+
+          task_9_3_2:
+            name: "Add aggressive early filtering"
+            complexity:
+              composite: 2.3
+            estimated_days: 1.5
+            deliverables:
+              - "Fast pre-screening rejecting obvious failures (blank images, wrong colors)"
+              - "Bottom 50% discarded before expensive scoring"
+              - "Cost savings report showing filtered vs processed"
+
+      epic_10:
+        name: "Documentation & User Experience"
+        weeks: "10"
+        milestone: "Complete user documentation, automation scripts, video walkthrough enabling new users to run full workflow"
+
+        feature_10_1:
+          name: "User Documentation"
+          complexity:
+            composite: 2.2
+            dimensions:
+              technical_complexity: 1
+              scope_size: 4
+              dependencies: 1
+              uncertainty: 2
+              risk: 1
+              testing: 2
+          estimated_days: 4
+          deliverables:
+            - "README.md with quickstart guide"
+            - "INSTALLATION.md with dependency setup"
+            - "WORKFLOW.md with step-by-step Stage 1-3 instructions"
+            - "CONFIGURATION.md for customizing brand criteria, scoring weights"
+
+          task_10_1_1:
+            name: "Write README and quickstart"
+            complexity:
+              composite: 2.0
+            estimated_days: 1.5
+            deliverables:
+              - "Project overview and objectives"
+              - "5-minute quickstart: install → run first generation"
+              - "Architecture diagram showing component relationships"
+
+          task_10_1_2:
+            name: "Create detailed workflow guide"
+            complexity:
+              composite: 2.3
+            estimated_days: 1.5
+            deliverables:
+              - "Stage-by-stage instructions with screenshots"
+              - "CLI command reference for all operations"
+              - "Web dashboard user guide"
+
+          task_10_1_3:
+            name: "Write configuration documentation"
+            complexity:
+              composite: 2.3
+            estimated_days: 1
+            deliverables:
+              - "Brand criteria customization guide"
+              - "Scoring weight tuning tutorial"
+              - "Model configuration (API keys, endpoints)"
+
+        feature_10_2:
+          name: "Automation Scripts & CLI Tools"
+          complexity:
+            composite: 2.4
+            dimensions:
+              technical_complexity: 2
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "run-stage-1.sh: Automated concept generation"
+            - "run-stage-2.sh: Refinement pipeline after approvals"
+            - "run-stage-3.sh: Production finalization and export"
+            - "analyze-results.sh: Generate analytics reports"
+
+          task_10_2_1:
+            name: "Create stage automation scripts"
+            complexity:
+              composite: 2.5
+            estimated_days: 2.5
+            deliverables:
+              - "Bash scripts wrapping Python modules"
+              - "Progress tracking and logging"
+              - "Error handling with clear messages"
+
+          task_10_2_2:
+            name: "Build analytics and reporting tools"
+            complexity:
+              composite: 2.3
+            estimated_days: 1.5
+            deliverables:
+              - "Cost report: spend by model, stage, session"
+              - "Quality report: score distributions, approval rates"
+              - "Performance report: generation times, bottlenecks"
+
+        feature_10_3:
+          name: "Troubleshooting Guide & FAQ"
+          complexity:
+            composite: 2.0
+            dimensions:
+              technical_complexity: 1
+              scope_size: 3
+              dependencies: 1
+              uncertainty: 2
+              risk: 1
+              testing: 2
+          estimated_days: 3
+          deliverables:
+            - "TROUBLESHOOTING.md with common issues and solutions"
+            - "FAQ covering setup, API keys, costs, quality concerns"
+            - "Debug mode documentation for developers"
+            - "Support contact information and GitHub issues template"
+
+          task_10_3_1:
+            name: "Write troubleshooting guide"
+            complexity:
+              composite: 2.0
+            estimated_days: 1.5
+            deliverables:
+              - "Common errors: API failures, OOM, scoring issues"
+              - "Solutions with step-by-step fixes"
+              - "Debug mode enabling verbose logging"
+
+          task_10_3_2:
+            name: "Create FAQ and support resources"
+            complexity:
+              composite: 2.0
+            estimated_days: 1.5
+            deliverables:
+              - "FAQ: setup, costs, quality, customization"
+              - "GitHub issues template for bug reports"
+              - "Community support guidelines"
+
+        feature_10_4:
+          name: "Video Walkthrough & Demo"
+          complexity:
+            composite: 2.2
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 1
+              testing: 2
+          estimated_days: 3
+          deliverables:
+            - "10-minute video walkthrough of complete workflow"
+            - "Screen recording: Stage 1 generation → approval → Stage 2 refinement → Stage 3 export"
+            - "Narration explaining each step and decision point"
+            - "Demo assets: sample approved logos showcasing system output"
+
+          task_10_4_1:
+            name: "Record workflow demo video"
+            complexity:
+              composite: 2.3
+            estimated_days: 2
+            deliverables:
+              - "Screen recording of full workflow"
+              - "Narration script and voiceover"
+              - "Editing for clarity (cut pauses, add captions)"
+
+          task_10_4_2:
+            name: "Create demo asset showcase"
+            complexity:
+              composite: 2.0
+            estimated_days: 1
+            deliverables:
+              - "Gallery of 5-10 generated logos"
+              - "Before/after refinement comparisons"
+              - "Final exported brand package preview"
+
+agent_blueprint:
+  total_estimated_days: 180
+  total_estimated_weeks: 10
+  parallel_capacity: 5
+  types_needed:
+    - type: "ml-engineer"
+      count: 2
+      focus_areas: ["CLIP integration", "aesthetic models", "Real-ESRGAN", "scoring algorithms"]
+    - type: "backend-dev"
+      count: 2
+      focus_areas: ["API clients", "queue management", "database", "async processing"]
+    - type: "frontend-dev"
+      count: 1
+      focus_areas: ["Flask dashboard", "Tailwind UI", "CLI with rich"]
+    - type: "devops"
+      count: 1
+      focus_areas: ["GPU setup", "cost tracking", "performance optimization"]
+    - type: "qa-engineer"
+      count: 1
+      focus_areas: ["test suite", "validation studies", "quality benchmarking"]
+
+feature_specifications:
+  - feature: "End-to-End Automation"
+    description: "Zero manual prompt copying or image downloads through full API automation"
+    complexity: "high"
+    assigned_agents: 2
+    acceptance_criteria:
+      - "User never copies prompts to external services"
+      - "All images downloaded automatically via API"
+      - "No manual file transfers between systems"
+
+  - feature: "Multi-Model Pipeline"
+    description: "Concurrent generation across Stable Diffusion, Flux, DALL-E with unified queue"
+    complexity: "high"
+    assigned_agents: 2
+    acceptance_criteria:
+      - "3 models generating in parallel"
+      - "Queue load balancing based on cost constraints"
+      - "Unified progress tracking and error handling"
+
+  - feature: "Quality Scoring System"
+    description: "CLIP + color + aesthetic + composition scoring with 80%+ human correlation"
+    complexity: "high"
+    assigned_agents: 2
+    acceptance_criteria:
+      - "Composite scoring from 4 dimensions"
+      - "Spearman's ρ > 0.7 vs human judgment"
+      - "Top 20% filter accuracy 85%+"
+
+  - feature: "Human Approval Interface"
+    description: "CLI and web interfaces for <10 minute checkpoint reviews"
+    complexity: "medium"
+    assigned_agents: 2
+    acceptance_criteria:
+      - "Review 50 images in <5 minutes via CLI"
+      - "Web dashboard for detailed analysis"
+      - "Batch operations and feedback capture"
+
+  - feature: "Iterative Refinement"
+    description: "img2img pipeline generating improved variations from approved seeds"
+    complexity: "high"
+    assigned_agents: 2
+    acceptance_criteria:
+      - "10 refinements per approved image"
+      - "Parameter exploration (strength, CFG, steps)"
+      - "Automatic re-scoring and ranking"
+
+  - feature: "Production Export"
+    description: "Upscaling, background removal, vectorization, multi-format export"
+    complexity: "high"
+    assigned_agents: 2
+    acceptance_criteria:
+      - "4x upscaling with no artifacts"
+      - "Clean transparent PNGs"
+      - "Automatic SVG generation (flag manual if needed)"
+      - "Complete brand package: SVG, PNG @1x/2x/3x, WebP"
+
+testing_strategy:
+  levels:
+    - level: "unit"
+      scope: "All modules: prompt generation, API clients, scoring, database"
+      coverage_target: "80%"
+    - level: "integration"
+      scope: "Multi-model queue, scoring pipeline, approval workflow"
+      coverage_target: "70%"
+    - level: "end-to-end"
+      scope: "Complete Stage 1 → Stage 3 workflow with real API calls (sandbox)"
+      coverage_target: "Critical paths only"
+    - level: "validation"
+      scope: "Human correlation studies for scoring accuracy"
+      coverage_target: "50 image sample, 3 raters"
+
+project_structure:
+  pattern: "vertical-slice"
+  rationale: "Each major feature (generation, scoring, approval, refinement, export) operates as independent slice with minimal cross-dependencies"
+  directories:
+    - path: "automation/config/"
+      purpose: "YAML configs for models, brand criteria, scoring weights"
+    - path: "automation/src/generation/"
+      purpose: "Prompt engine, API clients, queue manager"
+    - path: "automation/src/scoring/"
+      purpose: "CLIP, color, aesthetic, composition analyzers"
+    - path: "automation/src/approval/"
+      purpose: "CLI viewer, Flask dashboard, state management"
+    - path: "automation/src/refinement/"
+      purpose: "img2img engine, parameter exploration"
+    - path: "automation/src/export/"
+      purpose: "Upscaling, background removal, vectorization, format conversion"
+    - path: "automation/src/database/"
+      purpose: "SQLite schema, CRUD operations, queries"
+    - path: "automation/web/"
+      purpose: "Flask application, Tailwind templates"
+    - path: "automation/tests/"
+      purpose: "Unit, integration, E2E tests"
+    - path: "automation/scripts/"
+      purpose: "Automation bash scripts for stage execution"
+    - path: "automation/results/"
+      purpose: "Generated images organized by session/stage (gitignored)"
+    - path: "automation/data/"
+      purpose: "SQLite database and metadata (gitignored)"
+    - path: "specs/"
+      purpose: "This BLUEPRINT.yaml and architecture docs"
+
+success_metrics:
+  generation:
+    - metric: "300+ variations from 6 prompt templates in Stage 1"
+      target: "300 images"
+    - metric: "Stage 1 generation time"
+      target: "<30 minutes"
+    - metric: "Multi-model distribution"
+      target: "70% SD3.5, 20% Flux, 10% DALL-E"
+
+  quality:
+    - metric: "Brand color accuracy in top-scored images"
+      target: "95%+"
+    - metric: "Scoring correlation vs human judgment"
+      target: "Spearman's ρ > 0.7"
+    - metric: "Top 20% filter precision"
+      target: "85%+ approved by humans"
+
+  workflow:
+    - metric: "User time per checkpoint"
+      target: "<10 minutes"
+    - metric: "Zero manual operations"
+      target: "No prompt copying, no manual downloads"
+    - metric: "Production logos delivered"
+      target: "3-5 ready logos within timeline"
+
+  cost:
+    - metric: "Monthly API spend"
+      target: "$30-60 for 500-1000 generations"
+    - metric: "Cost per approved image"
+      target: "<$0.50"
+
+timeline_summary:
+  milestone_1:
+    name: "Foundation & Core Pipeline"
+    weeks: "1-4"
+    epics: ["Project Foundation", "Basic Generation", "Quality Scoring", "Approval Interface"]
+    deliverable: "Functional single-model pipeline with scoring and CLI approval"
+
+  milestone_2:
+    name: "Multi-Model & Refinement"
+    weeks: "5-8"
+    epics: ["Multi-Model Pipeline", "Iterative Refinement", "Production Export"]
+    deliverable: "Complete 3-stage workflow with img2img refinement and multi-format export"
+
+  milestone_3:
+    name: "Production Polish"
+    weeks: "9-10"
+    epics: ["Testing & QA", "Performance Optimization", "Documentation"]
+    deliverable: "Production-ready system with full test coverage and user documentation"
+
+risk_assessment:
+  high_risks:
+    - risk: "CLIP scoring correlation <0.7 vs human judgment"
+      mitigation: "Allocate time for weight tuning and alternative models (LAION Aesthetics)"
+      contingency: "Add task_3_1_4 for validation and tuning (already included)"
+
+    - risk: "Real-ESRGAN upscaling produces artifacts"
+      mitigation: "Quality validation step with manual review fallback"
+      contingency: "Flag problematic images for manual upscaling in Photoshop"
+
+    - risk: "API costs exceed $60/month budget"
+      mitigation: "Real-time cost tracking with automatic throttling at 75% threshold"
+      contingency: "Disable expensive models (DALL-E), increase SD3.5 percentage"
+
+    - risk: "Stable Diffusion 3.5 self-hosting complexity too high"
+      mitigation: "Task 2.2.1 includes deployment method research and decision"
+      contingency: "Use Stability AI API at $0.004/image (still within budget)"
+
+  medium_risks:
+    - risk: "Automatic vectorization quality insufficient"
+      mitigation: "Quality assessment flags complex images for manual work"
+      contingency: "Provide manual vectorization instructions in documentation"
+
+    - risk: "GPU memory limitations for CLIP batch processing"
+      mitigation: "Implement CPU fallback and batch size tuning"
+      contingency: "Process images sequentially on CPU (slower but functional)"
+
+dependencies:
+  external:
+    - dependency: "Stable Diffusion API access or self-hosted setup"
+      criticality: "critical"
+      alternative: "Stability AI API at $0.004/image"
+
+    - dependency: "OpenAI API key for DALL-E 3 and CLIP"
+      criticality: "high"
+      alternative: "Skip DALL-E, use open-source CLIP"
+
+    - dependency: "Replicate or Black Forest Labs API for Flux"
+      criticality: "medium"
+      alternative: "Skip Flux, rely on SD3.5 + DALL-E"
+
+  internal:
+    - dependency: "DESIGN-BRIEF.md accuracy and completeness"
+      criticality: "high"
+      mitigation: "Validate during feature_1_2 implementation"
+
+    - dependency: "GPU availability for ML model performance"
+      criticality: "medium"
+      mitigation: "CPU fallbacks implemented throughout"
+
+budget_allocation:
+  api_costs:
+    - model: "Stable Diffusion 3.5"
+      strategy: "Self-hosted (free) or Stability API ($0.004/img)"
+      monthly_allocation: "$0-20"
+
+    - model: "Flux Schnell"
+      strategy: "Replicate API ($0.003/img)"
+      monthly_allocation: "$10-20"
+
+    - model: "DALL-E 3"
+      strategy: "OpenAI API ($0.04/img)"
+      monthly_allocation: "$10-20"
+
+  total_monthly_target: "$30-60"
+  overage_strategy: "Throttle expensive models at 75% threshold"
