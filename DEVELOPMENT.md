@@ -94,7 +94,7 @@ automation/
 │   ├── main.py                  # Entry point
 │   ├── prompt_engine/
 │   │   ├── __init__.py
-│   │   ├── template_loader.py   # Load MIDJOURNEY-PROMPTS-*.md
+│   │   ├── template_loader.py   # Load PROMPT-TEMPLATES-*.md
 │   │   └── variable_subst.py    # Brand palette substitution
 │   ├── generation/
 │   │   ├── __init__.py

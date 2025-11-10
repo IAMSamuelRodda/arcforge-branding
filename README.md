@@ -34,7 +34,7 @@ Brand Forge eliminates manual iteration in brand asset development by:
 │                                                                 │
 │  ┌─────────────────┐                                           │
 │  │  Design Briefs  │  (DESIGN-BRIEF.md)                        │
-│  │  Prompt Temps   │  (MIDJOURNEY-PROMPTS-*.md)                │
+│  │  Prompt Temps   │  (PROMPT-TEMPLATES-*.md)                  │
 │  └────────┬────────┘                                           │
 │           │                                                     │
 │           ▼                                                     │

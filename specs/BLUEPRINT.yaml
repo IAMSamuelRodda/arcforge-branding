@@ -7,14 +7,14 @@ project_overview:
     - "Achieve zero manual prompt copying or image downloads through full API automation"
   complexity: "complex"
   existing_assets:
-    - path: "design/DESIGN-BRIEF.md"
+    - path: "archives/case-study-arcforge/design/DESIGN-BRIEF.md"
       size: "1157 lines"
-      purpose: "Comprehensive design system specification"
-    - path: "design/MIDJOURNEY-PROMPTS-*.md"
+      purpose: "Comprehensive design system specification (ArcForge case study)"
+    - path: "archives/case-study-arcforge/design/PROMPT-TEMPLATES-*.md"
       count: 6
-      purpose: "Engineered prompt templates for 3 visual directions"
-    - path: "design/philosophy/"
-      purpose: "Brand strategy and design philosophy documentation"
+      purpose: "Engineered prompt templates for brand generation (ArcForge case study)"
+    - path: "archives/case-study-arcforge/design/philosophy/"
+      purpose: "Brand strategy and design philosophy documentation (ArcForge case study)"
 
 architecture:
   pattern: "vertical-slice"
@@ -137,7 +137,7 @@ milestones:
           estimated_days: 3
           deliverables:
             - "Parser for DESIGN-BRIEF.md extracting color palette, typography, visual directions"
-            - "Loader for 6 MIDJOURNEY-PROMPTS-*.md files with template variable detection"
+            - "Loader for prompt template files (PROMPT-TEMPLATES-*.md) with template variable detection"
             - "Configuration files mapping design brief elements to prompt parameters"
             - "Validation tests confirming successful extraction of brand criteria"
 
@@ -157,7 +157,7 @@ milestones:
               composite: 2.3
             estimated_days: 1.5
             deliverables:
-              - "Loader for all 6 MIDJOURNEY-PROMPTS-*.md files"
+              - "Loader for prompt template files (PROMPT-TEMPLATES-*.md)"
               - "Template variable detection ({style}, {color_scheme}, etc.)"
               - "Template validation ensuring required variables present"
 
@@ -257,7 +257,7 @@ milestones:
               testing: 3
           estimated_days: 5
           deliverables:
-            - "Template processor converting MIDJOURNEY-PROMPTS-*.md to model-specific prompts"
+            - "Template processor converting prompt templates to model-specific prompts"
             - "Variable substitution engine for {style}, {color_scheme}, {composition} placeholders"
             - "Variation generator creating 50 unique prompts per template (300 total)"
             - "Prompt history tracking and effectiveness scoring"
@@ -268,9 +268,9 @@ milestones:
               composite: 2.5
             estimated_days: 2
             deliverables:
-              - "PromptTemplate class loading from MIDJOURNEY-PROMPTS-*.md"
+              - "PromptTemplate class loading from template files (PROMPT-TEMPLATES-*.md)"
               - "Variable substitution for brand palette, typography, visual direction"
-              - "Model-specific formatting (Stable Diffusion vs DALL-E prompt syntax)"
+              - "Model-specific formatting (Stable Diffusion vs DALL-E vs Flux prompt syntax)"
 
           task_2_1_2:
             name: "Implement variation generator"

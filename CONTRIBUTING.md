@@ -172,7 +172,7 @@ gh issue edit 2 --add-label "status: completed" --repo IAMSamuelRodda/brand-forg
 # Reference feature/task issue in commit messages
 git commit -m "feat: implement prompt generation engine
 
-- Built template processor for MIDJOURNEY-PROMPTS-*.md files
+- Built template processor for PROMPT-TEMPLATES-*.md files
 - Variable substitution for brand palette and visual direction
 - Model-specific formatting (SD vs DALL-E vs Flux)
 

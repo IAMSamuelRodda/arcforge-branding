@@ -40,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Design Assets
 - Integrated existing design briefs (1,157-line `design/DESIGN-BRIEF.md`)
-- Included 6 engineered prompt templates (`design/MIDJOURNEY-PROMPTS-*.md`)
+- Included engineered prompt templates for brand generation
 - Established brand palette: Forge Black (#1A1A1A), Spark Orange (#FF6B35), Vector Blue (#4A90E2)
 
 #### GitHub Project Management
@@ -99,7 +99,7 @@ This release establishes the complete planning foundation for an automated brand
 - Operates within budget constraints
 - Delivers production-ready assets with upscaling, background removal, vectorization
 
-**Trigger**: User requested Midjourney integration planning. After research revealed TOS violations and lack of official API, pivoted to legal alternatives (Stable Diffusion, Flux, DALL-E) while maintaining automation goals.
+**Trigger**: Initial exploration of AI generation tools. Selected Stable Diffusion 3.5, Flux Schnell, and DALL-E 3 as the multi-model generation pipeline due to API availability, cost-effectiveness, and automation compatibility.
 
 ---
 

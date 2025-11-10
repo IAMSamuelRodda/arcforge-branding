@@ -160,7 +160,7 @@ Export:           Isolated upscaling/conversion pipeline
 **Location**: `automation/src/prompt_engine/`
 
 **Responsibilities**:
-- Load MIDJOURNEY-PROMPTS-*.md templates
+- Load prompt template files (PROMPT-TEMPLATES-*.md)
 - Parse DESIGN-BRIEF.md for brand specifications
 - Substitute variables (colors, visual directions, typography)
 - Generate prompt variations (parameter sweeps, style mixing)
