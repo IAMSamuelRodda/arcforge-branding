@@ -1,4 +1,4 @@
-# Contributing to ArcForge Branding Automation
+# Contributing to Brand Forge
 
 ## Progress Tracking for AI Agents
 
@@ -30,13 +30,13 @@ Task (sub-issue L2+ - implementation work)
 
 ```bash
 # View all issues (epics, features, tasks)
-gh issue list --repo IAMSamuelRodda/arcforge-branding
+gh issue list --repo IAMSamuelRodda/brand-forge
 
 # View all epics
-gh issue list --search "label:type:epic" --repo IAMSamuelRodda/arcforge-branding
+gh issue list --search "label:type:epic" --repo IAMSamuelRodda/brand-forge
 
 # View specific epic with sub-issues
-gh issue view 1 --repo IAMSamuelRodda/arcforge-branding
+gh issue view 1 --repo IAMSamuelRodda/brand-forge
 
 # View project board in browser
 gh project view 6 --owner IAMSamuelRodda --web
@@ -50,16 +50,16 @@ gh project view 6 --owner IAMSamuelRodda --web
 
 ```bash
 # All pending work
-gh issue list --state open --label "status: pending" --repo IAMSamuelRodda/arcforge-branding
+gh issue list --state open --label "status: pending" --repo IAMSamuelRodda/brand-forge
 
 # In-progress work
-gh issue list --state open --label "status: in-progress" --repo IAMSamuelRodda/arcforge-branding
+gh issue list --state open --label "status: in-progress" --repo IAMSamuelRodda/brand-forge
 
 # Blocked work
-gh issue list --state open --label "status: blocked" --repo IAMSamuelRodda/arcforge-branding
+gh issue list --state open --label "status: blocked" --repo IAMSamuelRodda/brand-forge
 
 # View work by milestone
-gh issue list --milestone "v1.0 Foundation & Core Pipeline" --repo IAMSamuelRodda/arcforge-branding
+gh issue list --milestone "v1.0 Foundation & Core Pipeline" --repo IAMSamuelRodda/brand-forge
 ```
 
 ---
@@ -73,10 +73,10 @@ gh issue list --milestone "v1.0 Foundation & Core Pipeline" --repo IAMSamuelRodd
 gh issue edit 1 \
   --remove-label "status: pending" \
   --add-label "status: in-progress" \
-  --repo IAMSamuelRodda/arcforge-branding
+  --repo IAMSamuelRodda/brand-forge
 
 # Add start comment
-gh issue comment 1 --body "Started epic: Project Foundation & Infrastructure" --repo IAMSamuelRodda/arcforge-branding
+gh issue comment 1 --body "Started epic: Project Foundation & Infrastructure" --repo IAMSamuelRodda/brand-forge
 ```
 
 ### Working on Features/Tasks (Sub-Issues)
@@ -86,36 +86,36 @@ gh issue comment 1 --body "Started epic: Project Foundation & Infrastructure" --
 gh issue edit 2 \
   --remove-label "status: pending" \
   --add-label "status: in-progress" \
-  --repo IAMSamuelRodda/arcforge-branding
+  --repo IAMSamuelRodda/brand-forge
 
 # ... do the work ...
 
 # Complete the feature/task (progress rolls up to parent epic automatically!)
-gh issue close 2 --comment "Feature complete: Project Structure & Environment Setup" --repo IAMSamuelRodda/arcforge-branding
-gh issue edit 2 --add-label "status: completed" --repo IAMSamuelRodda/arcforge-branding
+gh issue close 2 --comment "Feature complete: Project Structure & Environment Setup" --repo IAMSamuelRodda/brand-forge
+gh issue edit 2 --add-label "status: completed" --repo IAMSamuelRodda/brand-forge
 
 # Verify parent epic shows updated progress
-gh issue view 1 --repo IAMSamuelRodda/arcforge-branding
+gh issue view 1 --repo IAMSamuelRodda/brand-forge
 ```
 
 ### Marking Work as Blocked (with Dependency Link)
 
 ```bash
 # Add blocked label and comment with link to blocking issue
-gh issue edit 17 --add-label "status: blocked" --repo IAMSamuelRodda/arcforge-branding
-gh issue comment 17 --body "Blocked by #9: Waiting for model configuration setup" --repo IAMSamuelRodda/arcforge-branding
+gh issue edit 17 --add-label "status: blocked" --repo IAMSamuelRodda/brand-forge
+gh issue comment 17 --body "Blocked by #9: Waiting for model configuration setup" --repo IAMSamuelRodda/brand-forge
 
 # When unblocked, update status
-gh issue edit 17 --remove-label "status: blocked" --add-label "status: in-progress" --repo IAMSamuelRodda/arcforge-branding
-gh issue comment 17 --body "Unblocked: Configuration complete, resuming research" --repo IAMSamuelRodda/arcforge-branding
+gh issue edit 17 --remove-label "status: blocked" --add-label "status: in-progress" --repo IAMSamuelRodda/brand-forge
+gh issue comment 17 --body "Unblocked: Configuration complete, resuming research" --repo IAMSamuelRodda/brand-forge
 ```
 
 ### Completing an Epic
 
 ```bash
 # When all sub-issues are complete, close the epic
-gh issue close 1 --comment "Epic complete: All infrastructure and configuration features delivered" --repo IAMSamuelRodda/arcforge-branding
-gh issue edit 1 --add-label "status: completed" --repo IAMSamuelRodda/arcforge-branding
+gh issue close 1 --comment "Epic complete: All infrastructure and configuration features delivered" --repo IAMSamuelRodda/brand-forge
+gh issue edit 1 --add-label "status: completed" --repo IAMSamuelRodda/brand-forge
 ```
 
 ---
@@ -126,13 +126,13 @@ gh issue edit 1 --add-label "status: completed" --repo IAMSamuelRodda/arcforge-b
 
 ```bash
 # Always check what's already done
-gh issue list --state open --repo IAMSamuelRodda/arcforge-branding
+gh issue list --state open --repo IAMSamuelRodda/brand-forge
 
 # Check epic hierarchy
-gh issue view 1 --repo IAMSamuelRodda/arcforge-branding
+gh issue view 1 --repo IAMSamuelRodda/brand-forge
 
 # View milestone progress
-gh issue list --milestone "v1.0 Foundation & Core Pipeline" --repo IAMSamuelRodda/arcforge-branding
+gh issue list --milestone "v1.0 Foundation & Core Pipeline" --repo IAMSamuelRodda/brand-forge
 ```
 
 ### 2. Update Status When Starting Work
@@ -142,25 +142,25 @@ gh issue list --milestone "v1.0 Foundation & Core Pipeline" --repo IAMSamuelRodd
 gh issue edit 2 \
   --remove-label "status: pending" \
   --add-label "status: in-progress" \
-  --repo IAMSamuelRodda/arcforge-branding
+  --repo IAMSamuelRodda/brand-forge
 ```
 
 ### 3. Comment on Progress
 
 ```bash
 # Add progress comments to epics
-gh issue comment 1 --body "Completed feature #2: Project Structure & Environment Setup" --repo IAMSamuelRodda/arcforge-branding
+gh issue comment 1 --body "Completed feature #2: Project Structure & Environment Setup" --repo IAMSamuelRodda/brand-forge
 
 # Add progress comments to features/tasks
-gh issue comment 2 --body "Implemented virtual environment with uv package manager and directory structure" --repo IAMSamuelRodda/arcforge-branding
+gh issue comment 2 --body "Implemented virtual environment with uv package manager and directory structure" --repo IAMSamuelRodda/brand-forge
 ```
 
 ### 4. Close Sub-Issues (Progress Rolls Up Automatically)
 
 ```bash
 # When a feature/task is complete, close it
-gh issue close 2 --comment "Feature complete" --repo IAMSamuelRodda/arcforge-branding
-gh issue edit 2 --add-label "status: completed" --repo IAMSamuelRodda/arcforge-branding
+gh issue close 2 --comment "Feature complete" --repo IAMSamuelRodda/brand-forge
+gh issue edit 2 --add-label "status: completed" --repo IAMSamuelRodda/brand-forge
 
 # Parent epic automatically shows updated progress!
 # No manual checkbox updates needed
@@ -195,7 +195,7 @@ gh issue comment 17 --body "Requirements update: Switching from self-hosted to S
 
 Original: Research and deploy self-hosted Stable Diffusion
 Updated: Use Stability AI API ($0.004/image)
-Reason: Faster iteration, lower complexity for MVP, cost-effective at current scale" --repo IAMSamuelRodda/arcforge-branding
+Reason: Faster iteration, lower complexity for MVP, cost-effective at current scale" --repo IAMSamuelRodda/brand-forge
 ```
 
 ---
@@ -221,10 +221,10 @@ Reason: Faster iteration, lower complexity for MVP, cost-effective at current sc
 
 ## Project Links
 
-- **GitHub Repository**: https://github.com/IAMSamuelRodda/arcforge-branding
+- **GitHub Repository**: https://github.com/IAMSamuelRodda/brand-forge
 - **Project Board**: https://github.com/users/IAMSamuelRodda/projects/6
-- **Issues**: https://github.com/IAMSamuelRodda/arcforge-branding/issues
-- **Blueprint**: `/home/samuel/repos/arcforge-branding/specs/BLUEPRINT.yaml`
+- **Issues**: https://github.com/IAMSamuelRodda/brand-forge/issues
+- **Blueprint**: `/home/samuel/repos/brand-forge/specs/BLUEPRINT.yaml`
 
 ---
 
@@ -242,7 +242,7 @@ gh auth refresh -h github.com -s project,read:project
 gh CLI doesn't have native sub-issue commands yet. Use:
 ```bash
 # Open epic in browser
-gh issue view 1 --web --repo IAMSamuelRodda/arcforge-branding
+gh issue view 1 --web --repo IAMSamuelRodda/brand-forge
 # Click "Create sub-issue" button at bottom of description
 ```
 
@@ -253,18 +253,18 @@ Or use GraphQL API (see skill documentation).
 Progress rolls up automatically when you close sub-issues:
 ```bash
 # Close the sub-issue
-gh issue close 2 --repo IAMSamuelRodda/arcforge-branding
+gh issue close 2 --repo IAMSamuelRodda/brand-forge
 
 # View parent epic to see updated progress
-gh issue view 1 --repo IAMSamuelRodda/arcforge-branding
+gh issue view 1 --repo IAMSamuelRodda/brand-forge
 ```
 
 ### Need to See Detailed BLUEPRINT
 
 ```bash
-cat /home/samuel/repos/arcforge-branding/specs/BLUEPRINT.yaml | less
+cat /home/samuel/repos/brand-forge/specs/BLUEPRINT.yaml | less
 # Or open in editor
-code /home/samuel/repos/arcforge-branding/specs/BLUEPRINT.yaml
+code /home/samuel/repos/brand-forge/specs/BLUEPRINT.yaml
 ```
 
 ### View Roadmap Timeline
@@ -281,26 +281,26 @@ gh project view 6 --owner IAMSamuelRodda --web
 
 ```bash
 # 1. Check current state
-gh issue list --state open --repo IAMSamuelRodda/arcforge-branding
+gh issue list --state open --repo IAMSamuelRodda/brand-forge
 
 # 2. View epic hierarchy
-gh issue view 1 --repo IAMSamuelRodda/arcforge-branding  # Epic #1: Project Foundation
+gh issue view 1 --repo IAMSamuelRodda/brand-forge  # Epic #1: Project Foundation
 
 # 3. Start working on Epic #1
 gh issue edit 1 \
   --remove-label "status: pending" \
   --add-label "status: in-progress" \
-  --repo IAMSamuelRodda/arcforge-branding
-gh issue comment 1 --body "Started epic: Project Foundation & Infrastructure" --repo IAMSamuelRodda/arcforge-branding
+  --repo IAMSamuelRodda/brand-forge
+gh issue comment 1 --body "Started epic: Project Foundation & Infrastructure" --repo IAMSamuelRodda/brand-forge
 
 # 4. Work on Feature #2 (sub-issue of Epic #1)
 gh issue edit 2 \
   --remove-label "status: pending" \
   --add-label "status: in-progress" \
-  --repo IAMSamuelRodda/arcforge-branding
+  --repo IAMSamuelRodda/brand-forge
 
 # 5. Do the implementation work...
-cd /home/samuel/repos/arcforge-branding
+cd /home/samuel/repos/brand-forge
 mkdir -p automation/{config,src,web,results,data}
 python3 -m venv automation/.venv
 source automation/.venv/bin/activate
@@ -320,18 +320,18 @@ Relates to #2 → #1 (Project Foundation & Infrastructure)
 🤖 Generated with [Claude Code](https://claude.com/claude-code)"
 
 # 7. Complete Feature #2
-gh issue close 2 --comment "Feature complete: Project structure created, virtual environment configured" --repo IAMSamuelRodda/arcforge-branding
-gh issue edit 2 --add-label "status: completed" --repo IAMSamuelRodda/arcforge-branding
+gh issue close 2 --comment "Feature complete: Project structure created, virtual environment configured" --repo IAMSamuelRodda/brand-forge
+gh issue edit 2 --add-label "status: completed" --repo IAMSamuelRodda/brand-forge
 
 # 8. Verify epic shows updated progress (automatic!)
-gh issue view 1 --repo IAMSamuelRodda/arcforge-branding
+gh issue view 1 --repo IAMSamuelRodda/brand-forge
 # Epic #1 now shows Feature #2 as completed
 
 # 9. Continue with next feature (#5: Design Asset Integration, #8: Configuration Management)...
 
 # 10. When all features complete, close epic
-gh issue close 1 --comment "Epic complete: Project foundation established with Python environment, design asset integration, and configuration system" --repo IAMSamuelRodda/arcforge-branding
-gh issue edit 1 --add-label "status: completed" --repo IAMSamuelRodda/arcforge-branding
+gh issue close 1 --comment "Epic complete: Project foundation established with Python environment, design asset integration, and configuration system" --repo IAMSamuelRodda/brand-forge
+gh issue edit 1 --add-label "status: completed" --repo IAMSamuelRodda/brand-forge
 ```
 
 ---
@@ -347,13 +347,13 @@ When multiple agents work on the project:
 
 ```bash
 # Check who's working on what
-gh issue list --state open --label "status: in-progress" --repo IAMSamuelRodda/arcforge-branding
+gh issue list --state open --label "status: in-progress" --repo IAMSamuelRodda/brand-forge
 
 # View epic to see which features are in progress
-gh issue view 11 --repo IAMSamuelRodda/arcforge-branding
+gh issue view 11 --repo IAMSamuelRodda/brand-forge
 
 # Check blocked work
-gh issue list --label "status: blocked" --repo IAMSamuelRodda/arcforge-branding
+gh issue list --label "status: blocked" --repo IAMSamuelRodda/brand-forge
 ```
 
 ### Parallel Work Strategy
@@ -370,5 +370,5 @@ Multiple agents can work on different features within the same epic:
 
 - Review `specs/BLUEPRINT.yaml` for detailed technical specifications
 - Check git history: `git log --oneline`
-- View all issues: `gh issue list --state all --repo IAMSamuelRodda/arcforge-branding`
+- View all issues: `gh issue list --state all --repo IAMSamuelRodda/brand-forge`
 - Open project board: `gh project view 6 --owner IAMSamuelRodda --web`

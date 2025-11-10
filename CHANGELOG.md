@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the ArcForge Branding Automation project will be documented in this file.
+All notable changes to the Brand Forge project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -44,14 +44,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Established brand palette: Forge Black (#1A1A1A), Spark Orange (#FF6B35), Vector Blue (#4A90E2)
 
 #### GitHub Project Management
-- Created public repository: https://github.com/IAMSamuelRodda/arcforge-branding
+- Created public repository: https://github.com/IAMSamuelRodda/brand-forge
 - Generated 125 GitHub issues:
   - 10 epics (type: epic)
   - 34 features (type: feature)
   - 81 tasks (type: task)
 - Established 115 parent-child relationships (hierarchical sub-issues)
 - Created 3 milestones with timeline markers
-- Set up Project #6: "ArcForge Branding Automation Roadmap" with date fields
+- Set up Project #6: "Brand Forge Roadmap" with date fields
 - Added 20+ standardized labels (type, status, priority)
 
 #### Documentation
@@ -112,6 +112,6 @@ This release establishes the complete planning foundation for an automated brand
 
 ## Links
 
-- **GitHub Repository**: https://github.com/IAMSamuelRodda/arcforge-branding
+- **GitHub Repository**: https://github.com/IAMSamuelRodda/brand-forge
 - **Project Board**: https://github.com/users/IAMSamuelRodda/projects/6
 - **Blueprint**: [specs/BLUEPRINT.yaml](specs/BLUEPRINT.yaml)

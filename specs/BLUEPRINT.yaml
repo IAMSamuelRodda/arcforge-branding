@@ -199,6 +199,46 @@ milestones:
               - "config/scoring-weights.yaml with adjustable dimension weights"
               - "Budget tracking config with monthly limits and alert thresholds"
 
+        feature_1_4:
+          name: "CI/CD Pipeline Setup"
+          complexity:
+            composite: 1.5
+            dimensions:
+              technical_complexity: 2
+              scope_size: 1
+              dependencies: 1
+              uncertainty: 1
+              risk: 1
+              testing: 3
+          estimated_days: 1
+          deliverables:
+            - "GitHub Actions workflow for lint, type check, and test on every push"
+            - "Pre-commit hooks for local quality checks"
+            - "Coverage reporting with 80% minimum threshold"
+            - "Automated dependency security scanning"
+
+          task_1_4_1:
+            name: "Configure GitHub Actions CI workflow"
+            complexity:
+              composite: 1.5
+            estimated_days: 0.5
+            deliverables:
+              - ".github/workflows/ci.yml with Python 3.11 setup"
+              - "Automated linting (ruff), type checking (mypy), testing (pytest)"
+              - "Coverage threshold enforcement (80% minimum)"
+              - "Fail-fast on quality gate violations"
+
+          task_1_4_2:
+            name: "Setup pre-commit hooks and quality tools"
+            complexity:
+              composite: 1.5
+            estimated_days: 0.5
+            deliverables:
+              - ".pre-commit-config.yaml with ruff and mypy hooks"
+              - "Local git hooks preventing commits that fail lint/type checks"
+              - "pyproject.toml with ruff and mypy configuration"
+              - "Development dependency updates (ruff, mypy, pytest, pytest-cov)"
+
       epic_2:
         name: "Basic Generation Pipeline (Single Model)"
         weeks: "1-2"
@@ -1122,7 +1162,7 @@ milestones:
               testing: 2
           estimated_days: 3
           deliverables:
-            - "Export to /home/samuel/repos/arcforge-branding/assets/logos/"
+            - "Export to /home/samuel/repos/brand-forge/assets/logos/"
             - "Format variants: SVG, PNG @1x/2x/3x, WebP"
             - "Light/dark background adaptations"
             - "Organized directory structure by visual direction"

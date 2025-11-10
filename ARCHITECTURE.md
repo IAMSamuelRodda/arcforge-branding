@@ -1,6 +1,6 @@
 # System Architecture
 
-**ArcForge Branding Automation** - Technical architecture, design decisions, and component specifications.
+**Brand Forge** - Technical architecture, design decisions, and component specifications.
 
 ---
 
@@ -20,7 +20,7 @@
 
 ## System Overview
 
-ArcForge Branding Automation is a **multi-model AI pipeline** that generates, scores, and exports brand assets with minimal human intervention.
+Brand Forge is a **multi-model AI pipeline** that generates, scores, and exports brand assets with minimal human intervention.
 
 ### Core Capabilities
 
@@ -89,7 +89,7 @@ ArcForge Branding Automation is a **multi-model AI pipeline** that generates, sc
 │  │  └──────────────┘  └──────────────┘  └────────────────────────┘ │  │
 │  └──────────────────────────────────────────────────────────────────┘  │
 │                                                                          │
-│                    ARCFORGE BRANDING AUTOMATION                         │
+│                         BRAND FORGE PIPELINE                             │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
 

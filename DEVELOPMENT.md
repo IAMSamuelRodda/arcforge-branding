@@ -1,6 +1,6 @@
 # Development Guide
 
-**ArcForge Branding Automation** - Development environment setup, testing strategy, and contribution guidelines.
+**Brand Forge** - Development environment setup, testing strategy, and contribution guidelines.
 
 ---
 
@@ -30,8 +30,8 @@
 
 ```bash
 # Clone repository
-git clone https://github.com/IAMSamuelRodda/arcforge-branding.git
-cd arcforge-branding
+git clone https://github.com/IAMSamuelRodda/brand-forge.git
+cd brand-forge
 
 # Create virtual environment
 python3 -m venv automation/.venv
@@ -349,9 +349,9 @@ Relates to #25 (Epic #24)
 🤖 Generated with [Claude Code](https://claude.com/claude-code)"
 
 # 8. Update GitHub issue status
-gh issue comment 25 --body "Implemented CLIP similarity scoring" --repo IAMSamuelRodda/arcforge-branding
-gh issue close 25 --comment "Feature complete: CLIP semantic similarity implemented and tested" --repo IAMSamuelRodda/arcforge-branding
-gh issue edit 25 --add-label "status: completed" --repo IAMSamuelRodda/arcforge-branding
+gh issue comment 25 --body "Implemented CLIP similarity scoring" --repo IAMSamuelRodda/brand-forge
+gh issue close 25 --comment "Feature complete: CLIP semantic similarity implemented and tested" --repo IAMSamuelRodda/brand-forge
+gh issue edit 25 --add-label "status: completed" --repo IAMSamuelRodda/brand-forge
 ```
 
 ---
@@ -461,7 +461,7 @@ pip install yappi
 
 ## Questions or Issues?
 
-- **GitHub Issues**: https://github.com/IAMSamuelRodda/arcforge-branding/issues
+- **GitHub Issues**: https://github.com/IAMSamuelRodda/brand-forge/issues
 - **Project Board**: https://github.com/users/IAMSamuelRodda/projects/6
 
 ---

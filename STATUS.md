@@ -1,18 +1,30 @@
 # Project Status
 
-**Last Updated**: November 10, 2025
+**Project**: Brand Forge
+**Last Updated**: November 11, 2025
 **Current Phase**: Planning & Setup
 **Overall Progress**: 0% (0/125 issues closed)
 
 ---
 
+## 🚀 AI-Calibrated Timeline
+
+**Original Human Estimate**: 10 weeks (50 business days)
+**AI-Calibrated Projection**: **15.2 days** (~2.2 weeks) with 1.3x buffer
+**Speedup Factor**: 22.8x faster (based on embark-quoting-system benchmark)
+**Projected Completion**: 2025-11-26 (starting 2025-11-11)
+
+> **Note**: Timings are calibrated from AI agent velocity benchmarks. See [AI-AGENT-TIMING-CALIBRATION.md](AI-AGENT-TIMING-CALIBRATION.md) for methodology.
+
+---
+
 ## Milestone Overview
 
-| Milestone | Timeline | Progress | Status |
-|-----------|----------|----------|--------|
-| **v1.0 Foundation & Core Pipeline** | Weeks 1-4 | 0/46 epics | 🔵 Not Started |
-| **v1.1 Multi-Model & Iterative Refinement** | Weeks 5-8 | 0/46 epics | 🔵 Not Started |
-| **v1.2 Production Polish & Documentation** | Weeks 9-10 | 0/33 epics | 🔵 Not Started |
+| Milestone | Original Timeline | AI-Calibrated | Progress | Status |
+|-----------|-------------------|---------------|----------|--------|
+| **v1.0 Foundation & Core Pipeline** | Weeks 1-4 | ~5 days | 0/46 epics | 🔵 Not Started |
+| **v1.1 Multi-Model & Iterative Refinement** | Weeks 5-8 | ~6 days | 0/46 epics | 🔵 Not Started |
+| **v1.2 Production Polish & Documentation** | Weeks 9-10 | ~4 days | 0/33 epics | 🔵 Not Started |
 
 **View Live Progress**: [GitHub Project Board](https://github.com/users/IAMSamuelRodda/projects/6)
 
@@ -31,7 +43,7 @@
 | Design Asset Integration | #5 | 🔵 Pending |
 | Configuration Management | #8 | 🔵 Pending |
 
-**View Epic**: https://github.com/IAMSamuelRodda/arcforge-branding/issues/1
+**View Epic**: https://github.com/IAMSamuelRodda/brand-forge/issues/1
 
 ---
 
@@ -44,7 +56,7 @@
 | Stable Diffusion API Integration | #16 | 🔵 Pending |
 | Basic Metadata Storage | #20 | 🔵 Pending |
 
-**View Epic**: https://github.com/IAMSamuelRodda/arcforge-branding/issues/11
+**View Epic**: https://github.com/IAMSamuelRodda/brand-forge/issues/11
 
 ---
 
@@ -58,7 +70,7 @@
 | Aesthetic Quality Predictor | #33 | 🔵 Pending |
 | Composition Analysis Module | #36 | 🔵 Pending |
 
-**View Epic**: https://github.com/IAMSamuelRodda/arcforge-branding/issues/24
+**View Epic**: https://github.com/IAMSamuelRodda/brand-forge/issues/24
 
 ---
 
@@ -71,7 +83,7 @@
 | Approval Workflow Implementation | #43 | 🔵 Pending |
 | Analytics Dashboard | #47 | 🔵 Pending |
 
-**View Epic**: https://github.com/IAMSamuelRodda/arcforge-branding/issues/39
+**View Epic**: https://github.com/IAMSamuelRodda/brand-forge/issues/39
 
 ---
 
@@ -87,7 +99,7 @@
 | DALL-E 3 Integration | #57 | 🔵 Pending |
 | Budget Tracking & Cost Allocation | #61 | 🔵 Pending |
 
-**View Epic**: https://github.com/IAMSamuelRodda/arcforge-branding/issues/50
+**View Epic**: https://github.com/IAMSamuelRodda/brand-forge/issues/50
 
 ---
 
@@ -100,7 +112,7 @@
 | Parameter Exploration Engine | #69 | 🔵 Pending |
 | Lineage Tracking System | #72 | 🔵 Pending |
 
-**View Epic**: https://github.com/IAMSamuelRodda/arcforge-branding/issues/64
+**View Epic**: https://github.com/IAMSamuelRodda/brand-forge/issues/64
 
 ---
 
@@ -114,7 +126,7 @@
 | Vectorization Engine | #83 | 🔵 Pending |
 | Multi-Format Export System | #87 | 🔵 Pending |
 
-**View Epic**: https://github.com/IAMSamuelRodda/arcforge-branding/issues/75
+**View Epic**: https://github.com/IAMSamuelRodda/brand-forge/issues/75
 
 ---
 
@@ -129,7 +141,7 @@
 | Integration Test Suite | #96 | 🔵 Pending |
 | End-to-End Testing | #99 | 🔵 Pending |
 
-**View Epic**: https://github.com/IAMSamuelRodda/arcforge-branding/issues/91
+**View Epic**: https://github.com/IAMSamuelRodda/brand-forge/issues/91
 
 ---
 
@@ -142,7 +154,7 @@
 | Caching Strategy | #106 | 🔵 Pending |
 | Resource Monitoring | #109 | 🔵 Pending |
 
-**View Epic**: https://github.com/IAMSamuelRodda/arcforge-branding/issues/102
+**View Epic**: https://github.com/IAMSamuelRodda/brand-forge/issues/102
 
 ---
 
@@ -156,7 +168,7 @@
 | Developer Guide | #120 | 🔵 Pending |
 | Deployment Documentation | #123 | 🔵 Pending |
 
-**View Epic**: https://github.com/IAMSamuelRodda/arcforge-branding/issues/112
+**View Epic**: https://github.com/IAMSamuelRodda/brand-forge/issues/112
 
 ---
 
@@ -177,32 +189,58 @@ No activity yet. Project setup phase.
 
 ## Next Steps
 
-1. **Start Epic #1**: Project Foundation & Infrastructure
-2. **Complete Feature #2**: Project Structure & Environment Setup
-3. **Begin Feature #5**: Design Asset Integration
-4. **Configure**: API keys and model settings
+### ✅ Setup Complete
+
+- ✓ **Issues Created**: 125 issues (9 epics, 34 features, 82 tasks)
+- ✓ **Dates Populated**: 34 features have AI-calibrated start/target dates
+- ✓ **Project Fields**: Start Date and Target Date fields added
+
+### Configure Roadmap View (~2 min)
+
+Open project in browser: https://github.com/users/IAMSamuelRodda/projects/6
+
+Then in GitHub UI:
+1. Click "+" next to view tabs → "Roadmap"
+2. Configure:
+   - Layout: Roadmap
+   - Date fields: Select "Start Date" and "Target Date"
+   - Zoom: Month or Quarter
+   - Markers: Enable "Milestone"
+   - Group by: "Parent issue"
+3. Save view
+
+### Start Implementation
+
+```bash
+# Mark Epic #1 as in-progress
+gh issue edit 1 --add-label "status: in-progress" \
+  --repo IAMSamuelRodda/brand-forge
+
+gh issue comment 1 --body "Starting: Project Foundation & Infrastructure" \
+  --repo IAMSamuelRodda/brand-forge
+```
 
 ---
 
-## Quick Commands
+## Quick Commands (After Issues Created)
 
 ```bash
 # View all open issues
-gh issue list --state open --repo IAMSamuelRodda/arcforge-branding
+gh issue list --state open --repo IAMSamuelRodda/brand-forge
 
 # View in-progress work
-gh issue list --state open --label "status: in-progress" --repo IAMSamuelRodda/arcforge-branding
+gh issue list --state open --label "status: in-progress" --repo IAMSamuelRodda/brand-forge
 
 # View blocked work
-gh issue list --state open --label "status: blocked" --repo IAMSamuelRodda/arcforge-branding
+gh issue list --state open --label "status: blocked" --repo IAMSamuelRodda/brand-forge
 
 # Start working on Epic #1
 gh issue edit 1 \
   --remove-label "status: pending" \
   --add-label "status: in-progress" \
-  --repo IAMSamuelRodda/arcforge-branding
+  --repo IAMSamuelRodda/brand-forge
 
-gh issue comment 1 --body "Started epic: Project Foundation & Infrastructure" --repo IAMSamuelRodda/arcforge-branding
+gh issue comment 1 --body "Started epic: Project Foundation & Infrastructure" --repo IAMSamuelRodda/brand-forge
 ```
 
 ---
@@ -223,6 +261,6 @@ gh issue comment 1 --body "Started epic: Project Foundation & Infrastructure" --
 ## Links
 
 - **Project Board**: https://github.com/users/IAMSamuelRodda/projects/6
-- **All Issues**: https://github.com/IAMSamuelRodda/arcforge-branding/issues
+- **All Issues**: https://github.com/IAMSamuelRodda/brand-forge/issues
 - **Blueprint**: [specs/BLUEPRINT.yaml](specs/BLUEPRINT.yaml)
 - **Contributing Guide**: [CONTRIBUTING.md](CONTRIBUTING.md)

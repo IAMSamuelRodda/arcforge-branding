@@ -1,11 +1,13 @@
-# ArcForge Branding Automation
+# Branding Automation System
 
-![GitHub Issues](https://img.shields.io/github/issues/IAMSamuelRodda/arcforge-branding)
+![GitHub Issues](https://img.shields.io/github/issues/IAMSamuelRodda/brand-forge)
 ![GitHub Project](https://img.shields.io/badge/project-roadmap-blue)
 ![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue)
 ![Status](https://img.shields.io/badge/status-planning-yellow)
 
 **Fully automated branding development system** that generates 300+ brand asset variations from design briefs with multi-model AI pipelines, quality scoring, and human checkpoints.
+
+> **Case Study**: ArcForge brand development (materials in `archives/case-study-arcforge/`). Brand Forge is designed to work for ANY brand, not just ArcForge.
 
 ```
 Design Brief → AI Generation → Quality Scoring → Human Approval → Production Export
@@ -15,7 +17,7 @@ Design Brief → AI Generation → Quality Scoring → Human Approval → Produc
 
 ## Overview
 
-ArcForge Branding Automation eliminates manual iteration in brand asset development by:
+Brand Forge eliminates manual iteration in brand asset development by:
 
 - **Generating 500-1000 variations/month** across 3 AI models (Stable Diffusion 3.5, Flux Schnell, DALL-E 3)
 - **Scoring quality automatically** with 4-dimensional weighted system (95%+ brand color accuracy)
@@ -104,8 +106,8 @@ ArcForge Branding Automation eliminates manual iteration in brand asset developm
 
 ```bash
 # Clone repository
-git clone https://github.com/IAMSamuelRodda/arcforge-branding.git
-cd arcforge-branding
+git clone https://github.com/IAMSamuelRodda/brand-forge.git
+cd brand-forge
 
 # Create virtual environment
 python3 -m venv automation/.venv
@@ -126,22 +128,14 @@ python automation/src/main.py
 
 ## Usage
 
-### 6-Stage Workflow
+### Workflow
 
-1. **Design Input**: Load brand specifications from `design/DESIGN-BRIEF.md` and prompt templates from `design/MIDJOURNEY-PROMPTS-*.md`
-
-2. **Prompt Generation**: Process templates with brand palette and visual direction variables
-
-3. **Multi-Model Generation**: Generate 70% via Stable Diffusion 3.5, 20% via Flux Schnell, 10% via DALL-E 3
-
-4. **Quality Scoring**: Score all outputs with weighted 4-dimensional system (target: 80+ correlation with human judgment)
-
-5. **Human Approval**: Review top-scoring variations at 3 checkpoints:
-   - **Concept Selection** (top 50 from 300+ generations)
-   - **Direction Selection** (top 20 from refinements)
-   - **Final Approval** (top 3-5 for production)
-
-6. **Production Export**: Upscale to 4K, remove backgrounds, vectorize to SVG
+1. **Design Input**: Load brand specifications (design brief + prompt templates)
+2. **Prompt Generation**: Process templates with brand variables
+3. **Multi-Model Generation**: 70% SD 3.5, 20% Flux, 10% DALL-E 3
+4. **Quality Scoring**: Weighted 4-dimensional system (CLIP, color, aesthetic, composition)
+5. **Human Approval**: 3 checkpoints (concept → direction → final)
+6. **Production Export**: Upscale, background removal, vectorization
 
 ### Configuration
 
@@ -179,37 +173,35 @@ budget:
 
 ---
 
-## Project Structure
+## Project Structure (Vertical Slice Architecture)
+
+Each feature slice contains its own code, tests, and documentation:
 
 ```
-arcforge-branding/
-├── automation/
-│   ├── config/
-│   │   └── config.yaml              # API keys, model settings, weights
-│   ├── src/
-│   │   ├── prompt_engine/           # Template processing
-│   │   ├── generation/              # Multi-model API integration
-│   │   ├── scoring/                 # Quality scoring system
-│   │   ├── refinement/              # Iterative img2img
-│   │   └── export/                  # Production export pipeline
-│   ├── web/
-│   │   └── approval_interface/      # Flask/Streamlit UI
-│   ├── results/                     # Generated images (gitignored)
-│   ├── data/                        # SQLite database (gitignored)
-│   └── requirements.txt             # Python dependencies
-├── design/
-│   ├── DESIGN-BRIEF.md              # Brand specifications (1,157 lines)
-│   └── MIDJOURNEY-PROMPTS-*.md      # 6 engineered prompt templates
-├── assets/
-│   └── approved/                    # Production-ready exports
+branding-automation/
+├── src/
+│   ├── prompt_engine/           # Template processing + docs
+│   ├── generation/              # Multi-model API + docs
+│   ├── scoring/                 # Quality scoring + docs
+│   ├── refinement/              # img2img refinement + docs
+│   ├── approval/                # Human approval UI + docs
+│   └── export/                  # Production export + docs
 ├── specs/
-│   └── BLUEPRINT.yaml               # Complete technical spec (1,824 lines)
-├── CONTRIBUTING.md                  # Agent workflow guide
-├── STATUS.md                        # Current milestone progress
-├── CHANGELOG.md                     # Version history
-├── DEVELOPMENT.md                   # Development setup & testing
-└── README.md                        # This file
+│   └── BLUEPRINT.yaml           # Technical specification
+├── archives/
+│   └── case-study-arcforge/     # ArcForge test case materials
+├── STATUS.md                    # Progress tracking (single source of truth)
+├── CONTRIBUTING.md              # Workflow guide
+└── README.md                    # This file
 ```
+
+**Documentation Philosophy**: Each feature directory contains its own `README.md` with:
+- Feature overview and architecture
+- API documentation
+- Usage examples
+- Testing approach
+
+**No separate `/docs` folder** - documentation lives with the code it documents.
 
 ---
 
@@ -278,11 +270,11 @@ Proprietary - All rights reserved.
 
 ## Links
 
-- **GitHub Repository**: https://github.com/IAMSamuelRodda/arcforge-branding
+- **GitHub Repository**: https://github.com/IAMSamuelRodda/brand-forge
 - **Project Board**: https://github.com/users/IAMSamuelRodda/projects/6
-- **Issues**: https://github.com/IAMSamuelRodda/arcforge-branding/issues
+- **Issues**: https://github.com/IAMSamuelRodda/brand-forge/issues
 - **Blueprint**: [specs/BLUEPRINT.yaml](specs/BLUEPRINT.yaml)
 
 ---
 
-**Last Updated**: November 10, 2025
+**Last Updated**: November 11, 2025

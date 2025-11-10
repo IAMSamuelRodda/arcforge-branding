@@ -40,12 +40,12 @@ def capture_site(page, site, index):
         time.sleep(3)
 
         # Capture full page screenshot
-        screenshot_path = f"/home/samuel/repos/archforge-branding/referances/images/captured_{index}_full.png"
+        screenshot_path = f"/home/samuel/repos/arcforge-branding/referances/images/captured_{index}_full.png"
         page.screenshot(path=screenshot_path, full_page=True)
         print(f"✓ Full page screenshot saved: {screenshot_path}")
 
         # Capture viewport screenshot (hero section)
-        viewport_path = f"/home/samuel/repos/archforge-branding/referances/images/captured_{index}_hero.png"
+        viewport_path = f"/home/samuel/repos/arcforge-branding/referances/images/captured_{index}_hero.png"
         page.screenshot(path=viewport_path)
         print(f"✓ Hero screenshot saved: {viewport_path}")
 
@@ -53,7 +53,7 @@ def capture_site(page, site, index):
         page.evaluate("window.scrollBy(0, 800)")
         time.sleep(2)
 
-        mid_path = f"/home/samuel/repos/archforge-branding/referances/images/captured_{index}_mid.png"
+        mid_path = f"/home/samuel/repos/arcforge-branding/referances/images/captured_{index}_mid.png"
         page.screenshot(path=mid_path)
         print(f"✓ Mid-section screenshot saved: {mid_path}")
 
