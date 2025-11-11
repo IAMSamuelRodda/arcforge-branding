@@ -1623,6 +1623,49 @@ milestones:
               - "Before/after refinement comparisons"
               - "Final exported brand package preview"
 
+  milestone_4:
+    name: "v2.0 User Personalization - Foundation Layer"
+    timeline_weeks: "TBD"
+    description: "Implement SQLite-based user profiles and brand-specific learning system that tracks communication style, preferences, approval patterns, and prompt effectiveness"
+    success_criteria:
+      - "User profiles persist communication style preferences (formality, detail level, terminology)"
+      - "Brand-specific learning tracks approval patterns per brand (preferred styles, effective prompts)"
+      - "Analytics dashboard shows per-brand model performance and cost-effectiveness"
+      - "System adapts prompts based on historical approval data"
+    rationale: "Phase 1 from USER-PERSONALIZATION-ANALYSIS.md - covers 80% of personalization needs at $0 cost using structured data storage"
+    reference: "docs/USER-PERSONALIZATION-ANALYSIS.md - Phase 1"
+    note: "Detailed epic/feature breakdown to be added when v1.2 (Milestone 3) nears completion"
+
+  milestone_5:
+    name: "v2.1 User Personalization - Memory Layer"
+    timeline_weeks: "TBD"
+    description: "Integrate LangChain session memory for better conversation context and multi-turn interactions. Add dynamic system prompt assembly combining user profile + brand learning + session context"
+    success_criteria:
+      - "LangChain ConversationSummaryBufferMemory manages session context"
+      - "Multi-turn interactions remember user decisions within session"
+      - "Dynamic system prompts inject personalization context into LLM on each request"
+      - "Session history preserved and queryable for audit trail"
+    rationale: "Phase 2 from USER-PERSONALIZATION-ANALYSIS.md - improves UX with conversation continuity at $0 additional cost"
+    reference: "docs/USER-PERSONALIZATION-ANALYSIS.md - Phase 2"
+    note: "Detailed epic/feature breakdown to be added based on v2.0 learnings"
+
+  milestone_6:
+    name: "v2.2 User Personalization - RAG Layer (Optional)"
+    timeline_weeks: "TBD"
+    description: "Add RAG/VectorDB for semantic search across rich user interaction history. Enable queries like 'find logos similar to that anvil design' or 'what prompts worked for minimalist brands'"
+    success_criteria:
+      - "VectorDB (Pinecone/Weaviate/Chroma) stores embeddings of prompts + images + feedback"
+      - "Semantic search: 'find similar designs' returns relevant historical examples"
+      - "Cross-brand pattern discovery: 'what works for minimalist tech logos'"
+      - "Weekly usage >100 semantic queries to justify $30/month cost"
+    rationale: "Phase 3 from USER-PERSONALIZATION-ANALYSIS.md - only if user has rich history (6+ months, 100+ brands) and semantic search proves valuable"
+    reference: "docs/USER-PERSONALIZATION-ANALYSIS.md - Phase 3"
+    note: "Evaluate ROI after v2.1 deployed - may remain optional if SQLite + LangChain sufficient"
+    dependencies:
+      - "Rich user history: 6+ months of usage, 50+ brands, 500+ generations"
+      - "User feedback requesting semantic search capabilities"
+      - "Cost-benefit analysis showing value > $30/month"
+
 agent_blueprint:
   total_estimated_days: 180
   total_estimated_weeks: 10
@@ -1779,22 +1822,40 @@ success_metrics:
 
 timeline_summary:
   milestone_1:
-    name: "Foundation & Core Pipeline"
+    name: "v1.0 Foundation & Core Pipeline"
     weeks: "1-4"
     epics: ["Project Foundation", "Basic Generation", "Quality Scoring", "Approval Interface"]
     deliverable: "Functional single-model pipeline with scoring and CLI approval"
 
   milestone_2:
-    name: "Multi-Model & Refinement"
+    name: "v1.1 Multi-Model & Refinement"
     weeks: "5-8"
     epics: ["Multi-Model Pipeline", "Iterative Refinement", "Production Export"]
     deliverable: "Complete 3-stage workflow with img2img refinement and multi-format export"
 
   milestone_3:
-    name: "Production Polish"
+    name: "v1.2 Production Polish"
     weeks: "9-10"
     epics: ["Testing & QA", "Performance Optimization", "Documentation"]
     deliverable: "Production-ready system with full test coverage and user documentation"
+
+  milestone_4:
+    name: "v2.0 User Personalization - Foundation Layer"
+    weeks: "TBD"
+    epics: ["TBD - User Profiles", "TBD - Brand Learning", "TBD - Analytics Dashboard"]
+    deliverable: "SQLite-based personalization tracking communication style and approval patterns"
+
+  milestone_5:
+    name: "v2.1 User Personalization - Memory Layer"
+    weeks: "TBD"
+    epics: ["TBD - LangChain Integration", "TBD - Session Memory", "TBD - Dynamic Prompts"]
+    deliverable: "Conversation continuity with LangChain memory and context-aware prompt assembly"
+
+  milestone_6:
+    name: "v2.2 User Personalization - RAG Layer (Optional)"
+    weeks: "TBD"
+    epics: ["TBD - VectorDB Setup", "TBD - Semantic Search", "TBD - Pattern Discovery"]
+    deliverable: "RAG-powered semantic search for historical designs and cross-brand insights"
 
 risk_assessment:
   high_risks:
