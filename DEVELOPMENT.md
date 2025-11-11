@@ -9,10 +9,11 @@
 1. [Development Environment Setup](#development-environment-setup)
 2. [Project Architecture](#project-architecture)
 3. [Code Style Guidelines](#code-style-guidelines)
-4. [Testing Strategy](#testing-strategy)
-5. [Pre-Commit Checklist](#pre-commit-checklist)
-6. [Debugging Guide](#debugging-guide)
-7. [Performance Optimization](#performance-optimization)
+4. [Project Conventions](#project-conventions)
+5. [Testing Strategy](#testing-strategy)
+6. [Pre-Commit Checklist](#pre-commit-checklist)
+7. [Debugging Guide](#debugging-guide)
+8. [Performance Optimization](#performance-optimization)
 
 ---
 
@@ -234,6 +235,66 @@ from PIL import Image
 from automation.src.generation import StableDiffusionClient
 from automation.src.scoring import WeightedScorer
 ```
+
+---
+
+## Project Conventions
+
+### Naming Conventions
+
+- **Python modules**: `snake_case.py`
+- **Classes**: `PascalCase` (e.g., `ModelKnowledgeAdapter`, `StableDiffusionClient`)
+- **Functions**: `snake_case` (e.g., `generate_variations`, `calculate_score`)
+- **Config files**: `kebab-case.yaml` (e.g., `brand-criteria.yaml`, `scoring-weights.yaml`)
+- **Database tables**: `snake_case` (e.g., `generations`, `prompt_effectiveness`)
+- **Feature branches**: `feature/epic-N-description` or `feature/issue-N-description`
+
+### Session Organization
+
+- **Path pattern**: `results/{session_id}/{stage}/`
+- **Stages**:
+  - `stage_1_concept` - Initial generation (300+ images)
+  - `stage_2_refinement` - img2img improvements
+  - `stage_3_production` - Final exports
+- **Retention**: 30 days (automated cleanup)
+- **Image naming**: `{image_id}.png` (UUID for generated), `{brand}-logo-{direction}-{variant}.{ext}` for exports
+
+### Multi-Model Strategy
+
+**Budget**: $30-60/month for 500-1000 generations
+
+**Model Allocation**:
+- **Stable Diffusion 3.5**: 70% ($0.004/img) - Bulk generation
+- **Flux Schnell**: 20% ($0.003/img) - Quality comparisons
+- **DALL-E 3**: 10% ($0.04/img) - Text-heavy fallback
+
+**Cost Tracking**: Real-time monitoring with alerts at 50%, 75%, 90% of budget.
+
+### Quality Thresholds
+
+- **Brand color accuracy**: 95%+ (using Delta E CIE 2000)
+- **Scoring correlation**: Spearman's ρ > 0.7 vs human judgment
+- **Scoring weights**:
+  - CLIP semantic similarity: 30%
+  - Brand color adherence: 25%
+  - Aesthetic quality: 25%
+  - Composition analysis: 20%
+
+### Approval Workflow
+
+1. **Stage 1 - Concept Selection**: Top 50 from 300+ generations (first human checkpoint)
+2. **Stage 2 - Direction Selection**: Top 20 from refinements (second checkpoint)
+3. **Stage 3 - Production**: Top 3-5 for final export (final approval)
+
+**Target**: <10 minutes human time per checkpoint.
+
+### Model Knowledge Base
+
+**Architecture**: Static YAML (NOT RAG for v1.0)
+- **Location**: `automation/src/prompt_engine/model_knowledge/`
+- **Files**: `stable_diffusion_35.yaml`, `flux_schnell.yaml`, `dalle_3.yaml`
+- **Decision**: See `docs/ADR-001-MODEL-KNOWLEDGE-ARCHITECTURE.md`
+- **Pattern**: ModelKnowledgeAdapter loads model-specific rules at runtime
 
 ---
 

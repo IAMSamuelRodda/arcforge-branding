@@ -40,72 +40,15 @@ feature/*  → All work happens here
 
 See `CONTRIBUTING.md` → Branch Workflow for full details.
 
-### Multi-Model Cost Constraints
+### Project Conventions
 
-**Budget**: $30-60/month for 500-1000 generations
-
-**Model Allocation:**
-- Stable Diffusion 3.5: 70% ($0.004/img)
-- Flux Schnell: 20% ($0.003/img)
-- DALL-E 3: 10% ($0.04/img)
-
-**Real-time cost tracking required** with alerts at 50%, 75%, 90% of budget.
-
-### Model Knowledge Base
-
-**Architecture**: Static YAML (NOT RAG for v1.0)
-- Location: `automation/src/prompt_engine/model_knowledge/`
-- Files: `stable_diffusion_35.yaml`, `flux_schnell.yaml`, `dalle_3.yaml`
-- Decision rationale: `docs/ADR-001-MODEL-KNOWLEDGE-ARCHITECTURE.md`
-
-### Quality Thresholds
-
-- **Brand color accuracy**: 95%+
-- **Scoring correlation**: Spearman's ρ > 0.7 vs human judgment
-- **Scoring weights**: CLIP (30%), Color (25%), Aesthetic (25%), Composition (20%)
-
-### Naming Conventions
-
-- **Python modules**: `snake_case.py`
-- **Classes**: `PascalCase` (e.g., `ModelKnowledgeAdapter`)
-- **Functions**: `snake_case` (e.g., `generate_variations`)
-- **Config files**: `kebab-case.yaml` (e.g., `brand-criteria.yaml`)
-- **Feature branches**: `feature/epic-N-description` or `feature/issue-N-description`
-
-### Session Organization
-
-- **Path pattern**: `results/{session_id}/{stage}/`
-- **Stages**: `stage_1_concept`, `stage_2_refinement`, `stage_3_production`
-- **Retention**: 30 days (automated cleanup)
-
-### Approval Workflow
-
-1. **Stage 1 - Concept**: Top 50 from 300+ generations
-2. **Stage 2 - Refinement**: Top 20 from refinements
-3. **Stage 3 - Production**: Top 3-5 for export
-
-Target: <10 minutes human time per checkpoint.
-
----
-
-## 📂 Project Structure
-
-```
-automation/
-├── config/              # YAML configs (models, brand criteria, scoring)
-├── src/
-│   ├── generation/      # Prompt engine, API clients, queue
-│   ├── scoring/         # CLIP, color, aesthetic, composition
-│   ├── approval/        # CLI viewer, Flask dashboard
-│   ├── refinement/      # img2img engine
-│   ├── export/          # Upscaling, background removal, vectorization
-│   ├── database/        # SQLite schema, CRUD
-│   └── prompt_engine/
-│       └── model_knowledge/  # YAML knowledge base
-├── web/                 # Flask app, Tailwind templates
-├── results/             # Generated images (gitignored)
-└── data/                # SQLite databases (gitignored)
-```
+All implementation details documented in **`DEVELOPMENT.md` → Project Conventions**:
+- Naming conventions (modules, classes, functions, configs, branches)
+- Session organization (path patterns, stages, retention)
+- Multi-model strategy (budget, allocation, cost tracking)
+- Quality thresholds (color accuracy, scoring correlation, weights)
+- Approval workflow (3 stages, <10min checkpoints)
+- Model knowledge base (static YAML architecture)
 
 ---
 
