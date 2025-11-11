@@ -120,6 +120,91 @@ gh issue edit 1 --add-label "status: completed" --repo IAMSamuelRodda/brand-forg
 
 ---
 
+## Branch Workflow
+
+### Branch Structure
+
+```
+main       → Production branch (deploy-ready only, no direct commits)
+  ↑
+dev        → Integration branch (no direct commits)
+  ↑
+feature/*  → Feature branches (all work happens here)
+```
+
+### Rules
+
+1. **NEVER commit directly to `main`** - This branch is linked to production environment
+2. **NEVER commit directly to `dev`** - This branch is for integration only
+3. **ALWAYS work on feature branches** - Create feature branches from `dev`
+4. **Auto-merge to `dev`** - PRs automatically merge to `dev` when basic checks pass
+5. **Manual promote to `main`** - Only promote `dev` → `main` when ready for production deployment
+
+### Working on Features
+
+```bash
+# 1. Create feature branch from dev
+git checkout dev
+git pull origin dev
+git checkout -b feature/epic-1-project-foundation
+
+# 2. Do your work and commit
+git add .
+git commit -m "feat: initialize Python environment (fixes #3)"
+
+# 3. Push feature branch
+git push origin feature/epic-1-project-foundation
+
+# 4. Create PR to dev (auto-merges when checks pass)
+gh pr create --base dev --head feature/epic-1-project-foundation \
+  --title "feat: Epic 1 - Project Foundation & Infrastructure" \
+  --body "Closes #1
+
+Implements complete project foundation:
+- Python 3.11 virtual environment
+- Directory structure (config, src, web, results, data)
+- Configuration management system
+- CI/CD pipeline setup
+
+All features complete and tested."
+
+# PR automatically merges to dev when CI passes
+```
+
+### Promoting to Production
+
+```bash
+# When dev is stable and ready for production
+git checkout main
+git pull origin main
+git merge dev
+git push origin main
+
+# Or create PR for review
+gh pr create --base main --head dev \
+  --title "release: Deploy v1.0 to production" \
+  --body "Production deployment of v1.0 Foundation & Core Pipeline
+
+Milestones completed:
+- Epic #1: Project Foundation & Infrastructure
+- Epic #11: Basic Generation Pipeline
+- Epic #24: Quality Scoring System
+- Epic #39: Human Approval Interface
+
+All tests passing, ready for production."
+```
+
+### Feature Branch Naming
+
+- `feature/epic-N-short-description` - For epic-level work
+- `feature/issue-N-short-description` - For specific feature/task work
+- Examples:
+  - `feature/epic-1-project-foundation`
+  - `feature/issue-12-prompt-generation-engine`
+  - `feature/issue-25-clip-scoring`
+
+---
+
 ## Best Practices for Agents
 
 ### 1. Check Current Progress Before Starting
