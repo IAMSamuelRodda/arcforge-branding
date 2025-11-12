@@ -1,0 +1,2955 @@
+project_overview:
+  brief: "DesignForge: Build a fully automated frontend design development system that transforms design briefs into production-ready visual assets and code through iterative AI-driven design processes with human approval checkpoints, covering brand identity, atomic components, page layouts, and framework-specific code exports."
+  core_objectives:
+    - "Generate 300+ brand and design asset variations from design briefs with 95%+ brand color accuracy"
+    - "Deliver 3-5 production-ready logos with multi-format exports within $30-60/month budget (v1.5 priority)"
+    - "Create atomic component libraries (buttons, forms, cards, navigation) with accessibility scoring (v2.0)"
+    - "Generate responsive landing page and web app layouts with mobile-first design (v2.5)"
+    - "Export framework-specific code (React, Vue, Svelte, Tailwind) with production optimization (v3.0)"
+    - "Reduce human intervention to <10 minutes per checkpoint across 3 approval stages"
+    - "Achieve zero manual prompt copying or image downloads through full API automation"
+  complexity: "complex"
+  scope_expansion:
+    from: "Brand-only asset generation (logos, color palettes, brand packages)"
+    to: "Full frontend design automation (brand identity → atomic components → page layouts → production code)"
+    rationale: "User needs complete design-to-code workflow, starting with images (v1.0-v2.5) then adding code export (v3.0). Logo generation is immediate priority (v1.5) before expanding to broader component/layout library."
+  existing_assets:
+    - path: "archives/case-study-arcforge/design/DESIGN-BRIEF.md"
+      size: "1157 lines"
+      purpose: "Comprehensive design system specification (ArcForge case study)"
+    - path: "archives/case-study-arcforge/design/PROMPT-TEMPLATES-*.md"
+      count: 6
+      purpose: "Engineered prompt templates for brand generation (ArcForge case study)"
+    - path: "archives/case-study-arcforge/design/philosophy/"
+      purpose: "Brand strategy and design philosophy documentation (ArcForge case study)"
+
+architecture:
+  pattern: "vertical-slice"
+  rationale: "Each feature (generation pipeline, scoring system, approval interface, component library, page layouts, code export) operates as independent slice with complete stack from input to output, enabling parallel agent development and isolated testing without cross-slice dependencies. Atomic components strategy (ADR-002) ensures independent generation of buttons, forms, cards before composing into full page layouts."
+  components:
+    - name: "Brand Agent Orchestrator"
+      purpose: "Central coordinator managing generation queues, iteration chains, and workflow stages across brand assets, components, and layouts"
+      boundaries: "IN: design brief parsing, prompt distribution, state tracking; OUT: business logic, UI rendering"
+      dependencies: []
+      token_estimate: "<15k"
+
+    - name: "Prompt Generation Engine"
+      purpose: "Converts design briefs and templates into model-specific prompts with variation generation for logos, components, and full pages"
+      boundaries: "IN: template processing, parameter variation, component specifications; OUT: image generation, scoring"
+      dependencies: ["Brand Agent Orchestrator"]
+      token_estimate: "<12k"
+
+    - name: "Multi-Model Generation Pipeline"
+      purpose: "Handles concurrent API calls to Stable Diffusion, Flux, DALL-E with queue management for all asset types"
+      boundaries: "IN: API integration, rate limiting, error handling; OUT: scoring, approval logic"
+      dependencies: ["Prompt Generation Engine"]
+      token_estimate: "<20k"
+
+    - name: "Quality Scoring System"
+      purpose: "Analyzes generated images using CLIP, color detection, aesthetic models, accessibility scoring with weighted ranking"
+      boundaries: "IN: image analysis, scoring algorithms, WCAG compliance; OUT: UI presentation, orchestration"
+      dependencies: ["Multi-Model Generation Pipeline"]
+      token_estimate: "<18k"
+
+    - name: "Iterative Refinement Pipeline"
+      purpose: "Uses top-scored images as img2img seeds for parameter exploration and quality improvement across all asset types"
+      boundaries: "IN: refinement logic, parameter variation; OUT: final exports"
+      dependencies: ["Quality Scoring System", "Multi-Model Generation Pipeline"]
+      token_estimate: "<12k"
+
+    - name: "Human Approval Interface"
+      purpose: "CLI and web dashboards for image review, batch operations, and feedback capture across brands, components, and layouts"
+      boundaries: "IN: UI rendering, user input, multi-asset comparison; OUT: orchestration, database writes"
+      dependencies: ["Quality Scoring System"]
+      token_estimate: "<20k"
+
+    - name: "Post-Processing Service"
+      purpose: "Upscaling, background removal, vector conversion, multi-format exports, responsive image generation"
+      boundaries: "IN: image transformations, resolution variants; OUT: file system writes"
+      dependencies: ["Iterative Refinement Pipeline"]
+      token_estimate: "<12k"
+
+    - name: "Design Token Extractor"
+      purpose: "Analyzes generated designs to extract color palettes, spacing scales, typography systems, and design tokens"
+      boundaries: "IN: image analysis, pattern recognition; OUT: structured design token JSON"
+      dependencies: ["Quality Scoring System"]
+      token_estimate: "<10k"
+
+    - name: "Code Generation Engine"
+      purpose: "Converts approved designs to HTML/CSS/JS and framework-specific code (React, Vue, Svelte, Tailwind)"
+      boundaries: "IN: design specifications, component hierarchies; OUT: code files, bundle optimization"
+      dependencies: ["Design Token Extractor", "Human Approval Interface"]
+      token_estimate: "<25k"
+
+    - name: "Metadata Tracking Database"
+      purpose: "SQLite storage for prompt→image→score→approval chains with analytics queries, component relationships, and design token versioning"
+      boundaries: "IN: CRUD operations, query interface, relationship mapping; OUT: application state"
+      dependencies: []
+      token_estimate: "<10k"
+
+milestones:
+  milestone_1:
+    name: "v1.0 Foundation & Core Pipeline"
+    timeline_weeks: "1-4"
+    description: "Establish project infrastructure, implement basic generation pipeline with single model, build scoring and approval systems (PRESERVED FROM ORIGINAL BLUEPRINT - NO CHANGES)"
+    success_criteria:
+      - "Successfully generate 50+ images from design brief using Stable Diffusion API"
+      - "Quality scoring system ranks images with 80%+ accuracy vs human judgment"
+      - "CLI approval interface allows batch review in <5 minutes for 50 images"
+      - "Database tracks complete lineage from prompt to approved image"
+
+    epics:
+      epic_1:
+        name: "Project Foundation & Infrastructure"
+        weeks: "1"
+        milestone: "Development environment configured with all dependencies, project structure established, existing design assets integrated"
+
+        feature_1_1:
+          name: "Project Structure & Environment Setup"
+          complexity:
+            composite: 1.8
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 1
+              uncertainty: 2
+              risk: 1
+              testing: 3
+          estimated_days: 2
+          deliverables:
+            - "Python 3.11+ virtual environment with uv package manager"
+            - "Directory structure: automation/{config,src,web,results,data}"
+            - "Git repository initialized with .gitignore for results/ and data/"
+            - "Requirements specification file with pinned ML library versions"
+
+          task_1_1_1:
+            name: "Initialize Python environment and directory structure"
+            complexity:
+              composite: 1.5
+            estimated_days: 1
+            deliverables:
+              - "Virtual environment at automation/.venv with Python 3.11+"
+              - "Directory structure created with README placeholders"
+              - "Git initialized with comprehensive .gitignore (results/, data/, .venv/)"
+
+          task_1_1_2:
+            name: "Install core dependencies and verify compatibility"
+            complexity:
+              composite: 2.0
+            estimated_days: 1
+            deliverables:
+              - "requirements.txt with pinned versions: torch, transformers, Pillow, flask, rich, asyncio"
+              - "Dependency compatibility verified across Linux environment"
+              - "Quick smoke test script confirming import success"
+
+        feature_1_2:
+          name: "Design Asset Integration"
+          complexity:
+            composite: 2.2
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 3
+              uncertainty: 2
+              risk: 2
+              testing: 2
+          estimated_days: 3
+          deliverables:
+            - "Parser for DESIGN-BRIEF.md extracting color palette, typography, visual directions"
+            - "Loader for prompt template files (PROMPT-TEMPLATES-*.md) with template variable detection"
+            - "Configuration files mapping design brief elements to prompt parameters"
+            - "Validation tests confirming successful extraction of brand criteria"
+
+          task_1_2_1:
+            name: "Build design brief parser"
+            complexity:
+              composite: 2.0
+            estimated_days: 1.5
+            deliverables:
+              - "Parser extracting color palette (#1A1A1A, #FF6B35, #4A90E2)"
+              - "Typography extraction (Inter, Raleway)"
+              - "Visual direction classification (Technical Blueprint, Sci-Fi, Grounded Fantasy)"
+
+          task_1_2_2:
+            name: "Implement prompt template loader"
+            complexity:
+              composite: 2.3
+            estimated_days: 1.5
+            deliverables:
+              - "Loader for prompt template files (PROMPT-TEMPLATES-*.md)"
+              - "Template variable detection ({style}, {color_scheme}, etc.)"
+              - "Template validation ensuring required variables present"
+
+        feature_1_3:
+          name: "Configuration Management System"
+          complexity:
+            composite: 2.0
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 2
+          estimated_days: 2
+          deliverables:
+            - "YAML configuration files for model endpoints, API keys (gitignored)"
+            - "Brand criteria thresholds (color tolerance, aesthetic minimums)"
+            - "Scoring weights configuration (CLIP: 30%, color: 25%, aesthetic: 25%, composition: 20%)"
+            - "Budget tracking parameters ($30-60/month, alert thresholds)"
+
+          task_1_3_1:
+            name: "Create model configuration schema"
+            complexity:
+              composite: 1.8
+            estimated_days: 1
+            deliverables:
+              - "config/models.yaml with Stable Diffusion, Flux, DALL-E endpoints"
+              - "API key placeholders with environment variable fallbacks"
+              - "Rate limiting configurations per model"
+
+          task_1_3_2:
+            name: "Define brand criteria and scoring weights"
+            complexity:
+              composite: 2.2
+            estimated_days: 1
+            deliverables:
+              - "config/brand-criteria.yaml with color tolerance ranges"
+              - "config/scoring-weights.yaml with adjustable dimension weights"
+              - "Budget tracking config with monthly limits and alert thresholds"
+
+        feature_1_4:
+          name: "CI/CD Pipeline Setup"
+          complexity:
+            composite: 1.5
+            dimensions:
+              technical_complexity: 2
+              scope_size: 1
+              dependencies: 1
+              uncertainty: 1
+              risk: 1
+              testing: 3
+          estimated_days: 1
+          deliverables:
+            - "GitHub Actions workflow for lint, type check, and test on every push"
+            - "Pre-commit hooks for local quality checks"
+            - "Coverage reporting with 80% minimum threshold"
+            - "Automated dependency security scanning"
+
+          task_1_4_1:
+            name: "Configure GitHub Actions CI workflow"
+            complexity:
+              composite: 1.5
+            estimated_days: 0.5
+            deliverables:
+              - ".github/workflows/ci.yml with Python 3.11 setup"
+              - "Automated linting (ruff), type checking (mypy), testing (pytest)"
+              - "Coverage threshold enforcement (80% minimum)"
+              - "Fail-fast on quality gate violations"
+
+          task_1_4_2:
+            name: "Setup pre-commit hooks and quality tools"
+            complexity:
+              composite: 1.5
+            estimated_days: 0.5
+            deliverables:
+              - ".pre-commit-config.yaml with ruff and mypy hooks"
+              - "Local git hooks preventing commits that fail lint/type checks"
+              - "pyproject.toml with ruff and mypy configuration"
+              - "Development dependency updates (ruff, mypy, pytest, pytest-cov)"
+
+      epic_2:
+        name: "Basic Generation Pipeline (Single Model)"
+        weeks: "1-2"
+        milestone: "Functional end-to-end pipeline generating images from design brief using Stable Diffusion with basic metadata tracking"
+
+        feature_2_1:
+          name: "Prompt Generation Engine"
+          complexity:
+            composite: 2.8
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 3
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Template processor converting prompt templates to model-specific prompts"
+            - "Variable substitution engine for {style}, {color_scheme}, {composition} placeholders"
+            - "Variation generator creating 50 unique prompts per template (300 total)"
+            - "Prompt history tracking and effectiveness scoring"
+
+          task_2_1_1:
+            name: "Build template processor with variable substitution"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "PromptTemplate class loading from template files (PROMPT-TEMPLATES-*.md)"
+              - "Variable substitution for brand palette, typography, visual direction"
+              - "Model-specific formatting (Stable Diffusion vs DALL-E vs Flux prompt syntax)"
+
+          task_2_1_2:
+            name: "Implement variation generator"
+            complexity:
+              composite: 3.0
+            estimated_days: 2
+            deliverables:
+              - "Parameter variation logic (style emphasis, color prominence, composition angle)"
+              - "50 unique prompt variations per template without repetition"
+              - "Variation tracking to avoid duplicate generations"
+
+          task_2_1_3:
+            name: "Add prompt history and effectiveness tracking"
+            complexity:
+              composite: 2.5
+            estimated_days: 1
+            deliverables:
+              - "Prompt storage linking to generated image metadata"
+              - "Effectiveness scoring (approved images per prompt template)"
+              - "Query interface for 'show best performing prompts'"
+
+        feature_2_2:
+          name: "Stable Diffusion API Integration"
+          complexity:
+            composite: 2.6
+            dimensions:
+              technical_complexity: 3
+              scope_size: 2
+              dependencies: 3
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "API client for Stable Diffusion 3.5 (self-hosted or Stability AI API)"
+            - "Async batch generation handling 50+ concurrent requests"
+            - "Error handling for timeouts, rate limits, model availability"
+            - "Cost tracking per generation with budget alerts"
+
+          task_2_2_1:
+            name: "Research and select Stable Diffusion deployment method"
+            complexity:
+              composite: 3.5
+            estimated_days: 1.5
+            needs_decomposition: true
+            decomposition_depth: 3
+            decomposition_reason: "High uncertainty (4.0) around self-hosted vs API tradeoffs and setup complexity"
+            deliverables:
+              - "Decision document: self-hosted (free, slower) vs Stability AI API (paid, faster)"
+              - "Cost analysis: compute vs API fees for 500-1000 images/month"
+              - "Performance benchmarks for image generation latency"
+
+          task_2_2_2:
+            name: "Implement API client with async batch handling"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "StableDiffusionClient class with async generate() method"
+              - "Batch queue management for 50+ concurrent generations"
+              - "Progress tracking with rich progress bars"
+
+          task_2_2_3:
+            name: "Add error handling and cost tracking"
+            complexity:
+              composite: 2.0
+            estimated_days: 0.5
+            deliverables:
+              - "Retry logic for transient failures (exponential backoff)"
+              - "Cost accumulator tracking generations per session/month"
+              - "Budget alerts when approaching $30-60 threshold"
+
+        feature_2_3:
+          name: "Image Storage & Metadata Database"
+          complexity:
+            composite: 2.4
+            dimensions:
+              technical_complexity: 2
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 3
+          deliverables:
+            - "SQLite database schema for generations (prompt, model, params, image_path, score, approval)"
+            - "File system storage at automation/results/{session_id}/{image_id}.png"
+            - "CRUD operations for image metadata with relationship tracking"
+            - "Query interface for 'show refinements of image X' lineage"
+
+          task_2_3_1:
+            name: "Design and implement SQLite database schema"
+            complexity:
+              composite: 2.3
+            estimated_days: 1.5
+            deliverables:
+              - "Tables: generations, prompts, scores, approvals, refinements"
+              - "Foreign keys linking prompt→generation→score→approval chains"
+              - "Indexes on frequently queried fields (approval_status, score, session_id)"
+
+          task_2_3_2:
+            name: "Build image storage manager"
+            complexity:
+              composite: 2.0
+            estimated_days: 1
+            deliverables:
+              - "Directory structure: results/{session_id}/{stage}/{image_id}.png"
+              - "Atomic file writes preventing corruption"
+              - "Cleanup utilities for old sessions (30-day retention)"
+
+          task_2_3_3:
+            name: "Implement query interface for lineage tracking"
+            complexity:
+              composite: 2.5
+            estimated_days: 0.5
+            deliverables:
+              - "get_refinements(image_id) returning parent→child chains"
+              - "get_top_scored(session_id, limit=20) for checkpoint review"
+              - "get_prompt_effectiveness() for template performance analytics"
+
+      epic_3:
+        name: "Quality Scoring & Filtering System"
+        weeks: "2-3"
+        milestone: "Automated quality scoring system ranking generated images with 80%+ accuracy vs human judgment, filtering top 20% for review"
+
+        feature_3_1:
+          name: "CLIP-Based Semantic Similarity Scoring"
+          complexity:
+            composite: 3.2
+            dimensions:
+              technical_complexity: 4
+              scope_size: 3
+              dependencies: 3
+              uncertainty: 4
+              risk: 3
+              testing: 3
+          estimated_days: 6
+          deliverables:
+            - "CLIP model integration (OpenAI ViT-L/14) for text-image similarity"
+            - "Design brief embedding generation from DESIGN-BRIEF.md"
+            - "Semantic similarity scoring (0-1 scale) per generated image"
+            - "Batch processing with GPU acceleration if available"
+
+          task_3_1_1:
+            name: "Install and configure CLIP model"
+            complexity:
+              composite: 3.0
+            estimated_days: 2
+            deliverables:
+              - "CLIP ViT-L/14 model downloaded and cached locally"
+              - "GPU detection and fallback to CPU with performance warnings"
+              - "Model warm-up on sample images for latency benchmarking"
+
+          task_3_1_2:
+            name: "Generate design brief embeddings"
+            complexity:
+              composite: 2.5
+            estimated_days: 1.5
+            deliverables:
+              - "Text embeddings from DESIGN-BRIEF.md key sections (visual direction, brand essence)"
+              - "Multiple embedding variants for 3 visual directions"
+              - "Embedding cache for reuse across sessions"
+
+          task_3_1_3:
+            name: "Implement semantic similarity scorer"
+            complexity:
+              composite: 3.5
+            estimated_days: 2
+            deliverables:
+              - "Image embedding generation with CLIP image encoder"
+              - "Cosine similarity calculation vs design brief embeddings"
+              - "Batch scoring with progress tracking (300 images in <5 minutes)"
+
+          task_3_1_4:
+            name: "Validate CLIP scoring accuracy"
+            complexity:
+              composite: 3.5
+            estimated_days: 0.5
+            deliverables:
+              - "Human validation: manual ranking of 30 images vs CLIP scores"
+              - "Correlation analysis (target Spearman's ρ > 0.7)"
+              - "Tuning recommendations if accuracy < 80%"
+
+        feature_3_2:
+          name: "Brand Color Palette Adherence Detection"
+          complexity:
+            composite: 2.6
+            dimensions:
+              technical_complexity: 3
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Color extraction from generated images using K-means clustering"
+            - "Palette comparison vs brand colors (#1A1A1A, #FF6B35, #4A90E2)"
+            - "Adherence scoring (0-1 scale) with tolerance thresholds"
+            - "Visual debug output showing extracted vs expected colors"
+
+          task_3_2_1:
+            name: "Implement color extraction with K-means"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "Dominant color extraction (top 5 colors per image)"
+              - "K-means clustering with opencv or sklearn"
+              - "Color histogram generation for distribution analysis"
+
+          task_3_2_2:
+            name: "Build brand color comparison engine"
+            complexity:
+              composite: 2.7
+            estimated_days: 2
+            deliverables:
+              - "Delta E (CIE 2000) color distance calculation"
+              - "Tolerance thresholds from config/brand-criteria.yaml"
+              - "Adherence score: % of brand colors present within tolerance"
+              - "Debug visualization overlaying extracted colors on images"
+
+        feature_3_3:
+          name: "Aesthetic Quality & Composition Analysis"
+          complexity:
+            composite: 3.0
+            dimensions:
+              technical_complexity: 4
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 4
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Aesthetic predictor model (LAION Aesthetics V2 or similar)"
+            - "Composition quality metrics (rule of thirds, balance, contrast)"
+            - "Combined aesthetic+composition score (0-1 scale)"
+            - "Low-score filtering rejecting bottom 50% immediately"
+
+          task_3_3_1:
+            name: "Integrate aesthetic prediction model"
+            complexity:
+              composite: 3.5
+            estimated_days: 2.5
+            deliverables:
+              - "LAION Aesthetics V2 model or CLIP-based aesthetic predictor"
+              - "Aesthetic score generation (trained on human preference data)"
+              - "Batch processing with GPU optimization"
+
+          task_3_3_2:
+            name: "Implement composition quality analyzer"
+            complexity:
+              composite: 2.5
+            estimated_days: 2.5
+            deliverables:
+              - "Rule of thirds grid overlay detection (interest point placement)"
+              - "Visual balance analysis (weight distribution, symmetry)"
+              - "Contrast ratio calculation (foreground vs background)"
+              - "Combined composition score weighted across metrics"
+
+        feature_3_4:
+          name: "Weighted Scoring & Ranking System"
+          complexity:
+            composite: 2.2
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 4
+              uncertainty: 2
+              risk: 2
+              testing: 2
+          estimated_days: 3
+          deliverables:
+            - "Composite scoring algorithm combining CLIP, color, aesthetic, composition"
+            - "Configurable weights from config/scoring-weights.yaml"
+            - "Ranked output with top 20% flagged for human review"
+            - "Scoring analytics dashboard (distribution histograms, threshold tuning)"
+
+          task_3_4_1:
+            name: "Build composite scoring algorithm"
+            complexity:
+              composite: 2.0
+            estimated_days: 1.5
+            deliverables:
+              - "Weighted average: CLIP(30%) + color(25%) + aesthetic(25%) + composition(20%)"
+              - "Normalization ensuring all scores on 0-1 scale"
+              - "Database storage of individual and composite scores"
+
+          task_3_4_2:
+            name: "Implement ranking and filtering logic"
+            complexity:
+              composite: 2.3
+            estimated_days: 1.5
+            deliverables:
+              - "Top 20% selection (60 images from 300 generations)"
+              - "Configurable percentile thresholds"
+              - "Automatic low-score rejection (bottom 50% immediately discarded)"
+              - "Ranked list output for approval interface"
+
+      epic_4:
+        name: "Human Approval Interface"
+        weeks: "3"
+        milestone: "Functional CLI and web interfaces enabling batch review of 50+ images in <10 minutes with approval tracking"
+
+        feature_4_1:
+          name: "CLI Gallery Viewer with Rich"
+          complexity:
+            composite: 2.4
+            dimensions:
+              technical_complexity: 2
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Terminal-based image gallery using rich library"
+            - "Keyboard navigation (arrows, space=approve, x=reject, q=quit)"
+            - "Batch operations (a=approve all similar, r=reject direction)"
+            - "Real-time approval count and progress tracking"
+
+          task_4_1_1:
+            name: "Build rich-based terminal gallery"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "Grid layout displaying thumbnails (via terminal image protocols)"
+              - "Metadata overlay (score, model, prompt snippet)"
+              - "Keyboard event handling for navigation"
+
+          task_4_1_2:
+            name: "Implement approval workflow logic"
+            complexity:
+              composite: 2.3
+            estimated_days: 2
+            deliverables:
+              - "Approve/reject state management"
+              - "Batch operations with confirmation prompts"
+              - "Database writes on approval/rejection"
+              - "Session resume capability (save progress, continue later)"
+
+        feature_4_2:
+          name: "Flask Web Dashboard"
+          complexity:
+            composite: 2.8
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Flask application serving image gallery at localhost:5000"
+            - "Tailwind CSS responsive grid layout"
+            - "Side-by-side comparison view for detailed analysis"
+            - "Feedback capture (tags: too dark, wrong colors, needs detail)"
+
+          task_4_2_1:
+            name: "Create Flask app with gallery endpoint"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "Flask routes: /gallery, /approve, /reject, /compare"
+              - "Image serving from automation/results/ directory"
+              - "Database query for top-scored images"
+
+          task_4_2_2:
+            name: "Build Tailwind CSS responsive UI"
+            complexity:
+              composite: 3.0
+            estimated_days: 2.5
+            deliverables:
+              - "Grid layout with lazy loading for 50+ images"
+              - "Modal popup for full-size viewing"
+              - "Side-by-side comparison panel (select 2-4 images)"
+              - "Mobile-responsive design (optional but recommended)"
+
+          task_4_2_3:
+            name: "Add feedback capture system"
+            complexity:
+              composite: 2.5
+            estimated_days: 0.5
+            deliverables:
+              - "Feedback tags: too dark, wrong colors, composition issues, needs detail"
+              - "Free-text comment field"
+              - "Feedback storage in database for prompt refinement"
+
+        feature_4_3:
+          name: "Approval State Management"
+          complexity:
+            composite: 2.0
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 2
+          estimated_days: 2
+          deliverables:
+            - "Database approval status tracking (pending, approved, rejected)"
+            - "Checkpoint stage management (concept, refinement, production)"
+            - "Query interface for 'show approved images from Stage 1'"
+            - "Approval analytics (approval rate per model, prompt, score threshold)"
+
+          task_4_3_1:
+            name: "Implement approval status database schema"
+            complexity:
+              composite: 1.8
+            estimated_days: 1
+            deliverables:
+              - "Approval table with status, stage, timestamp, user_feedback"
+              - "Foreign keys linking to generations table"
+              - "Indexes for fast querying by status and stage"
+
+          task_4_3_2:
+            name: "Build approval analytics queries"
+            complexity:
+              composite: 2.2
+            estimated_days: 1
+            deliverables:
+              - "Approval rate calculations per model/prompt/score_threshold"
+              - "Stage completion tracking (10/15 approved for Stage 1)"
+              - "Effectiveness reports for prompt template tuning"
+
+  milestone_2:
+    name: "v1.5 Brand Assets Module (HIGH PRIORITY)"
+    timeline_weeks: "5-6"
+    description: "Deliver 3-5 production-ready logos with comprehensive brand packages (multi-format exports, brand guidelines, icon sets, social media templates) - IMMEDIATE USER PRIORITY"
+    success_criteria:
+      - "Generate 3-5 unique logo concepts (wordmark, icon, combination marks) per design brief"
+      - "Extract brand color palette from logos with 95%+ accuracy (Delta E < 5)"
+      - "Export logos in 8+ formats (PNG @1x/2x/3x, SVG, PDF, ICO for favicon)"
+      - "Generate complete brand package (<10 min human review time)"
+      - "Typography pairing suggestions with 5+ font combinations per brand"
+
+    epics:
+      epic_13:
+        name: "Logo Variations Generator"
+        weeks: "5"
+        milestone: "Multi-style logo generation with brand color extraction and typography pairing"
+
+        feature_13_1:
+          name: "Multi-Style Logo Generation Pipeline"
+          complexity:
+            composite: 2.8
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Logo prompt templates for 3 styles: wordmark-only, icon-only, combination mark"
+            - "Variation generation producing 50 logos per style (150 total per session)"
+            - "Style-specific scoring weights (icon: symmetry 40%, wordmark: typography 50%)"
+            - "Multi-model generation using SD 3.5, Flux, DALL-E for logo workflows"
+
+          task_13_1_1:
+            name: "Create logo-specific prompt templates"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "Wordmark template emphasizing typography, letterforms, spacing"
+              - "Icon template emphasizing symbolism, geometry, scalability"
+              - "Combination mark template balancing text and icon integration"
+              - "Template variables: {brand_name}, {industry}, {style}, {symbolism}"
+
+          task_13_1_2:
+            name: "Implement style-specific scoring adjustments"
+            complexity:
+              composite: 2.8
+            estimated_days: 2
+            deliverables:
+              - "Icon scoring: symmetry (40%), scalability (30%), aesthetic (30%)"
+              - "Wordmark scoring: typography clarity (50%), color adherence (25%), composition (25%)"
+              - "Combination mark: balanced weighting across icon + wordmark criteria"
+
+          task_13_1_3:
+            name: "Build logo variation generator"
+            complexity:
+              composite: 3.0
+            estimated_days: 1
+            deliverables:
+              - "Parameter variation: layout (horizontal, vertical, stacked), proportions, spacing"
+              - "50 variations per style without repetition"
+              - "Logo-specific metadata tagging (style, layout, aspect_ratio)"
+
+        feature_13_2:
+          name: "Brand Color Palette Extraction"
+          complexity:
+            composite: 2.4
+            dimensions:
+              technical_complexity: 3
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 3
+          deliverables:
+            - "Dominant color extraction from approved logos (5-7 colors per palette)"
+            - "Color role classification (primary, secondary, accent, neutral)"
+            - "Palette export in HEX, RGB, HSL, CMYK formats"
+            - "Accessibility validation (WCAG AA contrast ratios for text/background pairs)"
+
+          task_13_2_1:
+            name: "Enhance color extraction for logo workflows"
+            complexity:
+              composite: 2.3
+            estimated_days: 1.5
+            deliverables:
+              - "Logo-specific K-means clustering (accounting for transparency, backgrounds)"
+              - "Color frequency analysis for primary vs accent identification"
+              - "Export format: JSON with {hex, rgb, hsl, cmyk, role, usage_notes}"
+
+          task_13_2_2:
+            name: "Implement accessibility validation"
+            complexity:
+              composite: 2.5
+            estimated_days: 1.5
+            deliverables:
+              - "WCAG AA/AAA contrast ratio calculation for all color pairs"
+              - "Validation reports flagging insufficient contrast"
+              - "Suggested adjustments for failing combinations"
+
+        feature_13_3:
+          name: "Typography Pairing System"
+          complexity:
+            composite: 2.6
+            dimensions:
+              technical_complexity: 3
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 3
+              risk: 2
+              testing: 2
+          estimated_days: 4
+          deliverables:
+            - "Font pairing algorithm matching 5+ combinations per brand style"
+            - "Font classification (serif, sans-serif, display, monospace)"
+            - "Usage recommendations (headings, body, accents)"
+            - "Google Fonts integration with direct download links"
+
+          task_13_3_1:
+            name: "Build font pairing database and algorithm"
+            complexity:
+              composite: 2.8
+            estimated_days: 2.5
+            deliverables:
+              - "Curated font pairing database (50+ combinations from Google Fonts)"
+              - "Pairing algorithm based on brand style (modern, classic, playful, technical)"
+              - "Contrast analysis (pairing serif + sans-serif for hierarchy)"
+
+          task_13_3_2:
+            name: "Create typography usage recommendations"
+            complexity:
+              composite: 2.3
+            estimated_days: 1.5
+            deliverables:
+              - "Usage guidelines: H1-H6 font assignments, body text, captions"
+              - "Font size scales (modular scale or custom ratios)"
+              - "Line height and letter spacing recommendations"
+
+        feature_13_4:
+          name: "Icon Set Generation"
+          complexity:
+            composite: 2.7
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Brand-consistent icon generation (16x16, 24x24, 32x32, 48x48 sizes)"
+            - "Icon categories: UI actions, navigation, social media, industry-specific"
+            - "Style consistency scoring across icon set (geometric, outline, filled)"
+            - "SVG export with clean paths and minimal nodes"
+
+          task_13_4_1:
+            name: "Create icon prompt templates"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "Icon templates for 20+ common use cases (home, search, profile, settings, etc.)"
+              - "Brand style application (color palette, visual direction)"
+              - "Consistency parameters (line weight, corner radius, padding)"
+
+          task_13_4_2:
+            name: "Implement icon generation and validation"
+            complexity:
+              composite: 2.8
+            estimated_days: 2
+            deliverables:
+              - "Multi-size generation with upscaling/downscaling from base 48x48"
+              - "Style consistency scoring comparing icon set similarity"
+              - "Quality validation (edge clarity, scalability, pixel-grid alignment)"
+
+      epic_14:
+        name: "Brand Package Export"
+        weeks: "6"
+        milestone: "Complete brand asset export system with multi-format logos, brand guidelines, favicon, and social templates"
+
+        feature_14_1:
+          name: "Multi-Format Logo Export"
+          complexity:
+            composite: 2.3
+            dimensions:
+              technical_complexity: 3
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 3
+          deliverables:
+            - "PNG export at 1x, 2x, 3x resolutions (transparent and white backgrounds)"
+            - "SVG vector export with optimized paths"
+            - "PDF export for print workflows"
+            - "Organized directory structure: brand-package/{logo,icons,colors,typography}/"
+
+          task_14_1_1:
+            name: "Build multi-format export pipeline"
+            complexity:
+              composite: 2.2
+            estimated_days: 2
+            deliverables:
+              - "PNG generation at 256px, 512px, 1024px with transparency"
+              - "SVG conversion using vectorization or direct export"
+              - "PDF generation with CMYK color mode for print"
+
+          task_14_1_2:
+            name: "Create organized export directory structure"
+            complexity:
+              composite: 2.3
+            estimated_days: 1
+            deliverables:
+              - "Directory structure: brand-package/{logo/{png,svg,pdf}, icons/, palette/, guidelines/}"
+              - "Filename conventions: {brand-name}-logo-{style}-{size}.{ext}"
+              - "Manifest file listing all exported assets with metadata"
+
+        feature_14_2:
+          name: "Brand Guidelines Generation"
+          complexity:
+            composite: 2.9
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 3
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Automated brand guidelines PDF with logo usage, color palette, typography"
+            - "Clear space and minimum size specifications"
+            - "Do's and don'ts for logo application"
+            - "Color palette swatches with HEX/RGB/CMYK values"
+
+          task_14_2_1:
+            name: "Design brand guidelines template"
+            complexity:
+              composite: 2.8
+            estimated_days: 2.5
+            deliverables:
+              - "PDF template with sections: logo, colors, typography, usage rules"
+              - "Visual examples showing correct and incorrect logo usage"
+              - "Clear space grid overlay (minimum padding around logo)"
+
+          task_14_2_2:
+            name: "Implement automated guidelines generation"
+            complexity:
+              composite: 3.0
+            estimated_days: 2.5
+            deliverables:
+              - "PDF generation using reportlab or weasyprint"
+              - "Dynamic content insertion (logos, color swatches, font samples)"
+              - "Professional formatting with grid layout and typography hierarchy"
+
+        feature_14_3:
+          name: "Favicon Generation"
+          complexity:
+            composite: 2.0
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 1
+              uncertainty: 2
+              risk: 1
+              testing: 3
+          estimated_days: 2
+          deliverables:
+            - "Favicon.ico generation (16x16, 32x32, 48x48 multi-resolution)"
+            - "PNG favicons for modern browsers (192x192, 512x512)"
+            - "Apple touch icon (180x180)"
+            - "Manifest.json for PWA integration"
+
+          task_14_3_1:
+            name: "Build favicon export pipeline"
+            complexity:
+              composite: 2.0
+            estimated_days: 1.5
+            deliverables:
+              - "ICO file generation with multi-resolution embedding"
+              - "PNG exports at 16x16, 32x32, 192x192, 512x512"
+              - "Apple touch icon with rounded corners and padding"
+
+          task_14_3_2:
+            name: "Generate web manifest and HTML snippets"
+            complexity:
+              composite: 2.0
+            estimated_days: 0.5
+            deliverables:
+              - "Manifest.json with app name, icons, theme color"
+              - "HTML <link> snippets for favicon integration"
+              - "Instructions for implementation in web projects"
+
+        feature_14_4:
+          name: "Social Media Templates"
+          complexity:
+            composite: 2.5
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Social media profile images (Twitter, LinkedIn, Facebook, Instagram)"
+            - "Cover photo templates for Facebook, Twitter, LinkedIn"
+            - "Instagram post templates (square 1080x1080, story 1080x1920)"
+            - "Platform-specific sizing and safe area guides"
+
+          task_14_4_1:
+            name: "Create social media template generator"
+            complexity:
+              composite: 2.5
+            estimated_days: 2.5
+            deliverables:
+              - "Profile image templates: Twitter (400x400), LinkedIn (300x300), Facebook (180x180)"
+              - "Cover photo templates: Facebook (820x312), Twitter (1500x500), LinkedIn (1584x396)"
+              - "Instagram templates: square post (1080x1080), story (1080x1920)"
+
+          task_14_4_2:
+            name: "Add safe area guides and export automation"
+            complexity:
+              composite: 2.5
+            estimated_days: 1.5
+            deliverables:
+              - "Safe area overlays for profile images (circular crop zones)"
+              - "Export automation generating all sizes from approved logo"
+              - "Usage guide documenting optimal logo placement per platform"
+
+  milestone_3:
+    name: "v2.0 Component Library Generation"
+    timeline_weeks: "7-12"
+    description: "Generate atomic UI component library (buttons, forms, cards, navigation) with accessibility scoring, design token extraction, and consistency validation - foundation for page layouts"
+    success_criteria:
+      - "Generate 100+ component variations across 4 categories (buttons, forms, cards, navigation)"
+      - "Accessibility scoring achieves WCAG AA compliance for 90%+ components"
+      - "Design token extraction produces complete system (colors, spacing, typography, shadows)"
+      - "Component consistency scoring shows 85%+ visual harmony across library"
+
+    epics:
+      epic_15:
+        name: "Atomic Component Generator"
+        weeks: "7-9"
+        milestone: "Generate comprehensive component library with variations, sizes, and states for buttons, forms, cards, and navigation"
+
+        feature_15_1:
+          name: "Button Component Generator"
+          complexity:
+            composite: 2.6
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Button variations: primary, secondary, tertiary, ghost, destructive"
+            - "Size variants: xs, sm, md, lg, xl"
+            - "State variants: default, hover, active, disabled, loading"
+            - "50+ unique button designs per brand style"
+
+          task_15_1_1:
+            name: "Create button prompt templates"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "Prompt templates for button types (primary CTA, secondary action, tertiary/text-only, ghost/outline, destructive/warning)"
+              - "Size variation prompts with pixel dimensions"
+              - "State variation prompts (hover glow, active pressed, disabled grayed, loading spinner)"
+
+          task_15_1_2:
+            name: "Generate button component library"
+            complexity:
+              composite: 2.7
+            estimated_days: 2
+            deliverables:
+              - "50+ button variations across types, sizes, and states"
+              - "Consistent brand application (colors, typography, border radius)"
+              - "Component metadata tagging (type, size, state, usage)"
+
+        feature_15_2:
+          name: "Form Input Component Generator"
+          complexity:
+            composite: 2.8
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Text inputs: default, search, textarea, password"
+            - "Selection inputs: select dropdown, checkbox, radio, toggle switch"
+            - "Input states: default, focus, error, disabled, success"
+            - "60+ form component variations"
+
+          task_15_2_1:
+            name: "Build form input prompt templates"
+            complexity:
+              composite: 2.8
+            estimated_days: 2.5
+            deliverables:
+              - "Text input templates with label, placeholder, helper text variations"
+              - "Select dropdown with option list visualization"
+              - "Checkbox and radio button templates (checked, unchecked, indeterminate)"
+              - "Toggle switch templates with on/off states"
+
+          task_15_2_2:
+            name: "Generate form component library"
+            complexity:
+              composite: 2.8
+            estimated_days: 2.5
+            deliverables:
+              - "60+ form components across input types and states"
+              - "Error state styling (red borders, error icons, helper text)"
+              - "Focus state styling (outline, glow, border color change)"
+              - "Consistent spacing and alignment across form elements"
+
+        feature_15_3:
+          name: "Card Component Generator"
+          complexity:
+            composite: 2.7
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Card types: basic, image, action, pricing, testimonial"
+            - "Card layouts: vertical, horizontal, grid-optimized"
+            - "Interactive states: hover elevation, clickable cards"
+            - "50+ card design variations"
+
+          task_15_3_1:
+            name: "Design card prompt templates"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "Basic card template (title, description, footer)"
+              - "Image card template (hero image, content, CTA)"
+              - "Action card template (icon, heading, button)"
+              - "Pricing card template (tier, price, features list, CTA)"
+
+          task_15_3_2:
+            name: "Generate card component library"
+            complexity:
+              composite: 2.8
+            estimated_days: 2
+            deliverables:
+              - "50+ card variations across types and layouts"
+              - "Hover states with elevation/shadow changes"
+              - "Responsive layouts (stacking behavior for mobile)"
+              - "Consistent padding, border radius, shadow styles"
+
+        feature_15_4:
+          name: "Navigation Component Generator"
+          complexity:
+            composite: 2.9
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Navbar variations: horizontal, sticky, transparent, colored"
+            - "Sidebar variations: collapsible, fixed, overlay"
+            - "Tab navigation: horizontal, vertical, pill-style"
+            - "Breadcrumbs and pagination components"
+
+          task_15_4_1:
+            name: "Create navigation prompt templates"
+            complexity:
+              composite: 2.8
+            estimated_days: 2.5
+            deliverables:
+              - "Navbar templates (logo left, links center, CTA right)"
+              - "Sidebar templates (icon-only collapsed, full expanded)"
+              - "Tab navigation templates (underline, pill, card-style)"
+              - "Breadcrumb and pagination templates"
+
+          task_15_4_2:
+            name: "Generate navigation component library"
+            complexity:
+              composite: 3.0
+            estimated_days: 2.5
+            deliverables:
+              - "40+ navigation variations across component types"
+              - "Active state styling (highlighted current page)"
+              - "Mobile responsive behavior (hamburger menu, drawer)"
+              - "Consistent spacing, typography, and interaction states"
+
+      epic_16:
+        name: "Component Quality Scoring"
+        weeks: "9-10"
+        milestone: "Automated quality scoring for components with accessibility validation, visual hierarchy analysis, and consistency checking"
+
+        feature_16_1:
+          name: "Accessibility Scoring System"
+          complexity:
+            composite: 3.0
+            dimensions:
+              technical_complexity: 4
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 3
+              risk: 3
+              testing: 3
+          estimated_days: 6
+          deliverables:
+            - "WCAG AA/AAA contrast ratio validation for text and UI elements"
+            - "Touch target size validation (minimum 44x44px for interactive elements)"
+            - "Color blindness simulation and validation"
+            - "Accessibility score (0-100) with detailed issue reporting"
+
+          task_16_1_1:
+            name: "Build WCAG contrast ratio analyzer"
+            complexity:
+              composite: 2.8
+            estimated_days: 2.5
+            deliverables:
+              - "Contrast ratio calculation for text/background pairs"
+              - "WCAG AA (4.5:1 normal, 3:1 large) and AAA (7:1, 4.5:1) validation"
+              - "Detailed reports flagging insufficient contrast with suggested fixes"
+
+          task_16_1_2:
+            name: "Implement touch target and size validation"
+            complexity:
+              composite: 2.5
+            estimated_days: 1.5
+            deliverables:
+              - "Interactive element detection (buttons, links, inputs)"
+              - "Bounding box measurement with minimum 44x44px validation"
+              - "Spacing validation (minimum 8px between touch targets)"
+
+          task_16_1_3:
+            name: "Add color blindness simulation"
+            complexity:
+              composite: 3.5
+            estimated_days: 2
+            deliverables:
+              - "Color blindness filters: protanopia, deuteranopia, tritanopia"
+              - "Validation checking if information relies solely on color"
+              - "Visual comparison showing original vs color-blind views"
+
+        feature_16_2:
+          name: "Visual Hierarchy Analysis"
+          complexity:
+            composite: 2.8
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Typography scale validation (consistent heading hierarchy)"
+            - "Visual weight distribution (primary vs secondary elements)"
+            - "Spacing consistency analysis (padding, margins)"
+            - "Hierarchy score highlighting well-structured vs cluttered components"
+
+          task_16_2_1:
+            name: "Build typography hierarchy analyzer"
+            complexity:
+              composite: 2.7
+            estimated_days: 2.5
+            deliverables:
+              - "Font size detection and classification (H1-H6, body, caption)"
+              - "Modular scale validation (consistent size ratios)"
+              - "Line height and letter spacing consistency checks"
+
+          task_16_2_2:
+            name: "Implement visual weight analysis"
+            complexity:
+              composite: 2.8
+            estimated_days: 2.5
+            deliverables:
+              - "Element saliency detection (identifying visual focus areas)"
+              - "Primary vs secondary element classification"
+              - "Balance analysis (avoiding single-side visual weight)"
+              - "Hierarchy score based on clear visual paths"
+
+        feature_16_3:
+          name: "Component Consistency Checker"
+          complexity:
+            composite: 2.7
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 3
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Cross-component similarity scoring (detecting style drift)"
+            - "Design token adherence validation (colors, spacing, typography)"
+            - "Variation appropriateness (ensuring meaningful differences)"
+            - "Consistency report flagging outliers"
+
+          task_16_3_1:
+            name: "Build cross-component similarity analyzer"
+            complexity:
+              composite: 2.8
+            estimated_days: 2
+            deliverables:
+              - "Feature extraction comparing components (color distribution, shapes, spacing)"
+              - "Similarity scoring using CLIP embeddings"
+              - "Outlier detection flagging components with <70% similarity"
+
+          task_16_3_2:
+            name: "Implement design token adherence validation"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "Color palette adherence checking (components use brand colors)"
+              - "Spacing scale validation (consistent use of 4px/8px grid)"
+              - "Typography adherence (components use defined font families/sizes)"
+              - "Consistency score based on token usage rates"
+
+        feature_16_4:
+          name: "Responsive Design Validation"
+          complexity:
+            composite: 2.6
+            dimensions:
+              technical_complexity: 3
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Mobile-first validation (components scale properly to small screens)"
+            - "Breakpoint testing at 320px, 768px, 1024px, 1440px"
+            - "Touch optimization validation (no hover-only interactions)"
+            - "Responsive score with device-specific recommendations"
+
+          task_16_4_1:
+            name: "Build responsive breakpoint analyzer"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "Simulated rendering at common breakpoints"
+              - "Overflow detection (content exceeding container bounds)"
+              - "Stacking behavior validation (vertical layout on mobile)"
+
+          task_16_4_2:
+            name: "Implement mobile optimization validation"
+            complexity:
+              composite: 2.7
+            estimated_days: 2
+            deliverables:
+              - "Touch target size validation on mobile viewports"
+              - "Hover interaction detection with mobile fallback recommendations"
+              - "Responsive typography scaling validation"
+              - "Mobile score based on touch-friendliness and readability"
+
+      epic_17:
+        name: "Design Token Extraction"
+        weeks: "11-12"
+        milestone: "Automated extraction of design tokens from generated components producing complete design system specification"
+
+        feature_17_1:
+          name: "Color Palette Extraction & Classification"
+          complexity:
+            composite: 2.5
+            dimensions:
+              technical_complexity: 3
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Primary, secondary, accent, neutral color extraction from component library"
+            - "Semantic color classification (success, warning, error, info)"
+            - "Shade generation for each color (50-900 scale)"
+            - "JSON export with hex, rgb, hsl values"
+
+          task_17_1_1:
+            name: "Build color extraction and clustering"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "Aggregate color extraction across all components"
+              - "K-means clustering identifying primary color groups"
+              - "Role classification based on usage frequency and context"
+
+          task_17_1_2:
+            name: "Generate color shades and export tokens"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "Shade generation: 50 (lightest) to 900 (darkest) for each primary color"
+              - "JSON token export: {primary-500: '#1A1A1A', success-600: '#10B981', ...}"
+              - "CSS custom properties export: --color-primary-500: #1A1A1A;"
+
+        feature_17_2:
+          name: "Spacing Scale Detection"
+          complexity:
+            composite: 2.4
+            dimensions:
+              technical_complexity: 3
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 3
+          deliverables:
+            - "Padding and margin analysis across components"
+            - "Spacing scale detection (4px, 8px, 12px, 16px, 24px, 32px, ...)"
+            - "Grid system inference (4px or 8px base unit)"
+            - "Spacing token export with semantic names (spacing-xs, spacing-md, ...)"
+
+          task_17_2_1:
+            name: "Analyze spacing patterns across components"
+            complexity:
+              composite: 2.3
+            estimated_days: 1.5
+            deliverables:
+              - "Padding/margin extraction from component images"
+              - "Histogram analysis identifying common spacing values"
+              - "Base unit detection (4px vs 8px grid)"
+
+          task_17_2_2:
+            name: "Generate spacing scale and tokens"
+            complexity:
+              composite: 2.5
+            estimated_days: 1.5
+            deliverables:
+              - "Spacing scale: spacing-0 (0px), spacing-1 (4px), spacing-2 (8px), ..."
+              - "Semantic aliases: spacing-xs (4px), spacing-sm (8px), spacing-md (16px), ..."
+              - "JSON and CSS custom property export"
+
+        feature_17_3:
+          name: "Typography Scale Extraction"
+          complexity:
+            composite: 2.6
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Font family detection (primary, secondary, monospace)"
+            - "Font size scale extraction (text-xs, text-sm, text-base, text-lg, ...)"
+            - "Line height and letter spacing analysis"
+            - "Typography token export with font stacks and fallbacks"
+
+          task_17_3_1:
+            name: "Extract typography patterns from components"
+            complexity:
+              composite: 2.8
+            estimated_days: 2
+            deliverables:
+              - "Font family identification across components"
+              - "Font size histogram analysis"
+              - "Line height ratio detection (1.5x, 1.75x, etc.)"
+
+          task_17_3_2:
+            name: "Generate typography tokens"
+            complexity:
+              composite: 2.4
+            estimated_days: 2
+            deliverables:
+              - "Font family tokens: font-primary, font-heading, font-mono"
+              - "Font size scale: text-xs (12px), text-sm (14px), text-base (16px), ..."
+              - "Line height tokens: leading-tight (1.25), leading-normal (1.5), ..."
+              - "JSON and CSS export with font fallback stacks"
+
+        feature_17_4:
+          name: "Shadow, Border Radius, and Animation Tokens"
+          complexity:
+            composite: 2.3
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 3
+          deliverables:
+            - "Shadow extraction (small, medium, large, xl elevation levels)"
+            - "Border radius analysis (none, sm, md, lg, full)"
+            - "Animation timing detection (transition durations, easing)"
+            - "Complete design token export (JSON, CSS, SCSS, JS)"
+
+          task_17_4_1:
+            name: "Extract shadows and border radius"
+            complexity:
+              composite: 2.2
+            estimated_days: 1.5
+            deliverables:
+              - "Shadow detection from card hover states and elevated components"
+              - "Border radius measurement across buttons, cards, inputs"
+              - "Shadow scale: shadow-sm, shadow-md, shadow-lg, shadow-xl"
+              - "Radius scale: rounded-sm (2px), rounded-md (4px), rounded-lg (8px), ..."
+
+          task_17_4_2:
+            name: "Build complete token export system"
+            complexity:
+              composite: 2.4
+            estimated_days: 1.5
+            deliverables:
+              - "JSON export with all token categories (colors, spacing, typography, shadows)"
+              - "CSS custom properties export for web projects"
+              - "SCSS variables export for Sass workflows"
+              - "JavaScript/TypeScript export for design systems"
+
+  milestone_4:
+    name: "v2.5 Page Layout Generation"
+    timeline_weeks: "13-18"
+    description: "Generate complete responsive page layouts (landing pages, marketing sections, dashboard screens) with mobile-first design and composition validation"
+    success_criteria:
+      - "Generate 50+ page layout variations across 3 categories (landing, marketing, dashboard)"
+      - "Responsive validation at 4 breakpoints (mobile, tablet, desktop, wide)"
+      - "Composition scoring achieves 80%+ quality vs human judgment"
+      - "Layout component reuse validates design system consistency"
+
+    epics:
+      epic_18:
+        name: "Landing Page Generator"
+        weeks: "13-14"
+        milestone: "Generate landing page layouts with hero sections, feature showcases, CTAs, and footers"
+
+        feature_18_1:
+          name: "Hero Section Generator"
+          complexity:
+            composite: 2.7
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Hero layouts: image-left, image-right, centered, full-bleed background"
+            - "CTA prominence variations (single primary, dual CTA, email capture)"
+            - "Typography hierarchy (headline, subheadline, supporting text)"
+            - "30+ hero section variations"
+
+          task_18_1_1:
+            name: "Create hero section prompt templates"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "Layout templates for image-left, image-right, centered compositions"
+              - "CTA templates with button positioning and hierarchy"
+              - "Typography templates for headline/subheadline/supporting text"
+
+          task_18_1_2:
+            name: "Generate hero section library"
+            complexity:
+              composite: 2.8
+            estimated_days: 2
+            deliverables:
+              - "30+ hero variations applying brand design tokens"
+              - "Responsive behavior (stacking on mobile, side-by-side on desktop)"
+              - "Component composition validation (using design system buttons, typography)"
+
+        feature_18_2:
+          name: "Feature Showcase Layout Generator"
+          complexity:
+            composite: 2.6
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Feature grid layouts: 2-column, 3-column, 4-column"
+            - "Feature card compositions (icon, title, description)"
+            - "Alternating layouts (image-text-image pattern)"
+            - "25+ feature section variations"
+
+          task_18_2_1:
+            name: "Design feature showcase templates"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "Grid layout templates (2-col, 3-col, 4-col with responsive breakpoints)"
+              - "Feature card templates integrating icon + text components"
+              - "Alternating layout templates (image left/right alternation)"
+
+          task_18_2_2:
+            name: "Generate feature showcase library"
+            complexity:
+              composite: 2.7
+            estimated_days: 2
+            deliverables:
+              - "25+ feature section variations"
+              - "Component reuse validation (cards from atomic library)"
+              - "Responsive grid behavior (4-col → 2-col → 1-col on smaller screens)"
+
+        feature_18_3:
+          name: "CTA Section Generator"
+          complexity:
+            composite: 2.4
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 3
+          deliverables:
+            - "CTA layouts: centered, split, background image"
+            - "Form integration (email capture, newsletter signup)"
+            - "Urgency elements (countdown timers, limited offers)"
+            - "20+ CTA section variations"
+
+          task_18_3_1:
+            name: "Create CTA section templates"
+            complexity:
+              composite: 2.3
+            estimated_days: 1.5
+            deliverables:
+              - "Centered CTA template (headline, subheadline, button)"
+              - "Split CTA template (text left, form/button right)"
+              - "Background image CTA with overlay and high-contrast text"
+
+          task_18_3_2:
+            name: "Generate CTA section library"
+            complexity:
+              composite: 2.5
+            estimated_days: 1.5
+            deliverables:
+              - "20+ CTA variations with brand application"
+              - "Form integration (email input + submit button from atomic library)"
+              - "Contrast validation ensuring CTA prominence"
+
+        feature_18_4:
+          name: "Footer Layout Generator"
+          complexity:
+            composite: 2.3
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 3
+          deliverables:
+            - "Footer layouts: simple, multi-column, newsletter integration"
+            - "Link organization (product, company, resources, social)"
+            - "Brand elements (logo, tagline, copyright)"
+            - "15+ footer variations"
+
+          task_18_4_1:
+            name: "Design footer layout templates"
+            complexity:
+              composite: 2.2
+            estimated_days: 1.5
+            deliverables:
+              - "Simple footer template (centered logo, links, copyright)"
+              - "Multi-column footer (4-column link organization)"
+              - "Newsletter footer (email capture form in footer)"
+
+          task_18_4_2:
+            name: "Generate footer library"
+            complexity:
+              composite: 2.4
+            estimated_days: 1.5
+            deliverables:
+              - "15+ footer variations"
+              - "Responsive behavior (multi-column → stacked on mobile)"
+              - "Component reuse (navigation links, form inputs from atomic library)"
+
+      epic_19:
+        name: "Marketing Site Sections"
+        weeks: "15-16"
+        milestone: "Generate marketing-focused sections (pricing tables, testimonials, team/about, blog layouts)"
+
+        feature_19_1:
+          name: "Pricing Table Generator"
+          complexity:
+            composite: 2.8
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Pricing layouts: 2-tier, 3-tier, 4-tier with feature comparison"
+            - "Tier emphasis (popular badge, highlighted borders)"
+            - "Feature list layouts (checkmarks, icons, tooltips)"
+            - "Annual/monthly toggle integration"
+
+          task_19_1_1:
+            name: "Create pricing table templates"
+            complexity:
+              composite: 2.7
+            estimated_days: 2.5
+            deliverables:
+              - "3-tier pricing template (basic, pro, enterprise)"
+              - "Feature comparison matrix layout"
+              - "Tier emphasis styling (border highlight, popular badge)"
+
+          task_19_1_2:
+            name: "Generate pricing table library"
+            complexity:
+              composite: 2.8
+            estimated_days: 2.5
+            deliverables:
+              - "20+ pricing table variations"
+              - "Annual/monthly toggle UI (using toggle component from atomic library)"
+              - "Responsive behavior (horizontal scroll on mobile for feature comparison)"
+
+        feature_19_2:
+          name: "Testimonial Section Generator"
+          complexity:
+            composite: 2.5
+            dimensions:
+              technical_complexity: 2
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Testimonial layouts: grid, carousel, featured quote"
+            - "Testimonial card designs (photo, quote, name, title, company)"
+            - "Star rating integration"
+            - "25+ testimonial section variations"
+
+          task_19_2_1:
+            name: "Design testimonial layout templates"
+            complexity:
+              composite: 2.4
+            estimated_days: 2
+            deliverables:
+              - "Grid layout (2x2, 3x2 testimonial grid)"
+              - "Carousel layout (rotating testimonials with navigation)"
+              - "Featured quote layout (large pull quote with attribution)"
+
+          task_19_2_2:
+            name: "Generate testimonial section library"
+            complexity:
+              composite: 2.6
+            estimated_days: 2
+            deliverables:
+              - "25+ testimonial variations"
+              - "Star rating visualization (5-star display)"
+              - "Component reuse (cards from atomic library with photo + text)"
+
+        feature_19_3:
+          name: "Team/About Section Generator"
+          complexity:
+            composite: 2.4
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 3
+          deliverables:
+            - "Team grid layouts (3-column, 4-column team member cards)"
+            - "Team member cards (photo, name, title, bio, social links)"
+            - "About section layouts (story timeline, values showcase)"
+            - "20+ team/about variations"
+
+          task_19_3_1:
+            name: "Create team/about templates"
+            complexity:
+              composite: 2.3
+            estimated_days: 1.5
+            deliverables:
+              - "Team grid template (4-column with responsive breakpoints)"
+              - "Team member card template (circular photo, name, title, short bio)"
+              - "About section templates (mission/vision/values layout)"
+
+          task_19_3_2:
+            name: "Generate team/about library"
+            complexity:
+              composite: 2.5
+            estimated_days: 1.5
+            deliverables:
+              - "20+ team/about section variations"
+              - "Social media icon integration (LinkedIn, Twitter links)"
+              - "Responsive behavior (4-col → 2-col → 1-col)"
+
+        feature_19_4:
+          name: "Blog/Content Layout Generator"
+          complexity:
+            composite: 2.6
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Blog grid layouts (2-column, 3-column with sidebar)"
+            - "Article card designs (featured image, title, excerpt, metadata)"
+            - "Featured post layouts (hero article at top)"
+            - "25+ blog section variations"
+
+          task_19_4_1:
+            name: "Design blog layout templates"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "3-column blog grid template"
+              - "2-column + sidebar template (recent posts, categories)"
+              - "Featured post template (large hero article)"
+
+          task_19_4_2:
+            name: "Generate blog section library"
+            complexity:
+              composite: 2.7
+            estimated_days: 2
+            deliverables:
+              - "25+ blog layout variations"
+              - "Article card component (image, title, excerpt, read more)"
+              - "Category tag styling and pagination component"
+
+      epic_20:
+        name: "Dashboard Layouts (Web App)"
+        weeks: "16-17"
+        milestone: "Generate dashboard layouts for web applications (dashboard home, data tables, settings, empty states)"
+
+        feature_20_1:
+          name: "Dashboard Home Layout Generator"
+          complexity:
+            composite: 2.9
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 3
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Dashboard layouts with sidebar navigation + main content area"
+            - "Widget grid layouts (metrics cards, charts, activity feed)"
+            - "Dashboard header (search, notifications, user menu)"
+            - "20+ dashboard home variations"
+
+          task_20_1_1:
+            name: "Create dashboard layout templates"
+            complexity:
+              composite: 2.8
+            estimated_days: 2.5
+            deliverables:
+              - "Sidebar + main content template (fixed sidebar, scrollable main)"
+              - "Widget grid template (metric cards, chart placeholders)"
+              - "Dashboard header template (search bar, notification bell, avatar)"
+
+          task_20_1_2:
+            name: "Generate dashboard home library"
+            complexity:
+              composite: 3.0
+            estimated_days: 2.5
+            deliverables:
+              - "20+ dashboard variations"
+              - "Component reuse (sidebar from navigation library, cards from atomic)"
+              - "Responsive behavior (sidebar collapse to hamburger on mobile)"
+
+        feature_20_2:
+          name: "Data Table Layout Generator"
+          complexity:
+            composite: 2.7
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Table layouts with header, sortable columns, row actions"
+            - "Pagination and row selection UI"
+            - "Filtering and search integration"
+            - "15+ data table variations"
+
+          task_20_2_1:
+            name: "Design data table templates"
+            complexity:
+              composite: 2.7
+            estimated_days: 2
+            deliverables:
+              - "Table layout template (header, body, footer with pagination)"
+              - "Sortable column headers (with sort icons)"
+              - "Row action templates (kebab menu, inline buttons)"
+
+          task_20_2_2:
+            name: "Generate data table library"
+            complexity:
+              composite: 2.7
+            estimated_days: 2
+            deliverables:
+              - "15+ table design variations"
+              - "Pagination component (from atomic library)"
+              - "Responsive table behavior (horizontal scroll on mobile)"
+
+        feature_20_3:
+          name: "Settings Page Layout Generator"
+          complexity:
+            composite: 2.5
+            dimensions:
+              technical_complexity: 2
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Settings layouts with tab navigation + form sections"
+            - "Form group layouts (profile, account, notifications, billing)"
+            - "Action buttons (save, cancel, delete account)"
+            - "15+ settings page variations"
+
+          task_20_3_1:
+            name: "Create settings page templates"
+            complexity:
+              composite: 2.4
+            estimated_days: 2
+            deliverables:
+              - "Tab navigation template (horizontal tabs for settings categories)"
+              - "Form section templates (grouped inputs with headings)"
+              - "Action button layout (save/cancel at bottom)"
+
+          task_20_3_2:
+            name: "Generate settings page library"
+            complexity:
+              composite: 2.6
+            estimated_days: 2
+            deliverables:
+              - "15+ settings page variations"
+              - "Component reuse (tabs, form inputs, buttons from atomic library)"
+              - "Validation state visualization (error messages, success states)"
+
+        feature_20_4:
+          name: "Empty State and Onboarding Layouts"
+          complexity:
+            composite: 2.4
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 3
+          deliverables:
+            - "Empty state layouts (no data illustration + CTA)"
+            - "Onboarding flow layouts (multi-step with progress indicator)"
+            - "Error state layouts (404, 500 error pages)"
+            - "15+ empty/onboarding variations"
+
+          task_20_4_1:
+            name: "Design empty state and onboarding templates"
+            complexity:
+              composite: 2.3
+            estimated_days: 1.5
+            deliverables:
+              - "Empty state template (centered illustration, message, CTA button)"
+              - "Onboarding template (step progress bar, form/content, next/back buttons)"
+              - "Error page template (error code, message, back to home link)"
+
+          task_20_4_2:
+            name: "Generate empty/onboarding library"
+            complexity:
+              composite: 2.5
+            estimated_days: 1.5
+            deliverables:
+              - "15+ variations across empty states, onboarding, errors"
+              - "Progress indicator component (stepper UI)"
+              - "Illustration placeholders with brand-consistent style"
+
+      epic_21:
+        name: "Responsive Design System"
+        weeks: "17-18"
+        milestone: "Mobile-first responsive validation and optimization across all page layouts"
+
+        feature_21_1:
+          name: "Mobile-First Layout Validation"
+          complexity:
+            composite: 2.8
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 3
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Mobile layout generation (320px-414px viewports)"
+            - "Stack behavior validation (horizontal → vertical on mobile)"
+            - "Touch target validation (minimum 44x44px for all interactive elements)"
+            - "Mobile usability score for all page layouts"
+
+          task_21_1_1:
+            name: "Generate mobile-first layouts"
+            complexity:
+              composite: 2.7
+            estimated_days: 2.5
+            deliverables:
+              - "Mobile versions of all page layouts (hero, features, pricing, dashboard)"
+              - "Stacking validation (multi-column → single column)"
+              - "Content prioritization (most important content first)"
+
+          task_21_1_2:
+            name: "Validate mobile usability"
+            complexity:
+              composite: 2.8
+            estimated_days: 2.5
+            deliverables:
+              - "Touch target size validation across all layouts"
+              - "Readability validation (minimum 16px font size on mobile)"
+              - "Navigation accessibility (hamburger menu, bottom nav)"
+              - "Mobile usability score (0-100) for each layout"
+
+        feature_21_2:
+          name: "Breakpoint Behavior Validation"
+          complexity:
+            composite: 2.7
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Breakpoint testing at 320px, 768px, 1024px, 1440px"
+            - "Grid adaptation validation (column count changes)"
+            - "Typography scaling validation (responsive font sizes)"
+            - "Breakpoint compatibility score"
+
+          task_21_2_1:
+            name: "Test layout behavior at key breakpoints"
+            complexity:
+              composite: 2.7
+            estimated_days: 2
+            deliverables:
+              - "Simulated rendering at 320px, 768px, 1024px, 1440px"
+              - "Grid column validation (4-col → 2-col → 1-col transitions)"
+              - "Overflow detection at each breakpoint"
+
+          task_21_2_2:
+            name: "Validate responsive typography and images"
+            complexity:
+              composite: 2.7
+            estimated_days: 2
+            deliverables:
+              - "Font size scaling validation (clamp or media query based)"
+              - "Image responsiveness (srcset, object-fit validation)"
+              - "Breakpoint score based on smooth transitions"
+
+        feature_21_3:
+          name: "Touch Optimization"
+          complexity:
+            composite: 2.5
+            dimensions:
+              technical_complexity: 3
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 3
+          deliverables:
+            - "Touch gesture support validation (swipe, pinch, tap)"
+            - "Hover interaction replacement (tap to reveal vs hover)"
+            - "Touch feedback visualization (ripple effects, active states)"
+            - "Touch optimization score"
+
+          task_21_3_1:
+            name: "Validate touch-friendly interactions"
+            complexity:
+              composite: 2.5
+            estimated_days: 1.5
+            deliverables:
+              - "Hover interaction detection and mobile fallback recommendations"
+              - "Touch target spacing validation (8px minimum between targets)"
+              - "Active state styling (visual feedback on tap)"
+
+          task_21_3_2:
+            name: "Generate touch optimization recommendations"
+            complexity:
+              composite: 2.5
+            estimated_days: 1.5
+            deliverables:
+              - "Touch gesture support recommendations (swipeable carousels)"
+              - "Hover replacement suggestions (tap to expand, modal on tap)"
+              - "Touch optimization score with actionable improvements"
+
+        feature_21_4:
+          name: "Responsive Typography and Images"
+          complexity:
+            composite: 2.4
+            dimensions:
+              technical_complexity: 2
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 3
+          deliverables:
+            - "Fluid typography validation (clamp, viewport-based scaling)"
+            - "Responsive image validation (srcset, sizes, lazy loading)"
+            - "Readability validation across devices"
+            - "Responsive media score"
+
+          task_21_4_1:
+            name: "Validate responsive typography"
+            complexity:
+              composite: 2.3
+            estimated_days: 1.5
+            deliverables:
+              - "Font size scaling validation (minimum 16px on mobile, scale to 18-20px on desktop)"
+              - "Line height adjustment validation (tighter on mobile, looser on desktop)"
+              - "Readability score based on font size and line length"
+
+          task_21_4_2:
+            name: "Validate responsive images"
+            complexity:
+              composite: 2.5
+            estimated_days: 1.5
+            deliverables:
+              - "Image resolution validation (1x, 2x, 3x for retina displays)"
+              - "Lazy loading recommendations for below-fold images"
+              - "Image aspect ratio preservation across breakpoints"
+              - "Responsive media score based on performance and quality"
+
+  milestone_5:
+    name: "v3.0 Code Export & Production"
+    timeline_weeks: "19-24"
+    description: "Transform approved designs into production-ready code with HTML/CSS generation, framework-specific exports (React, Vue, Svelte, Tailwind), and bundle optimization"
+    success_criteria:
+      - "Generate semantic HTML with ARIA attributes for 100% of approved designs"
+      - "Export framework-specific components (React, Vue, Svelte) with proper syntax"
+      - "CSS generation supports vanilla, Tailwind, CSS-in-JS, Sass workflows"
+      - "Production bundles achieve <100KB for component libraries, <500KB for full pages"
+      - "Accessibility validation ensures WCAG AA compliance in generated code"
+
+    epics:
+      epic_22:
+        name: "HTML/CSS Code Generation"
+        weeks: "19-20"
+        milestone: "Generate semantic HTML and CSS from approved designs with accessibility attributes and responsive media queries"
+
+        feature_22_1:
+          name: "Semantic HTML Structure Generation"
+          complexity:
+            composite: 3.0
+            dimensions:
+              technical_complexity: 4
+              scope_size: 3
+              dependencies: 3
+              uncertainty: 3
+              risk: 3
+              testing: 3
+          estimated_days: 6
+          deliverables:
+            - "Semantic HTML generation (header, nav, main, section, article, footer)"
+            - "Heading hierarchy validation (h1-h6 logical structure)"
+            - "Landmark regions (role attributes for navigation, search, etc.)"
+            - "Clean, indented HTML output with BEM class naming convention"
+
+          task_22_1_1:
+            name: "Build HTML structure analyzer"
+            complexity:
+              composite: 3.2
+            estimated_days: 3
+            deliverables:
+              - "Layout analysis identifying semantic regions (header, nav, main, footer)"
+              - "Component hierarchy mapping (parent-child relationships)"
+              - "Heading detection and h1-h6 assignment based on visual hierarchy"
+
+          task_22_1_2:
+            name: "Generate semantic HTML output"
+            complexity:
+              composite: 2.8
+            estimated_days: 3
+            deliverables:
+              - "HTML template generation with proper semantic tags"
+              - "BEM class naming (block__element--modifier convention)"
+              - "Landmark role attributes for accessibility"
+              - "Formatted, indented output with comments for sections"
+
+        feature_22_2:
+          name: "CSS Generation (Vanilla & BEM)"
+          complexity:
+            composite: 2.9
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 3
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Vanilla CSS generation with BEM class selectors"
+            - "Design token integration (CSS custom properties)"
+            - "Component-scoped styles (avoiding global conflicts)"
+            - "CSS output organized by component hierarchy"
+
+          task_22_2_1:
+            name: "Extract CSS properties from designs"
+            complexity:
+              composite: 3.0
+            estimated_days: 2.5
+            deliverables:
+              - "Color extraction (backgrounds, text, borders)"
+              - "Spacing extraction (padding, margin, gap)"
+              - "Typography extraction (font-family, size, weight, line-height)"
+              - "Layout properties (display, flexbox, grid)"
+
+          task_22_2_2:
+            name: "Generate CSS with design tokens"
+            complexity:
+              composite: 2.8
+            estimated_days: 2.5
+            deliverables:
+              - "CSS custom properties for design tokens (:root { --color-primary: ...; })"
+              - "BEM class selectors (.card__title, .button--primary)"
+              - "Component-scoped styles (avoiding cascading conflicts)"
+              - "Formatted CSS output with section comments"
+
+        feature_22_3:
+          name: "Responsive Media Queries"
+          complexity:
+            composite: 2.7
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Mobile-first media query generation (@media min-width: 768px)"
+            - "Breakpoint-specific styles (grid columns, font sizes, spacing)"
+            - "Responsive utility classes (hidden-mobile, visible-desktop)"
+            - "Media query organization (mobile-first ordering)"
+
+          task_22_3_1:
+            name: "Analyze responsive behavior from designs"
+            complexity:
+              composite: 2.7
+            estimated_days: 2
+            deliverables:
+              - "Breakpoint detection from responsive validation data"
+              - "Property changes at breakpoints (grid columns, font sizes)"
+              - "Visibility changes (hiding elements on mobile)"
+
+          task_22_3_2:
+            name: "Generate mobile-first media queries"
+            complexity:
+              composite: 2.7
+            estimated_days: 2
+            deliverables:
+              - "Media query generation (@media (min-width: 768px) { ... })"
+              - "Breakpoint-specific overrides (typography, spacing, layout)"
+              - "Utility classes for responsive visibility"
+
+        feature_22_4:
+          name: "Accessibility Attributes (ARIA)"
+          complexity:
+            composite: 2.8
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 3
+              risk: 3
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "ARIA labels for interactive elements (aria-label, aria-labelledby)"
+            - "ARIA roles for custom components (role='button', 'navigation', etc.)"
+            - "Focus management attributes (tabindex, aria-hidden)"
+            - "Validation ensuring WCAG 2.1 AA compliance"
+
+          task_22_4_1:
+            name: "Add ARIA attributes to generated HTML"
+            complexity:
+              composite: 2.8
+            estimated_days: 2.5
+            deliverables:
+              - "Interactive element detection (buttons, links, inputs)"
+              - "ARIA label generation (aria-label for icon-only buttons)"
+              - "Role attributes for custom components"
+
+          task_22_4_2:
+            name: "Validate accessibility compliance"
+            complexity:
+              composite: 2.8
+            estimated_days: 2.5
+            deliverables:
+              - "WCAG 2.1 AA validation (contrast, focus, labels)"
+              - "Keyboard navigation validation (tabindex, focus order)"
+              - "Screen reader compatibility testing"
+              - "Accessibility report with compliance score"
+
+      epic_23:
+        name: "Framework-Specific Exports"
+        weeks: "21-22"
+        milestone: "Export components in React, Vue, Svelte, and Web Components formats with proper syntax and conventions"
+
+        feature_23_1:
+          name: "React Component Generation"
+          complexity:
+            composite: 3.0
+            dimensions:
+              technical_complexity: 4
+              scope_size: 3
+              dependencies: 3
+              uncertainty: 3
+              risk: 3
+              testing: 3
+          estimated_days: 6
+          deliverables:
+            - "Functional React components with hooks (useState, useEffect)"
+            - "Props interface with TypeScript types"
+            - "CSS Modules or styled-components integration"
+            - "Component composition with children prop"
+
+          task_23_1_1:
+            name: "Build React component template generator"
+            complexity:
+              composite: 3.2
+            estimated_days: 3
+            deliverables:
+              - "Functional component template with props destructuring"
+              - "TypeScript interface generation for props"
+              - "State management for interactive components (useState)"
+
+          task_23_1_2:
+            name: "Generate React-specific styling"
+            complexity:
+              composite: 2.8
+            estimated_days: 3
+            deliverables:
+              - "CSS Modules generation (Button.module.css)"
+              - "Styled-components alternative export"
+              - "className prop integration for style overrides"
+
+        feature_23_2:
+          name: "Vue SFC (Single File Component) Generation"
+          complexity:
+            composite: 2.9
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 3
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Vue 3 Composition API components (setup script)"
+            - "Props definition with type validation"
+            - "Scoped CSS styles in <style scoped>"
+            - "Template with Vue directives (v-bind, v-on, v-for)"
+
+          task_23_2_1:
+            name: "Generate Vue SFC template"
+            complexity:
+              composite: 2.8
+            estimated_days: 2.5
+            deliverables:
+              - "<template> section with Vue syntax"
+              - "<script setup> with Composition API"
+              - "Props definition with defineProps"
+
+          task_23_2_2:
+            name: "Add scoped styles to Vue SFC"
+            complexity:
+              composite: 2.9
+            estimated_days: 2.5
+            deliverables:
+              - "<style scoped> section with component styles"
+              - "CSS custom properties integration"
+              - "Responsive media queries in scoped styles"
+
+        feature_23_3:
+          name: "Svelte Component Generation"
+          complexity:
+            composite: 2.8
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 3
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Svelte components with reactive statements"
+            - "Props with export let syntax"
+            - "Scoped styles in <style> tag"
+            - "Event forwarding and slot support"
+
+          task_23_3_1:
+            name: "Build Svelte component template"
+            complexity:
+              composite: 2.7
+            estimated_days: 2.5
+            deliverables:
+              - "Svelte template with reactive HTML"
+              - "Props definition (export let propName)"
+              - "Reactive statements ($: derivedValue = ...)"
+
+          task_23_3_2:
+            name: "Generate Svelte scoped styles"
+            complexity:
+              composite: 2.8
+            estimated_days: 2.5
+            deliverables:
+              - "<style> section with automatic scoping"
+              - "CSS custom properties integration"
+              - "Component-specific styles without class conflicts"
+
+        feature_23_4:
+          name: "Web Components (Custom Elements)"
+          complexity:
+            composite: 3.2
+            dimensions:
+              technical_complexity: 4
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 4
+              risk: 3
+              testing: 3
+          estimated_days: 6
+          deliverables:
+            - "Custom elements with Shadow DOM encapsulation"
+            - "Attribute reflection and property definitions"
+            - "Lifecycle callbacks (connectedCallback, attributeChangedCallback)"
+            - "Framework-agnostic web components"
+
+          task_23_4_1:
+            name: "Generate custom element class"
+            complexity:
+              composite: 3.5
+            estimated_days: 3
+            deliverables:
+              - "Custom element class extending HTMLElement"
+              - "Shadow DOM attachment (this.attachShadow)"
+              - "Lifecycle callbacks implementation"
+
+          task_23_4_2:
+            name: "Implement attribute reflection"
+            complexity:
+              composite: 2.8
+            estimated_days: 3
+            deliverables:
+              - "observedAttributes static getter"
+              - "attributeChangedCallback implementation"
+              - "Property-attribute synchronization"
+              - "Custom element registration (customElements.define)"
+
+      epic_24:
+        name: "CSS Framework Integration"
+        weeks: "22-23"
+        milestone: "Generate Tailwind CSS, CSS-in-JS, Sass/SCSS, and CSS Modules from approved designs"
+
+        feature_24_1:
+          name: "Tailwind CSS Generation"
+          complexity:
+            composite: 2.9
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 3
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Tailwind utility class generation from design tokens"
+            - "Custom theme configuration (tailwind.config.js)"
+            - "Responsive utility classes (md:, lg:, xl: prefixes)"
+            - "JIT compilation optimization"
+
+          task_24_1_1:
+            name: "Map design tokens to Tailwind config"
+            complexity:
+              composite: 2.8
+            estimated_days: 2.5
+            deliverables:
+              - "tailwind.config.js with custom colors, spacing, typography"
+              - "Design token mapping (primary-500 → colors.primary[500])"
+              - "Custom utility classes for brand-specific patterns"
+
+          task_24_1_2:
+            name: "Generate Tailwind utility classes"
+            complexity:
+              composite: 3.0
+            estimated_days: 2.5
+            deliverables:
+              - "Utility class generation (bg-primary-500, text-lg, p-4)"
+              - "Responsive prefixes (md:grid-cols-2, lg:text-xl)"
+              - "State variants (hover:bg-primary-600, focus:ring-2)"
+
+        feature_24_2:
+          name: "CSS-in-JS Export (styled-components, Emotion)"
+          complexity:
+            composite: 2.8
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 3
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "styled-components template literal generation"
+            - "Emotion css prop syntax export"
+            - "Theme provider integration with design tokens"
+            - "Dynamic styling based on props"
+
+          task_24_2_1:
+            name: "Generate styled-components code"
+            complexity:
+              composite: 2.8
+            estimated_days: 2.5
+            deliverables:
+              - "Styled component definitions (const Button = styled.button`...`)"
+              - "Template literal CSS with design tokens"
+              - "Props-based conditional styling"
+
+          task_24_2_2:
+            name: "Create theme provider and tokens"
+            complexity:
+              composite: 2.8
+            estimated_days: 2.5
+            deliverables:
+              - "Theme object with design tokens"
+              - "ThemeProvider setup for styled-components"
+              - "Theme access in styled templates (${props => props.theme.colors.primary})"
+
+        feature_24_3:
+          name: "Sass/SCSS with Design Tokens"
+          complexity:
+            composite: 2.6
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "SCSS variable generation from design tokens"
+            - "Mixin library for common patterns (button variants, card styles)"
+            - "Partials organization (_variables.scss, _mixins.scss, _components.scss)"
+            - "Sass module system (@use, @forward)"
+
+          task_24_3_1:
+            name: "Generate SCSS variables and mixins"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "_variables.scss with design tokens ($color-primary-500, $spacing-md)"
+              - "_mixins.scss with reusable patterns (@mixin button-primary { ... })"
+              - "Responsive mixins (@mixin responsive($breakpoint) { ... })"
+
+          task_24_3_2:
+            name: "Organize SCSS partials and modules"
+            complexity:
+              composite: 2.7
+            estimated_days: 2
+            deliverables:
+              - "Partial organization (_variables, _mixins, _components, _layouts)"
+              - "Module system (@use 'variables' as vars)"
+              - "Main SCSS file (@use imports)"
+
+        feature_24_4:
+          name: "CSS Modules Export"
+          complexity:
+            composite: 2.5
+            dimensions:
+              technical_complexity: 2
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Component-scoped CSS Modules (Button.module.css)"
+            - "Local class scoping preventing global conflicts"
+            - "Composition with composes keyword"
+            - "Integration with React/Vue/Svelte components"
+
+          task_24_4_1:
+            name: "Generate CSS Module files"
+            complexity:
+              composite: 2.4
+            estimated_days: 2
+            deliverables:
+              - "Component.module.css files with scoped classes"
+              - "Class naming matching component structure (.button, .button--primary)"
+              - "Design token integration via CSS custom properties"
+
+          task_24_4_2:
+            name: "Add composition and imports"
+            complexity:
+              composite: 2.6
+            estimated_days: 2
+            deliverables:
+              - "Composition with composes keyword (.button-primary { composes: button; })"
+              - "Import statements in component files (import styles from './Button.module.css')"
+              - "className assignment (className={styles.button})"
+
+      epic_25:
+        name: "Production Optimization"
+        weeks: "23-24"
+        milestone: "Optimize generated code for production with minification, image optimization, bundle size analysis, and performance budgets"
+
+        feature_25_1:
+          name: "Code Minification and Bundling"
+          complexity:
+            composite: 2.7
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "HTML/CSS/JS minification using terser, cssnano"
+            - "Tree shaking and dead code elimination"
+            - "Bundle splitting for code-on-demand loading"
+            - "Source maps for debugging minified code"
+
+          task_25_1_1:
+            name: "Implement minification pipeline"
+            complexity:
+              composite: 2.7
+            estimated_days: 2
+            deliverables:
+              - "HTML minification (whitespace removal, comment stripping)"
+              - "CSS minification with cssnano (property merging, shorthand)"
+              - "JS minification with terser (variable mangling, dead code removal)"
+
+          task_25_1_2:
+            name: "Configure bundle optimization"
+            complexity:
+              composite: 2.7
+            estimated_days: 2
+            deliverables:
+              - "Tree shaking configuration (ES module imports)"
+              - "Code splitting strategy (route-based, component-based)"
+              - "Source map generation for production debugging"
+
+        feature_25_2:
+          name: "Image Optimization Pipeline"
+          complexity:
+            composite: 2.6
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 4
+          deliverables:
+            - "Image compression (PNG, JPEG, WebP, AVIF)"
+            - "Responsive image generation (srcset, sizes attributes)"
+            - "Lazy loading implementation (loading='lazy')"
+            - "CDN-ready image URLs with optimization parameters"
+
+          task_25_2_1:
+            name: "Build image compression pipeline"
+            complexity:
+              composite: 2.5
+            estimated_days: 2
+            deliverables:
+              - "PNG/JPEG compression with quality settings"
+              - "WebP/AVIF generation for modern browsers"
+              - "Fallback image generation for older browsers"
+
+          task_25_2_2:
+            name: "Generate responsive image markup"
+            complexity:
+              composite: 2.7
+            estimated_days: 2
+            deliverables:
+              - "srcset generation with multiple resolutions (1x, 2x, 3x)"
+              - "sizes attribute calculation based on layout"
+              - "Lazy loading attributes (loading='lazy', decoding='async')"
+
+        feature_25_3:
+          name: "Bundle Size Analysis"
+          complexity:
+            composite: 2.5
+            dimensions:
+              technical_complexity: 3
+              scope_size: 2
+              dependencies: 2
+              uncertainty: 2
+              risk: 2
+              testing: 3
+          estimated_days: 3
+          deliverables:
+            - "Bundle size reporting (components, pages, total)"
+            - "Dependency analysis (identifying large dependencies)"
+            - "Size trend tracking (bundle growth over time)"
+            - "Visualization with webpack-bundle-analyzer equivalent"
+
+          task_25_3_1:
+            name: "Implement bundle size tracking"
+            complexity:
+              composite: 2.4
+            estimated_days: 1.5
+            deliverables:
+              - "Bundle size calculation (gzip, brotli compression)"
+              - "Component-level size breakdown"
+              - "Dependency size attribution (which library adds most weight)"
+
+          task_25_3_2:
+            name: "Generate size analysis reports"
+            complexity:
+              composite: 2.6
+            estimated_days: 1.5
+            deliverables:
+              - "Visual bundle size report (treemap or sunburst chart)"
+              - "Size budget warnings (exceeding thresholds)"
+              - "Optimization recommendations (remove unused deps, code split)"
+
+        feature_25_4:
+          name: "Performance Budgets and Monitoring"
+          complexity:
+            composite: 2.8
+            dimensions:
+              technical_complexity: 3
+              scope_size: 3
+              dependencies: 3
+              uncertainty: 3
+              risk: 2
+              testing: 3
+          estimated_days: 5
+          deliverables:
+            - "Performance budget configuration (bundle size, page weight, LCP, FID)"
+            - "Lighthouse CI integration for automated performance testing"
+            - "Regression detection (performance declining over time)"
+            - "Performance score reporting with actionable recommendations"
+
+          task_25_4_1:
+            name: "Define performance budgets"
+            complexity:
+              composite: 2.7
+            estimated_days: 2.5
+            deliverables:
+              - "Budget configuration (component library <100KB, full pages <500KB)"
+              - "Core Web Vitals targets (LCP <2.5s, FID <100ms, CLS <0.1)"
+              - "Bundle size budgets per component category"
+
+          task_25_4_2:
+            name: "Implement automated performance testing"
+            complexity:
+              composite: 2.9
+            estimated_days: 2.5
+            deliverables:
+              - "Lighthouse CI integration for automated audits"
+              - "Performance regression detection (comparing to baseline)"
+              - "Performance report generation with scores and recommendations"
+              - "CI/CD integration (failing builds on budget violations)"
+
+agent_blueprint:
+  total_estimated: 50
+  parallel_capacity: 5
+  types_needed:
+    - type: "frontend-design"
+      count: 10
+      focus_areas: ["Prompt engineering", "UI/UX patterns", "Design systems"]
+    - type: "ml-vision"
+      count: 8
+      focus_areas: ["CLIP scoring", "Image analysis", "Accessibility validation"]
+    - type: "backend-api"
+      count: 6
+      focus_areas: ["Multi-model API integration", "Queue management", "Database"]
+    - type: "web-interface"
+      count: 8
+      focus_areas: ["Flask", "React/Vue/Svelte", "Responsive design"]
+    - type: "code-generation"
+      count: 12
+      focus_areas: ["HTML/CSS generation", "Framework exports", "AST manipulation"]
+    - type: "devops-optimization"
+      count: 6
+      focus_areas: ["Bundle optimization", "Performance testing", "CI/CD"]
+
+feature_specifications:
+  - feature: "Logo Variations Generator (v1.5)"
+    description: "Generate 3-5 production-ready logos in multiple styles with brand color extraction"
+    complexity: "medium"
+    assigned_agents: 3
+    acceptance_criteria:
+      - "150 logo variations generated (50 per style: wordmark, icon, combination)"
+      - "Brand color palette extracted with 95%+ accuracy"
+      - "Multi-format export (PNG, SVG, PDF, ICO)"
+
+  - feature: "Atomic Component Library (v2.0)"
+    description: "Generate 100+ UI components (buttons, forms, cards, navigation) with accessibility scoring"
+    complexity: "high"
+    assigned_agents: 5
+    acceptance_criteria:
+      - "100+ component variations across 4 categories"
+      - "WCAG AA compliance for 90%+ components"
+      - "Design token extraction producing complete system"
+
+  - feature: "Page Layout Generation (v2.5)"
+    description: "Generate responsive landing pages, marketing sections, and dashboard layouts"
+    complexity: "high"
+    assigned_agents: 5
+    acceptance_criteria:
+      - "50+ page layout variations (landing, marketing, dashboard)"
+      - "Responsive validation at 4 breakpoints"
+      - "Component reuse validates design system consistency"
+
+  - feature: "Code Export System (v3.0)"
+    description: "Transform designs into production-ready code (HTML/CSS, React, Vue, Svelte, Tailwind)"
+    complexity: "complex"
+    assigned_agents: 8
+    acceptance_criteria:
+      - "Framework-specific exports with proper syntax"
+      - "Bundle size <100KB for components, <500KB for pages"
+      - "WCAG AA compliance in generated code"
+
+testing_strategy:
+  levels:
+    - level: "unit"
+      scope: "Individual components (prompt generator, scorer, extractor, code generator)"
+    - level: "integration"
+      scope: "Multi-model pipeline, approval workflow, design token extraction, code export"
+    - level: "end-to-end"
+      scope: "Design brief → logo generation → brand package export"
+    - level: "accessibility"
+      scope: "WCAG 2.1 AA compliance validation for generated designs and code"
+    - level: "performance"
+      scope: "Bundle size budgets, Core Web Vitals, image optimization"
+
+project_structure:
+  pattern: "vertical-slice"
+  directories:
+    - path: "specs/"
+      purpose: "Architectural documentation and blueprints"
+    - path: "automation/src/"
+      purpose: "Core generation pipeline (prompts, scoring, refinement, code generation)"
+    - path: "automation/web/"
+      purpose: "Flask approval dashboard and component previews"
+    - path: "automation/config/"
+      purpose: "Model configs, brand criteria, scoring weights, design tokens"
+    - path: "automation/results/"
+      purpose: "Generated images organized by session and stage"
+    - path: "automation/exports/"
+      purpose: "Brand packages, component libraries, code exports"
+    - path: "automation/data/"
+      purpose: "SQLite database for metadata tracking"
+    - path: "docs/"
+      purpose: "ADRs, guides, and project documentation"
+
+archived_milestones:
+  note: "Original v2.0-v2.2 personalization features moved to future v4.0-v4.2"
+  milestone_6:
+    name: "v4.0 Multi-Brand Personalization (ARCHIVED)"
+    description: "Deferred to post-v3.0: Brand variation system, audience targeting, personalization engine"
+  milestone_7:
+    name: "v4.1 Advanced Refinement (ARCHIVED)"
+    description: "Deferred to post-v3.0: Multi-round refinement, A/B testing, feedback loop optimization"
+  milestone_8:
+    name: "v4.2 Production Deployment (ARCHIVED)"
+    description: "Deferred to post-v3.0: API service, web interface deployment, cost optimization"
