@@ -1,0 +1,27 @@
+name: Enforce Main PR Source
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  check-source-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR source branch
+        run: |
+          if [[ "${{ github.head_ref }}" != "dev" ]]; then
+            echo "❌ ERROR: Pull requests to 'main' must come from 'dev' branch"
+            echo "Current source branch: ${{ github.head_ref }}"
+            echo ""
+            echo "Please follow the branch workflow:"
+            echo "  feature/* → dev → main"
+            echo ""
+            echo "To fix this:"
+            echo "  1. Merge your changes to 'dev' first"
+            echo "  2. Create a PR from 'dev' to 'main'"
+            exit 1
+          fi
+          echo "✅ PR source branch is valid (dev → main)"
