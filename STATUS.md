@@ -1,32 +1,43 @@
 # Project Status
 
-**Project**: Brand Forge
-**Last Updated**: November 11, 2025
-**Current Phase**: Planning & Setup
-**Overall Progress**: 0% (0/125 issues closed)
+**Project**: DesignForge
+**Last Updated**: November 12, 2025
+**Current Phase**: v1.0 Foundation & Core Pipeline
+**Overall Progress**: 1% (1/52 open issues completed - Issue #3)
 
 ---
 
-## 🚀 AI-Calibrated Timeline
+## 🚀 DesignForge Scope Evolution
 
-**Original Human Estimate**: 10 weeks (50 business days)
-**AI-Calibrated Projection**: **15.2 days** (~2.2 weeks) with 1.3x buffer
-**Speedup Factor**: 22.8x faster (based on embark-quoting-system benchmark)
-**Projected Completion**: 2025-11-26 (starting 2025-11-11)
+**Original Scope**: Brand Forge (logo generation only)
+**New Scope**: DesignForge (brand identity → components → layouts → code)
+**Pivot Date**: November 12, 2025
+**Rationale**: User needs complete design-to-code workflow, not just logos
 
-> **Note**: Timings are calibrated from AI agent velocity benchmarks. See [AI-AGENT-TIMING-CALIBRATION.md](AI-AGENT-TIMING-CALIBRATION.md) for methodology.
+### Milestone Timeline
+- **v1.0 Foundation**: Weeks 1-4 (52 issues, 1 completed)
+- **v1.5 Brand Assets**: TBD (HIGH PRIORITY - logos)
+- **v2.0 Component Library**: TBD (buttons, forms, cards)
+- **v2.5 Page Layouts**: TBD (landing pages, responsive)
+- **v3.0 Code Export**: TBD (React, Vue, Tailwind)
 
 ---
 
 ## Milestone Overview
 
-| Milestone | Original Timeline | AI-Calibrated | Progress | Status |
-|-----------|-------------------|---------------|----------|--------|
-| **v1.0 Foundation & Core Pipeline** | Weeks 1-4 | ~5 days | 0/46 epics | 🔵 Not Started |
-| **v1.1 Multi-Model & Iterative Refinement** | Weeks 5-8 | ~6 days | 0/46 epics | 🔵 Not Started |
-| **v1.2 Production Polish & Documentation** | Weeks 9-10 | ~4 days | 0/33 epics | 🔵 Not Started |
+| Milestone | Timeline | Progress | Status |
+|-----------|----------|----------|--------|
+| **v1.0 Foundation & Core Pipeline** | Weeks 1-4 | 1/52 issues (2%) | 🟡 In Progress |
+| **v1.5 Brand Assets Module** | TBD | Not started | 🔵 Pending |
+| **v2.0 Component Library** | TBD | Not started | 🔵 Pending |
+| **v2.5 Page Layout Generation** | TBD | Not started | 🔵 Pending |
+| **v3.0 Code Export & Production** | TBD | Not started | 🔵 Pending |
 
 **View Live Progress**: [GitHub Project Board](https://github.com/users/IAMSamuelRodda/projects/6)
+
+### Issue Cleanup Summary (Nov 12, 2025)
+- ✅ **79 issues closed**: Epics #50, #64, #75, #91, #102, #112 (replaced by DesignForge design)
+- ✅ **52 issues kept**: Epics #1, #11, #24, #39 + CI/CD (assigned to v1.0 milestone)
 
 ---
 
@@ -87,88 +98,55 @@
 
 ---
 
-### Milestone 2: v1.1 Multi-Model & Iterative Refinement
+### Milestone 2: v1.5 Brand Assets Module (HIGH PRIORITY)
 
-#### Epic #50: Multi-Model Generation Pipeline (Weeks 5-6)
-**Status**: 🔵 Pending | **Progress**: 0/4 features
+**Status**: 🔵 Not Started | **Issues**: TBD (to be generated from BLUEPRINT-DESIGNFORGE.yaml)
 
-| Feature | Issue | Status |
-|---------|-------|--------|
-| Multi-Model Orchestration Engine | #51 | 🔵 Pending |
-| Flux API Integration | #54 | 🔵 Pending |
-| DALL-E 3 Integration | #57 | 🔵 Pending |
-| Budget Tracking & Cost Allocation | #61 | 🔵 Pending |
+**Scope**:
+- Logo generation (300+ variations, 3-5 production-ready)
+- Multi-format exports (SVG, PNG, WebP)
+- Brand package delivery
 
-**View Epic**: https://github.com/IAMSamuelRodda/brand-forge/issues/50
+**Blueprint**: See `specs/BLUEPRINT-DESIGNFORGE.yaml` milestone_2
 
 ---
 
-#### Epic #64: Iterative Refinement Pipeline (Weeks 6-7)
-**Status**: 🔵 Pending | **Progress**: 0/3 features
+### Milestone 3: v2.0 Component Library Generation
 
-| Feature | Issue | Status |
-|---------|-------|--------|
-| img2img Refinement System | #65 | 🔵 Pending |
-| Parameter Exploration Engine | #69 | 🔵 Pending |
-| Lineage Tracking System | #72 | 🔵 Pending |
+**Status**: 🔵 Not Started | **Issues**: TBD
 
-**View Epic**: https://github.com/IAMSamuelRodda/brand-forge/issues/64
+**Scope**:
+- Atomic components (buttons, forms, cards, navigation)
+- Accessibility scoring (WCAG 2.1 AA)
+- Component variations and states
 
----
-
-#### Epic #75: Production Finalization & Export (Weeks 7-8)
-**Status**: 🔵 Pending | **Progress**: 0/4 features
-
-| Feature | Issue | Status |
-|---------|-------|--------|
-| Upscaling Pipeline | #76 | 🔵 Pending |
-| Background Removal System | #80 | 🔵 Pending |
-| Vectorization Engine | #83 | 🔵 Pending |
-| Multi-Format Export System | #87 | 🔵 Pending |
-
-**View Epic**: https://github.com/IAMSamuelRodda/brand-forge/issues/75
+**Blueprint**: See `specs/BLUEPRINT-DESIGNFORGE.yaml` milestone_4
 
 ---
 
-### Milestone 3: v1.2 Production Polish & Documentation
+### Milestone 4: v2.5 Page Layout Generation
 
-#### Epic #91: Testing & Quality Assurance (Week 9)
-**Status**: 🔵 Pending | **Progress**: 0/3 features
+**Status**: 🔵 Not Started | **Issues**: TBD
 
-| Feature | Issue | Status |
-|---------|-------|--------|
-| Unit Test Suite | #92 | 🔵 Pending |
-| Integration Test Suite | #96 | 🔵 Pending |
-| End-to-End Testing | #99 | 🔵 Pending |
+**Scope**:
+- Landing pages and app layouts
+- Responsive design (mobile-first)
+- Component composition
 
-**View Epic**: https://github.com/IAMSamuelRodda/brand-forge/issues/91
+**Blueprint**: See `specs/BLUEPRINT-DESIGNFORGE.yaml` milestone_5
 
 ---
 
-#### Epic #102: Performance Optimization (Weeks 9-10)
-**Status**: 🔵 Pending | **Progress**: 0/3 features
+### Milestone 5: v3.0 Code Export & Production
 
-| Feature | Issue | Status |
-|---------|-------|--------|
-| AsyncIO Optimization | #103 | 🔵 Pending |
-| Caching Strategy | #106 | 🔵 Pending |
-| Resource Monitoring | #109 | 🔵 Pending |
+**Status**: 🔵 Not Started | **Issues**: TBD
 
-**View Epic**: https://github.com/IAMSamuelRodda/brand-forge/issues/102
+**Scope**:
+- HTML/CSS/JS generation
+- React/Vue/Svelte exports
+- Tailwind optimization
 
----
-
-#### Epic #112: Documentation & User Experience (Week 10)
-**Status**: 🔵 Pending | **Progress**: 0/4 features
-
-| Feature | Issue | Status |
-|---------|-------|--------|
-| API Documentation | #113 | 🔵 Pending |
-| User Guide | #117 | 🔵 Pending |
-| Developer Guide | #120 | 🔵 Pending |
-| Deployment Documentation | #123 | 🔵 Pending |
-
-**View Epic**: https://github.com/IAMSamuelRodda/brand-forge/issues/112
+**Blueprint**: See `specs/BLUEPRINT-DESIGNFORGE.yaml` milestone_6
 
 ---
 
@@ -183,64 +161,68 @@
 
 ## Recent Activity
 
-No activity yet. Project setup phase.
+### November 12, 2025
+- ✅ **Pivot to DesignForge**: Expanded scope from logo generation to full frontend design automation
+- ✅ **Blueprint Created**: BLUEPRINT-DESIGNFORGE.yaml with 8 milestones (v1.0-v4.2)
+- ✅ **Issue Cleanup**: Closed 79 Brand Forge issues, kept 52 foundational issues for v1.0
+- ✅ **Documentation Updated**: README, STATUS, CLAUDE.md reflect DesignForge scope
+- 🟡 **v1.0 In Progress**: Issue #3 completed (Python environment initialized)
 
 ---
 
 ## Next Steps
 
-### ✅ Setup Complete
+### ✅ Pivot Complete
 
-- ✓ **Issues Created**: 125 issues (9 epics, 34 features, 82 tasks)
-- ✓ **Dates Populated**: 34 features have AI-calibrated start/target dates
-- ✓ **Project Fields**: Start Date and Target Date fields added
+- ✓ **BLUEPRINT-DESIGNFORGE.yaml created**: 8 milestones (v1.0-v4.2)
+- ✓ **Issue cleanup complete**: 79 closed, 52 kept for v1.0
+- ✓ **Documentation updated**: README, STATUS reflect DesignForge scope
+- ✓ **v1.0 milestone assigned**: 52 issues ready
 
-### Configure Roadmap View (~2 min)
-
-Open project in browser: https://github.com/users/IAMSamuelRodda/projects/6
-
-Then in GitHub UI:
-1. Click "+" next to view tabs → "Roadmap"
-2. Configure:
-   - Layout: Roadmap
-   - Date fields: Select "Start Date" and "Target Date"
-   - Zoom: Month or Quarter
-   - Markers: Enable "Milestone"
-   - Group by: "Parent issue"
-3. Save view
-
-### Start Implementation
+### 🔄 Continue v1.0 Foundation
 
 ```bash
-# Mark Epic #1 as in-progress
+# Continue Epic #1: Project Foundation
 gh issue edit 1 --add-label "status: in-progress" \
-  --repo IAMSamuelRodda/brand-forge
+  --repo IAMSamuelRodda/design-forge
 
-gh issue comment 1 --body "Starting: Project Foundation & Infrastructure" \
-  --repo IAMSamuelRodda/brand-forge
+# Next task: Install core dependencies (Issue #4)
+gh issue edit 4 --add-label "status: in-progress" \
+  --repo IAMSamuelRodda/design-forge
 ```
+
+### 🆕 Generate Issues for v1.5-v3.0 (Later)
+
+After v1.0 completion, generate issues from BLUEPRINT-DESIGNFORGE.yaml:
+- v1.5 Brand Assets Module (HIGH PRIORITY)
+- v2.0 Component Library Generation
+- v2.5 Page Layout Generation
+- v3.0 Code Export & Production
 
 ---
 
-## Quick Commands (After Issues Created)
+## Quick Commands
 
 ```bash
 # View all open issues
-gh issue list --state open --repo IAMSamuelRodda/brand-forge
+gh issue list --state open --repo IAMSamuelRodda/design-forge
 
 # View in-progress work
-gh issue list --state open --label "status: in-progress" --repo IAMSamuelRodda/brand-forge
+gh issue list --state open --label "status: in-progress" --repo IAMSamuelRodda/design-forge
 
 # View blocked work
-gh issue list --state open --label "status: blocked" --repo IAMSamuelRodda/brand-forge
+gh issue list --state open --label "status: blocked" --repo IAMSamuelRodda/design-forge
+
+# View v1.0 milestone issues
+gh issue list --state open --milestone "v1.0 Foundation & Core Pipeline" --repo IAMSamuelRodda/design-forge
 
 # Start working on Epic #1
 gh issue edit 1 \
   --remove-label "status: pending" \
   --add-label "status: in-progress" \
-  --repo IAMSamuelRodda/brand-forge
+  --repo IAMSamuelRodda/design-forge
 
-gh issue comment 1 --body "Started epic: Project Foundation & Infrastructure" --repo IAMSamuelRodda/brand-forge
+gh issue comment 1 --body "Started epic: Project Foundation & Infrastructure" --repo IAMSamuelRodda/design-forge
 ```
 
 ---
@@ -261,6 +243,7 @@ gh issue comment 1 --body "Started epic: Project Foundation & Infrastructure" --
 ## Links
 
 - **Project Board**: https://github.com/users/IAMSamuelRodda/projects/6
-- **All Issues**: https://github.com/IAMSamuelRodda/brand-forge/issues
-- **Blueprint**: [specs/BLUEPRINT.yaml](specs/BLUEPRINT.yaml)
+- **All Issues**: https://github.com/IAMSamuelRodda/design-forge/issues
+- **Blueprint**: [specs/BLUEPRINT-DESIGNFORGE.yaml](specs/BLUEPRINT-DESIGNFORGE.yaml)
 - **Contributing Guide**: [CONTRIBUTING.md](CONTRIBUTING.md)
+- **Project Conventions**: [CLAUDE.md](CLAUDE.md)

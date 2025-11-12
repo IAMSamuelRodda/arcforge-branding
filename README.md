@@ -1,29 +1,32 @@
-# Branding Automation System
+# DesignForge - AI-Powered Frontend Design Automation
 
-![GitHub Issues](https://img.shields.io/github/issues/IAMSamuelRodda/brand-forge)
+![GitHub Issues](https://img.shields.io/github/issues/IAMSamuelRodda/design-forge)
 ![GitHub Project](https://img.shields.io/badge/project-roadmap-blue)
 ![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue)
 ![Status](https://img.shields.io/badge/status-planning-yellow)
 
-**Fully automated branding development system** that generates 300+ brand asset variations from design briefs with multi-model AI pipelines, quality scoring, and human checkpoints.
+**Fully automated frontend design system** that transforms design briefs into production-ready visual assets and framework-specific code through AI-driven workflows with human approval checkpoints.
 
-> **Case Study**: ArcForge brand development (materials in `archives/case-study-arcforge/`). Brand Forge is designed to work for ANY brand, not just ArcForge.
+> **Scope**: Brand identity (v1.5) → Atomic components (v2.0) → Page layouts (v2.5) → Production code (v3.0)
 
 ```
-Design Brief → AI Generation → Quality Scoring → Human Approval → Production Export
+Design Brief → AI Generation → Quality Scoring → Human Approval → Code Export
+     ↓              ↓                 ↓                 ↓              ↓
+  Logos      Components/Layouts   Accessibility    Refinement    React/Vue/CSS
 ```
 
 ---
 
 ## Overview
 
-Brand Forge eliminates manual iteration in brand asset development by:
+DesignForge eliminates manual iteration in frontend design development by:
 
-- **Generating 500-1000 variations/month** across 3 AI models (Stable Diffusion 3.5, Flux Schnell, DALL-E 3)
-- **Scoring quality automatically** with 4-dimensional weighted system (95%+ brand color accuracy)
-- **Reducing human time to <10 min/checkpoint** across 3 approval stages
-- **Delivering production-ready assets** with upscaling, background removal, vectorization
-- **Operating within $30-60/month budget** using cost-optimized model allocation
+- **Generating complete design systems** from brand identity through production code
+- **v1.5 Brand Assets**: 300+ logo variations with 95%+ color accuracy ($30-60/month)
+- **v2.0 Component Library**: Buttons, forms, cards, navigation with accessibility scoring
+- **v2.5 Page Layouts**: Responsive landing pages and app layouts (mobile-first)
+- **v3.0 Code Export**: React, Vue, Svelte, Tailwind with production optimization
+- **Reducing human time to <10 min/checkpoint** across 3 approval stages per milestone
 
 ### Architecture
 
@@ -128,14 +131,14 @@ python automation/src/main.py
 
 ## Usage
 
-### Workflow
+### Workflow (Per Milestone)
 
-1. **Design Input**: Load brand specifications (design brief + prompt templates)
-2. **Prompt Generation**: Process templates with brand variables
-3. **Multi-Model Generation**: 70% SD 3.5, 20% Flux, 10% DALL-E 3
-4. **Quality Scoring**: Weighted 4-dimensional system (CLIP, color, aesthetic, composition)
-5. **Human Approval**: 3 checkpoints (concept → direction → final)
-6. **Production Export**: Upscale, background removal, vectorization
+1. **Design Input**: Load specifications (design brief + prompt templates + component specs)
+2. **Prompt Generation**: Process templates with variables (brand/component/layout-specific)
+3. **AI Generation**: Stable Diffusion 3.5 (v1.0-v2.5), Claude 3.5 Sonnet (v3.0 code)
+4. **Quality Scoring**: CLIP, color, aesthetic, composition, accessibility (WCAG 2.1 AA)
+5. **Human Approval**: 3 checkpoints per milestone (concept → refinement → final)
+6. **Export**: Multi-format images (v1.5-v2.5), framework code (v3.0)
 
 ### Configuration
 
@@ -178,19 +181,26 @@ budget:
 Each feature slice contains its own code, tests, and documentation:
 
 ```
-branding-automation/
-├── src/
-│   ├── prompt_engine/           # Template processing + docs
-│   ├── generation/              # Multi-model API + docs
-│   ├── scoring/                 # Quality scoring + docs
-│   ├── refinement/              # img2img refinement + docs
-│   ├── approval/                # Human approval UI + docs
-│   └── export/                  # Production export + docs
+design-forge/
+├── automation/
+│   ├── src/
+│   │   ├── prompt_engine/       # Template processing + docs
+│   │   ├── generation/          # AI generation API + docs
+│   │   ├── scoring/             # Quality + accessibility scoring + docs
+│   │   ├── refinement/          # Iterative refinement + docs
+│   │   ├── approval/            # Human approval UI + docs
+│   │   ├── export/              # Image/code export + docs
+│   │   └── code_gen/            # Framework code generation (v3.0)
+│   ├── config/                  # Configuration files
+│   ├── web/                     # Flask dashboard
+│   └── tests/                   # Test suites
 ├── specs/
-│   └── BLUEPRINT.yaml           # Technical specification
+│   ├── BLUEPRINT-DESIGNFORGE.yaml  # DesignForge specification
+│   └── BLUEPRINT.yaml              # Original (archived)
 ├── archives/
 │   └── case-study-arcforge/     # ArcForge test case materials
-├── STATUS.md                    # Progress tracking (single source of truth)
+├── STATUS.md                    # Progress tracking
+├── CLAUDE.md                    # Project conventions
 ├── CONTRIBUTING.md              # Workflow guide
 └── README.md                    # This file
 ```
@@ -242,17 +252,27 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 - [ ] Epic #24: Quality Scoring & Filtering System
 - [ ] Epic #39: Human Approval Interface
 
-### Milestone 2: v1.1 Multi-Model & Iterative Refinement (Weeks 5-8)
-- [ ] Epic #50: Multi-Model Generation Pipeline
-- [ ] Epic #64: Iterative Refinement Pipeline
-- [ ] Epic #75: Production Finalization & Export
+### Milestone 2: v1.5 Brand Assets Module (HIGH PRIORITY)
+- [ ] Logo generation (300+ variations, 3-5 production-ready)
+- [ ] Multi-format exports (SVG, PNG, WebP)
+- [ ] Brand package delivery
 
-### Milestone 3: v1.2 Production Polish & Documentation (Weeks 9-10)
-- [ ] Epic #91: Testing & Quality Assurance
-- [ ] Epic #102: Performance Optimization
-- [ ] Epic #112: Documentation & User Experience
+### Milestone 3: v2.0 Component Library Generation
+- [ ] Atomic components (buttons, forms, cards, navigation)
+- [ ] Accessibility scoring (WCAG 2.1 AA)
+- [ ] Component variations and states
 
-**Current Status**: Planning phase (Milestone 1 not started)
+### Milestone 4: v2.5 Page Layout Generation
+- [ ] Landing pages and app layouts
+- [ ] Responsive design (mobile-first)
+- [ ] Component composition
+
+### Milestone 5: v3.0 Code Export & Production
+- [ ] HTML/CSS/JS generation
+- [ ] React/Vue/Svelte exports
+- [ ] Tailwind optimization
+
+**Current Status**: v1.0 Foundation (52 issues open, Epic #1 ready to start)
 
 **View Progress**: https://github.com/users/IAMSamuelRodda/projects/6
 
@@ -270,11 +290,11 @@ Proprietary - All rights reserved.
 
 ## Links
 
-- **GitHub Repository**: https://github.com/IAMSamuelRodda/brand-forge
+- **GitHub Repository**: https://github.com/IAMSamuelRodda/design-forge
 - **Project Board**: https://github.com/users/IAMSamuelRodda/projects/6
-- **Issues**: https://github.com/IAMSamuelRodda/brand-forge/issues
-- **Blueprint**: [specs/BLUEPRINT.yaml](specs/BLUEPRINT.yaml)
+- **Issues**: https://github.com/IAMSamuelRodda/design-forge/issues
+- **Blueprint**: [specs/BLUEPRINT-DESIGNFORGE.yaml](specs/BLUEPRINT-DESIGNFORGE.yaml)
 
 ---
 
-**Last Updated**: November 11, 2025
+**Last Updated**: November 12, 2025
