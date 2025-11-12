@@ -1,6 +1,6 @@
 # System Architecture
 
-**Brand Forge** - Technical architecture, design decisions, and component specifications.
+**DesignForge** - Technical architecture, design decisions, and component specifications for full frontend design automation.
 
 ---
 
@@ -20,17 +20,20 @@
 
 ## System Overview
 
-Brand Forge is a **multi-model AI pipeline** that generates, scores, and exports brand assets with minimal human intervention.
+DesignForge is a **full-stack AI design automation pipeline** that transforms design briefs into production-ready visual assets and framework-specific code with minimal human intervention.
 
 ### Core Capabilities
 
 | Capability | Description | Target |
 |------------|-------------|--------|
-| **Generation** | AsyncIO-based multi-model image generation | 50+ images/hour |
-| **Scoring** | 4-dimensional weighted quality assessment | ρ > 0.70 correlation |
-| **Approval** | Human-in-the-loop checkpoints at 3 stages | <10 min per checkpoint |
-| **Export** | Production-ready asset pipeline (4K, SVG, multi-format) | 3-5 logos/run |
-| **Cost** | Budget-aware model allocation | $30-60/month |
+| **v1.5 Brand Assets** | Logo generation with multi-format exports | 3-5 production logos |
+| **v2.0 Component Library** | Atomic components with accessibility scoring | WCAG 2.1 AA compliance |
+| **v2.5 Page Layouts** | Responsive landing pages and app layouts | Mobile-first design |
+| **v3.0 Code Export** | React/Vue/Svelte with Tailwind optimization | Production-ready code |
+| **Generation** | AsyncIO-based AI image/code generation | 50+ outputs/hour |
+| **Scoring** | Quality + accessibility assessment | ρ > 0.70 correlation |
+| **Approval** | Human-in-the-loop checkpoints per milestone | <10 min per checkpoint |
+| **Cost** | Budget-aware per-milestone allocation | $30-60/month per milestone |
 
 ### High-Level Architecture
 
@@ -38,29 +41,33 @@ Brand Forge is a **multi-model AI pipeline** that generates, scores, and exports
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                         EXTERNAL SYSTEMS                                 │
 ├─────────────────────────────────────────────────────────────────────────┤
-│                                                                          │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌────────────┐ │
-│  │ Stability AI │  │ Replicate    │  │   OpenAI     │  │  GitHub    │ │
-│  │ (SD 3.5 API) │  │ (Flux API)   │  │ (DALL-E API) │  │  (Issues)  │ │
+│  │ Stability AI │  │ Anthropic    │  │   GitHub     │  │  Replicate │ │
+│  │ (SD 3.5 API) │  │(Claude API)  │  │  (Issues)    │  │  (Models)  │ │
 │  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └─────┬──────┘ │
-│         │                 │                 │                 │         │
 └─────────┼─────────────────┼─────────────────┼─────────────────┼─────────┘
-          │                 │                 │                 │
           │                 │                 │                 │
 ┌─────────┼─────────────────┼─────────────────┼─────────────────┼─────────┐
 │         │                 │                 │                 │         │
-│         ▼                 ▼                 ▼                 ▼         │
+│         ▼                 │                 ▼                 ▼         │
+│  ┌──────────────────────┐ │  ┌──────────────────────────────────────┐  │
+│  │ Image Generation     │ │  │    Code Generation (v3.0)            │  │
+│  │ (v1.5-v2.5)          │ │  │    Claude 3.5 Sonnet                 │  │
+│  │ SD 3.5 Primary       │ │  │    React/Vue/Svelte/Tailwind         │  │
+│  └──────────┬───────────┘ │  └──────────────────┬───────────────────┘  │
+│             │             │                     │                       │
+│             ▼             │                     ▼                       │
 │  ┌──────────────────────────────────────────────────────────────────┐  │
 │  │              AsyncIO Generation Orchestrator                      │  │
-│  │  (Concurrent API calls, rate limiting, retry logic)              │  │
+│  │  (Multi-milestone pipeline: logos → components → layouts → code) │  │
 │  └──────────────────────┬───────────────────────────────────────────┘  │
 │                         │                                               │
 │                         ▼                                               │
 │  ┌──────────────────────────────────────────────────────────────────┐  │
 │  │                   Quality Scoring Engine                          │  │
 │  │  ┌────────────┐ ┌──────────────┐ ┌────────────┐ ┌─────────────┐ │  │
-│  │  │CLIP (30%)  │ │ Color (25%)  │ │Aesthetic   │ │Composition  │ │  │
-│  │  │Similarity  │ │ Adherence    │ │Predictor   │ │Analysis     │ │  │
+│  │  │CLIP (30%)  │ │ Color (25%)  │ │Aesthetic   │ │Accessibility│ │  │
+│  │  │Similarity  │ │ Adherence    │ │Predictor   │ │(WCAG AA)    │ │  │
 │  │  │            │ │              │ │(25%)       │ │(20%)        │ │  │
 │  │  └────────────┘ └──────────────┘ └────────────┘ └─────────────┘ │  │
 │  └──────────────────────┬───────────────────────────────────────────┘  │
@@ -68,7 +75,7 @@ Brand Forge is a **multi-model AI pipeline** that generates, scores, and exports
 │                         ▼                                               │
 │  ┌──────────────────────────────────────────────────────────────────┐  │
 │  │                SQLite Metadata Database                           │  │
-│  │  (Lineage, scores, approval status, cost tracking)               │  │
+│  │  (Lineage, scores, approval status, component relationships)     │  │
 │  └──────────────────────┬───────────────────────────────────────────┘  │
 │                         │                                               │
 │                         ▼                                               │
@@ -76,20 +83,20 @@ Brand Forge is a **multi-model AI pipeline** that generates, scores, and exports
 │  │              Human Approval Interface                             │  │
 │  │  ┌────────────────────┐      ┌──────────────────────────┐        │  │
 │  │  │  CLI Gallery       │      │  Flask Web Dashboard     │        │  │
-│  │  │  (Rich Terminal)   │ ◄──► │  (Tailwind CSS UI)       │        │  │
+│  │  │  (Rich Terminal)   │ ◄──► │  (Component Preview)     │        │  │
 │  │  └────────────────────┘      └──────────────────────────┘        │  │
 │  └──────────────────────┬───────────────────────────────────────────┘  │
 │                         │                                               │
 │                         ▼                                               │
 │  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │           Production Export Pipeline                              │  │
+│  │           Multi-Format Export Pipeline                            │  │
 │  │  ┌──────────────┐  ┌──────────────┐  ┌────────────────────────┐ │  │
-│  │  │ Real-ESRGAN  │→ │    rembg     │→ │ potrace + Multi-Format │ │  │
-│  │  │ (Upscaling)  │  │ (BG Removal) │  │ (SVG, PNG, PDF)        │ │  │
+│  │  │ Image Export │→ │ Design Tokens│→ │  Code Export           │ │  │
+│  │  │ (SVG/PNG)    │  │ (JSON/YAML)  │  │  (React/Vue/Tailwind)  │ │  │
 │  │  └──────────────┘  └──────────────┘  └────────────────────────┘ │  │
 │  └──────────────────────────────────────────────────────────────────┘  │
 │                                                                          │
-│                         BRAND FORGE PIPELINE                             │
+│                         DESIGNFORGE PIPELINE                             │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -112,30 +119,38 @@ Checkpoint 3 (Final):      Human reviews top 5/30    (2 min)
 
 **Why**: Balances creative control with efficiency gains. Humans excel at subjective aesthetic judgment; machines excel at parameter exploration.
 
-### 2. Cost-Optimized Multi-Model Strategy
+### 2. Milestone-Based Architecture
 
-**Principle**: Use cheaper models for bulk exploration, expensive models for targeted refinement.
-
-```
-Stable Diffusion 3.5: 70% allocation ($0.004/img)  → Bulk exploration
-Flux Schnell:         20% allocation ($0.003/img)  → Quality comparisons
-DALL-E 3:             10% allocation ($0.04/img)   → Text-heavy fallback
-```
-
-**Why**: Achieves 500-1000 generations/month within $30-60 budget by allocating expensive models only where they add unique value.
-
-### 3. Weighted Quality Scoring
-
-**Principle**: Multi-dimensional scoring mirrors human aesthetic judgment.
+**Principle**: Progressive expansion from brand identity through production code.
 
 ```
-CLIP Semantic Similarity:  30%  (Does it match the design brief?)
-Brand Color Adherence:     25%  (Does it use our palette?)
-Aesthetic Prediction:      25%  (Is it objectively beautiful?)
-Composition Analysis:      20%  (Is it well-balanced?)
+v1.5 Brand Assets:       Logos with multi-format exports ($30-60/month)
+v2.0 Component Library:  Buttons, forms, cards with accessibility ($30-60/month)
+v2.5 Page Layouts:       Responsive landing pages and app layouts ($30-60/month)
+v3.0 Code Export:        React/Vue/Svelte with Tailwind optimization ($30-60/month)
 ```
 
-**Why**: Single-metric scoring (e.g., CLIP alone) misses critical brand-specific criteria. Weighted approach targets ρ > 0.70 correlation with human judgment.
+**Why**: Each milestone delivers production value independently. Budgets isolated per milestone to control costs.
+
+### 3. Multi-Dimensional Quality Scoring
+
+**Principle**: Scoring evolves per milestone to match output type.
+
+```
+v1.5-v2.5 (Images):
+  CLIP Semantic Similarity:  30%  (Design brief match)
+  Brand Color Adherence:     25%  (Palette compliance)
+  Aesthetic Prediction:      25%  (Visual appeal)
+  Accessibility/Composition: 20%  (WCAG AA for v2.0+)
+
+v3.0 (Code):
+  Code Quality:              35%  (ESLint, type safety)
+  Performance:               25%  (Bundle size, Lighthouse)
+  Accessibility:             25%  (WCAG 2.1 AA compliance)
+  Design Fidelity:           15%  (Match to approved layouts)
+```
+
+**Why**: Different output types require different quality metrics. Images prioritize aesthetics; code prioritizes maintainability.
 
 ### 4. Vertical Slice Architecture
 
