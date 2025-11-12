@@ -1,0 +1,197 @@
+# Brand Criteria Configuration for DesignForge
+# Defines thresholds and tolerance ranges for brand compliance scoring
+#
+# These criteria ensure generated designs match the brand identity
+# specified in the design brief
+
+version: "1.0"
+
+# Color Accuracy Criteria
+color_accuracy:
+  # Brand color matching tolerance
+  color_matching:
+    # Delta E (ΔE) threshold for color similarity (CIE2000)
+    # ΔE < 2.0: Imperceptible difference
+    # ΔE 2.0-10.0: Small difference
+    # ΔE > 10.0: Large difference
+    delta_e_threshold: 10.0  # Maximum acceptable color difference
+    strict_delta_e_threshold: 5.0  # Preferred threshold for primary brand colors
+
+    # Color space for comparison
+    color_space: "LAB"  # or "RGB", "HSV"
+
+  # Color presence requirements
+  presence:
+    # Minimum percentage of image that should contain brand colors
+    min_brand_color_percentage: 5.0  # At least 5% of pixels
+    max_brand_color_percentage: 60.0  # No more than 60% to avoid oversaturation
+
+    # Color distribution (avoid single dominant color)
+    max_single_color_dominance: 40.0  # No single color > 40% of brand color pixels
+
+  # Monochrome color requirements (for Technical Blueprint style)
+  monochrome:
+    min_percentage: 30.0  # Minimum monochrome colors (white/gray/dark)
+    max_percentage: 95.0  # Maximum (leave room for accents)
+
+  # Target accuracy for quality gate
+  target_accuracy: 95.0  # 95%+ color accuracy required
+
+# Aesthetic Quality Criteria
+aesthetic_quality:
+  # Minimum aesthetic score (0-10 scale from LAION Aesthetic Predictor)
+  min_score: 5.0  # Reject if below 5.0
+  target_score: 7.0  # Aim for 7.0+ for production
+
+  # Aesthetic dimensions
+  dimensions:
+    composition: 0.25  # Balanced layout, rule of thirds
+    color_harmony: 0.25  # Pleasing color combinations
+    visual_interest: 0.25  # Not boring or flat
+    technical_quality: 0.25  # Sharp, clear, well-rendered
+
+  # Reject criteria
+  reject_if:
+    blurry: true
+    distorted: true
+    artifacts: true
+    incomplete: true
+
+# Composition & Layout Criteria
+composition:
+  # Aspect ratio requirements
+  aspect_ratio:
+    preferred: "1:1"  # Square for logos
+    accepted:
+      - "1:1"
+      - "4:3"
+      - "16:9"
+    tolerance: 0.05  # 5% tolerance on aspect ratio
+
+  # Symmetry requirements (for logo generation)
+  symmetry:
+    require_symmetry: false  # Not all logos need perfect symmetry
+    min_symmetry_score: 0.3  # 0.0 = asymmetric, 1.0 = perfect symmetry
+
+  # Edge padding requirements
+  padding:
+    min_edge_padding_percentage: 5.0  # Minimum 5% padding around subject
+    max_edge_padding_percentage: 30.0  # Maximum 30% padding
+
+  # Center weighting (subject should be centered)
+  center_weighting:
+    enabled: true
+    tolerance_percentage: 20.0  # Subject can be within 20% of center
+
+# Accessibility Criteria (WCAG 2.1 compliance)
+accessibility:
+  # Contrast ratios
+  contrast:
+    # Text on background contrast (WCAG AA)
+    min_text_contrast: 4.5  # Normal text
+    min_large_text_contrast: 3.0  # Large text (18pt+)
+
+    # Component contrast
+    min_component_contrast: 3.0  # UI components, graphics
+
+  # Color blindness simulation
+  color_blindness:
+    test_protanopia: true  # Red-blind
+    test_deuteranopia: true  # Green-blind
+    test_tritanopia: true  # Blue-blind
+
+    # Minimum distinguishability score after simulation
+    min_distinguishability: 0.7  # 70% of brand colors still distinguishable
+
+# Brand Alignment Criteria
+brand_alignment:
+  # Visual direction matching (from design brief)
+  visual_directions:
+    # Weights for each visual direction
+    technical_blueprint: 0.33
+    sci_fi_futuristic: 0.33
+    grounded_fantasy_tech: 0.34
+
+    # Minimum match score (0-1) for a direction
+    min_match_score: 0.6  # At least 60% match to one direction
+
+  # Keyword matching
+  keywords:
+    # Required style keywords (from prompt templates)
+    required:
+      - "minimalist"
+      - "geometric"
+      - "precision"
+
+    # Preferred keywords (bonus points)
+    preferred:
+      - "technical"
+      - "futuristic"
+      - "clean"
+
+    # Forbidden keywords (auto-reject)
+    forbidden:
+      - "realistic photo"
+      - "painting"
+      - "sketch"
+
+# Rejection Thresholds
+rejection:
+  # Auto-reject if any of these are true
+  auto_reject:
+    - condition: "color_accuracy < 70.0"
+      reason: "Insufficient brand color accuracy"
+    - condition: "aesthetic_quality < 4.0"
+      reason: "Poor aesthetic quality"
+    - condition: "contains_text == true"
+      reason: "Generated text found (not desired for logos)"
+    - condition: "aspect_ratio_error > 0.1"
+      reason: "Incorrect aspect ratio"
+    - condition: "has_artifacts == true"
+      reason: "Visual artifacts or distortions detected"
+
+  # Warning thresholds (flag for human review)
+  warning:
+    - condition: "color_accuracy < 85.0"
+      message: "Color accuracy below target"
+    - condition: "aesthetic_quality < 6.0"
+      message: "Aesthetic quality below target"
+    - condition: "symmetry_score < 0.4 and requires_symmetry"
+      message: "Low symmetry for logo"
+
+# Quality Gates
+quality_gates:
+  # Gate 1: Initial screening (fast filters)
+  gate_1_initial:
+    required_checks:
+      - "has_valid_aspect_ratio"
+      - "no_severe_artifacts"
+      - "min_resolution_met"
+    pass_threshold: 100  # All checks must pass
+
+  # Gate 2: Basic quality (color + aesthetic)
+  gate_2_basic:
+    required_checks:
+      - "color_accuracy >= 70.0"
+      - "aesthetic_quality >= 5.0"
+      - "no_text_detected"
+    pass_threshold: 100  # All checks must pass
+
+  # Gate 3: Brand compliance (full scoring)
+  gate_3_brand:
+    required_checks:
+      - "color_accuracy >= 85.0"
+      - "aesthetic_quality >= 6.0"
+      - "brand_alignment >= 0.6"
+      - "composition_score >= 0.7"
+    pass_threshold: 75  # 3 out of 4 checks must pass
+
+  # Gate 4: Production ready (strict)
+  gate_4_production:
+    required_checks:
+      - "color_accuracy >= 95.0"
+      - "aesthetic_quality >= 7.0"
+      - "brand_alignment >= 0.75"
+      - "composition_score >= 0.8"
+      - "accessibility_score >= 0.9"
+    pass_threshold: 80  # 4 out of 5 checks must pass

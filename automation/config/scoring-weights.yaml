@@ -1,0 +1,256 @@
+# Scoring Weights Configuration for DesignForge
+# Defines how different quality dimensions are weighted in the overall score
+#
+# Weights can be adjusted based on the generation phase and output type:
+# - v1.5 Brand Assets (logos): Emphasize color, composition, brand alignment
+# - v2.0 Components: Emphasize accessibility, usability, aesthetic quality
+# - v2.5 Layouts: Emphasize composition, responsiveness, user experience
+# - v3.0 Code: Emphasize code quality, performance, maintainability
+
+version: "1.0"
+
+# Default Weights (v1.5 Brand Assets - Logo Generation)
+default:
+  description: "Default scoring weights for logo generation (v1.5)"
+
+  # Core quality dimensions
+  dimensions:
+    # CLIP Semantic Similarity (prompt adherence)
+    clip_similarity:
+      weight: 0.30  # 30%
+      description: "How well the image matches the text prompt semantically"
+      min_score: 0.0
+      max_score: 1.0
+      target_score: 0.75
+
+    # Brand Color Adherence
+    color_adherence:
+      weight: 0.25  # 25%
+      description: "Accuracy of brand color usage and placement"
+      min_score: 0.0
+      max_score: 1.0
+      target_score: 0.95
+
+    # Aesthetic Quality
+    aesthetic_quality:
+      weight: 0.25  # 25%
+      description: "Overall visual appeal and artistic quality"
+      min_score: 0.0
+      max_score: 1.0
+      target_score: 0.70
+
+    # Composition & Layout
+    composition:
+      weight: 0.20  # 20%
+      description: "Balance, symmetry, spacing, and visual structure"
+      min_score: 0.0
+      max_score: 1.0
+      target_score: 0.70
+
+  # Composite score calculation
+  composite:
+    formula: "weighted_average"  # or "weighted_geometric_mean"
+    passing_threshold: 0.70  # 70% overall score to pass
+    production_threshold: 0.80  # 80% for production-ready
+
+# Component-Specific Weights (v2.0 Components)
+components:
+  description: "Scoring weights for UI component generation (v2.0)"
+
+  dimensions:
+    # Accessibility (WCAG 2.1 compliance)
+    accessibility:
+      weight: 0.35  # 35% - Critical for components
+      description: "Contrast, color blindness support, screen reader compatibility"
+      min_score: 0.0
+      max_score: 1.0
+      target_score: 0.90
+
+    # Aesthetic Quality
+    aesthetic_quality:
+      weight: 0.25  # 25%
+      description: "Visual appeal and design consistency"
+      min_score: 0.0
+      max_score: 1.0
+      target_score: 0.75
+
+    # Brand Color Adherence
+    color_adherence:
+      weight: 0.20  # 20%
+      description: "Proper use of brand colors and theme"
+      min_score: 0.0
+      max_score: 1.0
+      target_score: 0.85
+
+    # Usability
+    usability:
+      weight: 0.20  # 20%
+      description: "Intuitive layout, clear affordances, proper sizing"
+      min_score: 0.0
+      max_score: 1.0
+      target_score: 0.80
+
+  composite:
+    formula: "weighted_average"
+    passing_threshold: 0.75
+    production_threshold: 0.85
+
+# Layout-Specific Weights (v2.5 Page Layouts)
+layouts:
+  description: "Scoring weights for page layout generation (v2.5)"
+
+  dimensions:
+    # Composition & Layout
+    composition:
+      weight: 0.35  # 35% - Most important for layouts
+      description: "Visual hierarchy, whitespace, grid alignment"
+      min_score: 0.0
+      max_score: 1.0
+      target_score: 0.80
+
+    # Aesthetic Quality
+    aesthetic_quality:
+      weight: 0.25  # 25%
+      description: "Overall visual appeal and coherence"
+      min_score: 0.0
+      max_score: 1.0
+      target_score: 0.75
+
+    # Responsiveness
+    responsiveness:
+      weight: 0.25  # 25%
+      description: "Mobile-first design, breakpoint handling"
+      min_score: 0.0
+      max_score: 1.0
+      target_score: 0.85
+
+    # Brand Alignment
+    brand_alignment:
+      weight: 0.15  # 15%
+      description: "Consistency with brand identity"
+      min_score: 0.0
+      max_score: 1.0
+      target_score: 0.80
+
+  composite:
+    formula: "weighted_average"
+    passing_threshold: 0.75
+    production_threshold: 0.85
+
+# Code Export Weights (v3.0 Code Generation)
+code:
+  description: "Scoring weights for code export quality (v3.0)"
+
+  dimensions:
+    # Code Quality
+    code_quality:
+      weight: 0.35  # 35%
+      description: "Clean, maintainable, idiomatic code"
+      min_score: 0.0
+      max_score: 1.0
+      target_score: 0.85
+
+    # Performance
+    performance:
+      weight: 0.25  # 25%
+      description: "Bundle size, load time, runtime efficiency"
+      min_score: 0.0
+      max_score: 1.0
+      target_score: 0.80
+
+    # Accessibility
+    accessibility:
+      weight: 0.25  # 25%
+      description: "Semantic HTML, ARIA, keyboard navigation"
+      min_score: 0.0
+      max_score: 1.0
+      target_score: 0.90
+
+    # Design Fidelity
+    design_fidelity:
+      weight: 0.15  # 15%
+      description: "Accuracy to original design"
+      min_score: 0.0
+      max_score: 1.0
+      target_score: 0.90
+
+  composite:
+    formula: "weighted_average"
+    passing_threshold: 0.80
+    production_threshold: 0.90
+
+# Dynamic Weight Adjustment
+dynamic_adjustment:
+  enabled: true
+  description: "Automatically adjust weights based on generation context"
+
+  # Rules for weight adjustment
+  rules:
+    # If generating for dark mode, increase color adherence weight
+    - condition: "dark_mode == true"
+      adjustments:
+        color_adherence: 1.2  # Multiply by 1.2 (increase by 20%)
+
+    # If generating for accessibility-focused project
+    - condition: "accessibility_priority == true"
+      adjustments:
+        accessibility: 1.3
+        composition: 0.9
+
+    # If generating for high-end brand
+    - condition: "premium_brand == true"
+      adjustments:
+        aesthetic_quality: 1.2
+        composition: 1.1
+
+    # If generating for MVP/prototype
+    - condition: "prototype == true"
+      adjustments:
+        aesthetic_quality: 0.8
+        code_quality: 0.7
+
+# Correlation Targets
+correlation:
+  description: "Target correlation between automated scores and human judgments"
+
+  # Spearman's rank correlation coefficient (ρ)
+  target_rho: 0.70  # ρ > 0.70 indicates strong correlation
+  min_acceptable_rho: 0.50  # Below 0.50 suggests scoring needs tuning
+
+  # Calibration strategy
+  calibration:
+    enabled: true
+    sample_size: 100  # Number of images to calibrate on
+    frequency: "monthly"  # How often to recalibrate
+    method: "linear_regression"  # Adjust weights via regression
+
+# Score Normalization
+normalization:
+  method: "min_max"  # or "z_score", "robust"
+
+  # Min-max scaling
+  min_max:
+    output_min: 0.0
+    output_max: 1.0
+
+  # Handle outliers
+  outlier_handling:
+    clip_outliers: true
+    lower_percentile: 1  # Clip bottom 1%
+    upper_percentile: 99  # Clip top 1%
+
+# Ensemble Scoring (optional)
+ensemble:
+  enabled: false
+  description: "Combine multiple scoring models for robustness"
+
+  models:
+    - name: "primary"
+      weight: 0.7
+      config: "default"
+
+    - name: "aesthetic_specialist"
+      weight: 0.3
+      config: "aesthetic_focused"
+
+  aggregation: "weighted_average"  # or "max", "min", "median"
