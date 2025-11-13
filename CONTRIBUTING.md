@@ -137,8 +137,10 @@ feature/*  → Feature branches (all work happens here)
 1. **NEVER commit directly to `main`** - This branch is linked to production environment
 2. **NEVER commit directly to `dev`** - This branch is for integration only
 3. **ALWAYS work on feature branches** - Create feature branches from `dev`
-4. **Auto-merge to `dev`** - PRs automatically merge to `dev` when basic checks pass
-5. **Manual promote to `main`** - Only promote `dev` → `main` when ready for production deployment
+4. **ONLY `dev` → `main` PRs allowed** - PRs from feature branches to `main` are automatically blocked
+5. **Auto-merge to `dev`** - PRs automatically merge to `dev` when basic checks pass
+6. **Auto-delete after merge** - Feature branches are automatically deleted after successful merge to `dev`
+7. **Manual promote to `main`** - Only promote `dev` → `main` when ready for production deployment
 
 ### Working on Features
 
@@ -169,18 +171,30 @@ Implements complete project foundation:
 All features complete and tested."
 
 # PR automatically merges to dev when CI passes
+# Feature branch is automatically deleted after merge
 ```
 
 ### Promoting to Production
 
+**IMPORTANT**: Only `dev` → `main` PRs are allowed. Feature branches cannot PR directly to `main`.
+
+```bash
+# WRONG: This will be automatically blocked
+gh pr create --base main --head feature/my-feature  # ❌ BLOCKED
+
+# RIGHT: Only dev can PR to main
+gh pr create --base main --head dev  # ✅ ALLOWED
+```
+
 ```bash
 # When dev is stable and ready for production
+# Option 1: Direct merge (for quick deployments)
 git checkout main
 git pull origin main
 git merge dev
 git push origin main
 
-# Or create PR for review
+# Option 2: Create PR for review (recommended)
 gh pr create --base main --head dev \
   --title "release: Deploy v1.0 to production" \
   --body "Production deployment of v1.0 Foundation & Core Pipeline

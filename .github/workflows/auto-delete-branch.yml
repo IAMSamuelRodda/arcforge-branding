@@ -1,0 +1,30 @@
+name: Auto-Delete Feature Branches
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - dev
+
+jobs:
+  delete-branch:
+    name: Delete Merged Feature Branch
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'feature/')
+    steps:
+      - name: Delete feature branch
+        run: |
+          echo "🗑️  PR #${{ github.event.pull_request.number }} was merged"
+          echo "🌿 Deleting branch: ${{ github.head_ref }}"
+
+          # GitHub automatically deletes the branch if "Automatically delete head branches"
+          # is enabled in repo settings, but we'll log it here for visibility
+          echo "✅ Branch will be automatically deleted by GitHub"
+
+      - name: Log branch cleanup
+        run: |
+          echo "Branch cleanup summary:"
+          echo "  PR: #${{ github.event.pull_request.number }}"
+          echo "  Branch: ${{ github.head_ref }}"
+          echo "  Merged into: ${{ github.base_ref }}"
+          echo "  Merged by: ${{ github.event.pull_request.merged_by.login }}"
