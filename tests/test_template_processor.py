@@ -9,14 +9,14 @@ from design_assets.template_loader import PromptTemplate
 @pytest.fixture
 def design_brief_path():
     """Path to test design brief."""
-    repo_root = Path(__file__).parent.parent.parent
+    repo_root = Path(__file__).parent.parent
     return repo_root / "archives" / "case-study-arcforge" / "design" / "DESIGN-BRIEF.md"
 
 
 @pytest.fixture
 def template_directory():
     """Path to test template directory."""
-    repo_root = Path(__file__).parent.parent.parent
+    repo_root = Path(__file__).parent.parent
     return repo_root / "archives" / "case-study-arcforge" / "design"
 
 

@@ -386,9 +386,9 @@ gh issue edit 2 \
 
 # 5. Do the implementation work...
 cd /home/samuel/repos/brand-forge
-mkdir -p automation/{config,src,web,results,data}
-python3 -m venv automation/.venv
-source automation/.venv/bin/activate
+mkdir -p {config,src,web,results,data}
+python3 -m venv ./.venv
+source ./.venv/bin/activate
 # ... create requirements.txt, etc ...
 
 # 6. Commit with issue reference

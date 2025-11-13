@@ -35,14 +35,14 @@ git clone https://github.com/IAMSamuelRodda/brand-forge.git
 cd brand-forge
 
 # Create virtual environment
-python3 -m venv automation/.venv
-source automation/.venv/bin/activate  # On Windows: automation\.venv\Scripts\activate
+python3 -m venv ./.venv
+source ./.venv/bin/activate  # On Windows: automation\.venv\Scripts\activate
 
 # Verify uv is installed
 uv --version  # Should show version 0.1.0+
 
 # Install dependencies (when requirements.txt is available)
-uv pip install -r automation/requirements.txt
+uv pip install -r ./requirements.txt
 
 # Install development dependencies
 uv pip install pytest pytest-asyncio pytest-cov black ruff mypy
@@ -55,10 +55,10 @@ python -c "import sys; print(f'Python {sys.version}')"
 
 ```bash
 # Copy example configuration
-cp automation/config/config.example.yaml automation/config/config.yaml
+cp ./config/config.example.yaml ./config/config.yaml
 
 # Edit configuration with your API keys
-nano automation/config/config.yaml  # or vim, code, etc.
+nano ./config/config.yaml  # or vim, code, etc.
 ```
 
 **Required API Keys**:
@@ -86,7 +86,7 @@ gh project view 6 --owner IAMSamuelRodda
 ### Directory Structure
 
 ```
-automation/
+./
 ├── config/
 │   ├── config.yaml              # Runtime configuration (gitignored)
 │   └── config.example.yaml      # Template with defaults
@@ -201,7 +201,7 @@ async def generate_batch(prompts: list[str]) -> list[Image]:
 # Use pathlib for file operations (not os.path)
 from pathlib import Path
 
-results_dir = Path("automation/results")
+results_dir = Path("./results")
 results_dir.mkdir(parents=True, exist_ok=True)
 ```
 
@@ -209,13 +209,13 @@ results_dir.mkdir(parents=True, exist_ok=True)
 
 ```bash
 # Format code with Black (100 char line length)
-black --line-length 100 automation/src/
+black --line-length 100 ./src/
 
 # Lint with Ruff (faster than flake8 + pylint)
-ruff check automation/src/
+ruff check ./src/
 
 # Type check with mypy
-mypy automation/src/
+mypy ./src/
 ```
 
 ### Import Order
@@ -291,7 +291,7 @@ from automation.src.scoring import WeightedScorer
 ### Model Knowledge Base
 
 **Architecture**: Static YAML (NOT RAG for v1.0)
-- **Location**: `automation/src/prompt_engine/model_knowledge/`
+- **Location**: `./src/prompt_engine/model_knowledge/`
 - **Files**: `stable_diffusion_35.yaml`, `flux_schnell.yaml`, `dalle_3.yaml`
 - **Decision**: See `docs/ADR-001-MODEL-KNOWLEDGE-ARCHITECTURE.md`
 - **Pattern**: ModelKnowledgeAdapter loads model-specific rules at runtime
@@ -376,11 +376,11 @@ Before committing code, ensure:
 
 ```bash
 # 1. Format code
-black --line-length 100 automation/src/
-ruff check --fix automation/src/
+black --line-length 100 ./src/
+ruff check --fix ./src/
 
 # 2. Type check
-mypy automation/src/
+mypy ./src/
 
 # 3. Run tests
 pytest
@@ -422,13 +422,13 @@ gh issue edit 25 --add-label "status: completed" --repo IAMSamuelRodda/brand-for
 ### Logging Configuration
 
 ```python
-# automation/src/utils/logging_config.py
+# ./src/utils/logging_config.py
 import logging
 from pathlib import Path
 
 def setup_logging(level: str = "INFO"):
     """Configure application logging."""
-    log_dir = Path("automation/logs")
+    log_dir = Path("./logs")
     log_dir.mkdir(parents=True, exist_ok=True)
 
     logging.basicConfig(
@@ -480,12 +480,12 @@ async def generate_in_batches(prompts: list[str], batch_size: int = 10):
 
 ```bash
 # Profile CPU usage
-python -m cProfile -o profile.stats automation/src/main.py
+python -m cProfile -o profile.stats ./src/main.py
 python -m pstats profile.stats
 
 # Profile memory usage
 pip install memory_profiler
-python -m memory_profiler automation/src/main.py
+python -m memory_profiler ./src/main.py
 
 # Profile async code
 pip install yappi

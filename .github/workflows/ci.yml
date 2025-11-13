@@ -27,24 +27,19 @@ jobs:
         run: uv python install 3.11
 
       - name: Create virtual environment
-        run: uv venv automation/.venv
+        run: uv venv .venv
 
       - name: Install dependencies
-        run: |
-          cd automation
-          uv pip install -r requirements.txt
+        run: uv pip install -r requirements.txt
 
       - name: Run ruff (linter)
         run: |
-          cd automation
           uv pip install ruff
           uv run ruff check . --config ruff.toml || true
         continue-on-error: false
 
       - name: Run mypy (type checker)
-        run: |
-          cd automation
-          uv run mypy src/ --config-file mypy.ini || true
+        run: uv run mypy src/ --config-file mypy.ini || true
         continue-on-error: true
 
   test:
@@ -63,21 +58,16 @@ jobs:
         run: uv python install 3.11
 
       - name: Create virtual environment
-        run: uv venv automation/.venv
+        run: uv venv .venv
 
       - name: Install dependencies
-        run: |
-          cd automation
-          uv pip install -r requirements.txt
+        run: uv pip install -r requirements.txt
 
       - name: Run smoke test (import verification)
-        run: |
-          cd automation
-          uv run python smoke_test.py
+        run: uv run python smoke_test.py
 
       - name: Run pytest with coverage
         run: |
-          cd automation
           uv run pytest tests/ \
             --cov=src \
             --cov-report=term-missing \
@@ -90,7 +80,7 @@ jobs:
         uses: codecov/codecov-action@v4
         if: always()
         with:
-          file: ./automation/coverage.xml
+          file: ./coverage.xml
           flags: unittests
           name: codecov-umbrella
         continue-on-error: true
@@ -106,7 +96,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
-          scan-ref: 'automation'
+          scan-ref: '.'
           severity: 'CRITICAL,HIGH'
           exit-code: '0'
         continue-on-error: true
