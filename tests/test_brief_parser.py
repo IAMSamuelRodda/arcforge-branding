@@ -15,7 +15,7 @@ from design_assets.brief_parser import (
 def design_brief_path():
     """Path to the actual ArchForge design brief."""
     # Get repo root (two levels up from tests/)
-    repo_root = Path(__file__).parent.parent.parent
+    repo_root = Path(__file__).parent.parent
     return repo_root / "archives" / "case-study-arcforge" / "design" / "DESIGN-BRIEF.md"
 
 

@@ -113,18 +113,18 @@ git clone https://github.com/IAMSamuelRodda/brand-forge.git
 cd brand-forge
 
 # Create virtual environment
-python3 -m venv automation/.venv
-source automation/.venv/bin/activate
+python3 -m venv ./.venv
+source ./.venv/bin/activate
 
 # Install dependencies (when available)
-uv pip install -r automation/requirements.txt
+uv pip install -r ./requirements.txt
 
 # Configure API keys
-cp automation/config/config.example.yaml automation/config/config.yaml
+cp ./config/config.example.yaml ./config/config.yaml
 # Edit config.yaml with your API keys
 
 # Run generation pipeline (when implemented)
-python automation/src/main.py
+python src/main.py
 ```
 
 ---
@@ -142,7 +142,7 @@ python automation/src/main.py
 
 ### Configuration
 
-Edit `automation/config/config.yaml`:
+Edit `./config/config.yaml`:
 
 ```yaml
 models:
@@ -182,7 +182,7 @@ Each feature slice contains its own code, tests, and documentation:
 
 ```
 design-forge/
-├── automation/
+├── 
 │   ├── src/
 │   │   ├── prompt_engine/       # Template processing + docs
 │   │   ├── generation/          # AI generation API + docs

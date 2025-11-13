@@ -125,7 +125,7 @@ params = adapter.validate_parameters(base_params)  # ← Knowledge lookup
 │  │  • Best practices (prompt structure, common fixes)       │  │
 │  │                                                           │  │
 │  │  Update: Quarterly (manual, version controlled)          │  │
-│  │  Storage: automation/src/prompt_engine/model_knowledge/  │  │
+│  │  Storage: src/prompt_engine/model_knowledge/  │  │
 │  └──────────────────────────────────────────────────────────┘  │
 │                          │                                      │
 │                          ▼                                      │
@@ -137,7 +137,7 @@ params = adapter.validate_parameters(base_params)  # ← Knowledge lookup
 │  │  • Error pattern detection (common failures → fixes)     │  │
 │  │                                                           │  │
 │  │  Update: Real-time (from generation results)             │  │
-│  │  Storage: automation/data/analytics.db                   │  │
+│  │  Storage: data/analytics.db                   │  │
 │  └──────────────────────────────────────────────────────────┘  │
 │                          │                                      │
 │                          ▼                                      │

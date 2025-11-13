@@ -13,7 +13,7 @@ from design_assets.template_loader import (
 def prompt_template_path():
     """Path to the actual Midjourney prompts file."""
     # Get repo root (two levels up from tests/)
-    repo_root = Path(__file__).parent.parent.parent
+    repo_root = Path(__file__).parent.parent
     return repo_root / "archives" / "case-study-arcforge" / "design" / "MIDJOURNEY-PROMPTS-V2-ANVIL.md"
 
 

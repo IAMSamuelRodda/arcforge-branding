@@ -9,8 +9,8 @@ from config.loader import ConfigLoader, ConfigError
 @pytest.fixture
 def config_dir():
     """Path to test config directory."""
-    repo_root = Path(__file__).parent.parent.parent
-    return repo_root / "automation" / "config"
+    repo_root = Path(__file__).parent.parent
+    return repo_root / "config"
 
 
 @pytest.fixture

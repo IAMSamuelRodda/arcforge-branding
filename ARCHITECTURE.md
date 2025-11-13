@@ -172,7 +172,7 @@ Export:           Isolated upscaling/conversion pipeline
 
 ### 1. Prompt Generation Engine
 
-**Location**: `automation/src/prompt_engine/`
+**Location**: `src/prompt_engine/`
 
 **Responsibilities**:
 - Load prompt template files (PROMPT-TEMPLATES-*.md)
@@ -213,7 +213,7 @@ class PromptEngine:
 
 ### 2. Multi-Model Generation Pipeline
 
-**Location**: `automation/src/generation/`
+**Location**: `src/generation/`
 
 **Responsibilities**:
 - Orchestrate concurrent API calls across 3 models
@@ -274,7 +274,7 @@ class GenerationOrchestrator:
 
 ### 3. Quality Scoring System
 
-**Location**: `automation/src/scoring/`
+**Location**: `src/scoring/`
 
 **Responsibilities**:
 - Score images on 4 dimensions (CLIP, color, aesthetic, composition)
@@ -329,7 +329,7 @@ class WeightedScorer:
 
 ### 4. Human Approval Interface
 
-**Location**: `automation/web/`
+**Location**: `web/`
 
 **Responsibilities**:
 - Display scored images in gallery view
@@ -364,7 +364,7 @@ class WeightedScorer:
 
 ### 5. Production Export Pipeline
 
-**Location**: `automation/src/export/`
+**Location**: `src/export/`
 
 **Responsibilities**:
 - Upscale approved images to 4K (Real-ESRGAN)
@@ -426,7 +426,7 @@ Prompt engineering expertise is critical for generating high-quality brand asset
 ├──────────────────────────────────────────────────────────────┤
 │                                                               │
 │  ┌────────────────────────────────────────────────────────┐  │
-│  │  automation/src/prompt_engine/model_knowledge/        │  │
+│  │  src/prompt_engine/model_knowledge/        │  │
 │  │                                                        │  │
 │  │  ├── stable_diffusion_35.yaml  (SD 3.5 expertise)    │  │
 │  │  ├── flux_schnell.yaml         (Flux expertise)      │  │
@@ -675,7 +675,7 @@ class PromptEngine:
 
         # Load model knowledge
         knowledge_loader = ModelKnowledgeLoader(
-            Path("automation/src/prompt_engine/model_knowledge")
+            Path("src/prompt_engine/model_knowledge")
         )
         self.adapters = {
             'sd35': ModelKnowledgeAdapter('stable_diffusion_35', knowledge_loader),
@@ -1035,7 +1035,7 @@ def test_flux_weight_syntax_removal():
 #### 1. Secret Management
 
 ```yaml
-# automation/config/config.yaml (gitignored)
+# config/config.yaml (gitignored)
 models:
   stable_diffusion:
     api_key: "${SD_API_KEY}"  # Environment variable required
@@ -1051,13 +1051,13 @@ models:
 
 ```bash
 # Restrict database access
-chmod 600 automation/data/*.db
+chmod 600 data/*.db
 
 # Restrict config access
-chmod 600 automation/config/config.yaml
+chmod 600 config/config.yaml
 
 # Make results directory read-only after generation
-chmod -R 444 automation/results/approved/
+chmod -R 444 results/approved/
 ```
 
 #### 3. Cost Controls

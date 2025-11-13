@@ -320,7 +320,7 @@ class MockSDClient:
 
 **Implementation**:
 ```python
-# automation/src/generation/sd_client.py
+# src/generation/sd_client.py
 from replicate import AsyncClient
 
 class StableDiffusionClient:
@@ -358,7 +358,7 @@ export REPLICATE_API_TOKEN="r8_..."
 ```
 
 ### Step 2: Implement API Client
-- Create `automation/src/generation/sd_client.py`
+- Create `src/generation/sd_client.py`
 - Add async `generate()` method
 - Implement batch queue for 50+ concurrent requests
 - Add progress tracking with `rich` library
@@ -372,7 +372,7 @@ export REPLICATE_API_TOKEN="r8_..."
 - Track generations per session/month
 - Calculate cumulative costs ($0.003 per image)
 - Alert when approaching $30-60 threshold
-- Export cost reports to `automation/results/cost-tracking.json`
+- Export cost reports to `results/cost-tracking.json`
 
 ### Step 5: Testing
 - Unit tests with mock client
