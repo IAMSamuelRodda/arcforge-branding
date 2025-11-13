@@ -3,7 +3,7 @@
 **Project**: DesignForge
 **Last Updated**: November 13, 2025
 **Current Phase**: v1.0 Foundation & Core Pipeline
-**Overall Progress**: 21% (11/52 issues completed)
+**Overall Progress**: 25% (13/52 issues completed)
 
 ---
 
@@ -15,7 +15,7 @@
 **Rationale**: User needs complete design-to-code workflow, not just logos
 
 ### Milestone Timeline
-- **v1.0 Foundation**: Weeks 1-4 (52 issues, 11 completed - 21%)
+- **v1.0 Foundation**: Weeks 1-4 (52 issues, 13 completed - 25%)
 - **v1.5 Brand Assets**: TBD (HIGH PRIORITY - logos)
 - **v2.0 Component Library**: TBD (buttons, forms, cards)
 - **v2.5 Page Layouts**: TBD (landing pages, responsive)
@@ -27,7 +27,7 @@
 
 | Milestone | Timeline | Progress | Status |
 |-----------|----------|----------|--------|
-| **v1.0 Foundation & Core Pipeline** | Weeks 1-4 | 11/52 issues (21%) | 🟡 In Progress |
+| **v1.0 Foundation & Core Pipeline** | Weeks 1-4 | 13/52 issues (25%) | 🟡 In Progress |
 | **v1.5 Brand Assets Module** | TBD | Not started | 🔵 Pending |
 | **v2.0 Component Library** | TBD | Not started | 🔵 Pending |
 | **v2.5 Page Layout Generation** | TBD | Not started | 🔵 Pending |
@@ -61,15 +61,17 @@
 ---
 
 #### Epic #11: Basic Generation Pipeline (Single Model) (Weeks 1-2)
-**Status**: 🔵 Pending | **Progress**: 0/3 features
+**Status**: 🟡 In Progress | **Progress**: 2/3 features
 
 | Feature | Issue | Status |
 |---------|-------|--------|
-| Prompt Generation Engine | #12 | 🔵 Pending |
-| Stable Diffusion API Integration | #16 | 🔵 Pending |
+| Prompt Generation Engine | #12 | 🟢 Complete |
+| Stable Diffusion API Integration | #16 | 🟢 Complete |
 | Basic Metadata Storage | #20 | 🔵 Pending |
 
-**View Epic**: https://github.com/IAMSamuelRodda/brand-forge/issues/11
+**Sub-Issues Completed**: #12, #16
+
+**View Epic**: https://github.com/IAMSamuelRodda/design-forge/issues/11
 
 ---
 
@@ -164,14 +166,25 @@
 ## Recent Activity
 
 ### November 13, 2025
+- ✅ **Feature #2.1 Complete**: Prompt Generation Engine (Issue #12) - PR #133
+  - PromptEngine with template processing and variable substitution
+  - Prompt variation generation with uniqueness checks
+  - Effectiveness tracking (approval rates, quality scores)
+  - 17 tests, 100% passing
+- ✅ **Feature #2.2 Complete**: Stable Diffusion API Integration (Issue #16) - PR #134
+  - Hybrid backend: Local GPU (RTX 4090, $0.0002/img) + Replicate fallback ($0.003/img)
+  - MultiBackendClient with intelligent failover
+  - CostTracker with budget limits and real-time monitoring
+  - 93% cost reduction vs cloud-only
+  - 32 tests, 100% passing
+- ✅ **Refactoring**: Removed automation/ wrapper directory (PR #135)
+  - Flattened structure to align with Python standards
+  - All 163 tests passing after refactor
 - ✅ **Epic #1 Complete**: Project Foundation & Infrastructure (100%)
-  - ✅ Feature #1.1: Project Structure & Environment Setup (Issues #2, #3, #4)
-  - ✅ Feature #1.2: Design Asset Integration (Issues #5, #6, #7) - PR #131
-  - ✅ Feature #1.3: Configuration Management System (Issues #8, #9, #10) - PR #132
-- 📊 **Progress Update**: 11/52 issues complete (21%)
-  - 3 YAML configs: models.yaml, brand-criteria.yaml, scoring-weights.yaml
-  - Configuration loader with environment variable substitution
-  - 69 total tests (43 parsers + 26 config)
+  - Feature #1.1: Project Structure & Environment Setup (Issues #2, #3, #4)
+  - Feature #1.2: Design Asset Integration (Issues #5, #6, #7) - PR #131
+  - Feature #1.3: Configuration Management System (Issues #8, #9, #10) - PR #132
+- 📊 **Progress Update**: 13/52 issues complete (25%)
 
 ### November 12, 2025
 - ✅ **CI/CD Pipeline**: GitHub Actions with lint, test, security scan, auto-merge (Issues #126, #127, #128)
@@ -185,29 +198,32 @@
 
 ## Next Steps
 
-### ✅ Epic #1 Complete - Moving to Epic #11
+### 🟡 Epic #11 In Progress (2/3 features complete)
 
-**Epic #1 Achievements** (11 issues closed):
-- ✓ Python environment with 30 dependencies (PyTorch, Transformers, CV2)
-- ✓ CI/CD pipeline with auto-merge (lint, test, security)
-- ✓ Design brief parser (colors, typography, visual directions)
-- ✓ Prompt template loader (variables, parameters, substitution)
-- ✓ Model configuration (SD, Flux, DALL-E, budget tracking)
-- ✓ Brand criteria (color accuracy, aesthetic quality, quality gates)
-- ✓ Scoring weights (CLIP 30%, color 25%, aesthetic 25%, composition 20%)
+**Completed Features**:
+- ✅ Feature #2.1: Prompt Generation Engine (Issue #12) - PR #133
+  - PromptEngine with template processing and variable substitution
+  - Prompt variation generation with uniqueness checks
+  - Effectiveness tracking and JSON export
+  - 17 tests, 100% passing
+- ✅ Feature #2.2: Stable Diffusion API Integration (Issue #16) - PR #134
+  - Hybrid backend (Local GPU + Replicate fallback)
+  - MultiBackendClient with intelligent failover
+  - CostTracker with budget limits
+  - 93% cost reduction, 32 tests passing
 
-**Next: Epic #11 - Basic Generation Pipeline** (Issues #12, #16, #20)
-- Feature #2.1: Prompt Generation Engine (Issue #12)
-- Feature #2.2: Stable Diffusion API Integration (Issue #16)
-- Feature #2.3: Basic Metadata Storage (Issue #20)
+**Next: Feature #2.3 - Image Storage & Metadata Database (Issue #20)**
+- SQLite database for generation metadata
+- Image storage management
+- Lineage tracking (prompt → generation → refinement)
+- Approval status and quality scores
 
 ```bash
-# Start Epic #11: Basic Generation Pipeline
-gh issue edit 11 --add-label "status: in-progress" \
+# Start Feature #2.3: Image Storage & Metadata Database
+gh issue edit 20 --remove-label "status: pending" --add-label "status: in-progress" \
   --repo IAMSamuelRodda/design-forge
 
-# Start Feature #2.1: Prompt Generation Engine
-gh issue edit 12 --add-label "status: in-progress" \
+gh issue comment 20 --body "Starting Feature #2.3: Image Storage & Metadata Database" \
   --repo IAMSamuelRodda/design-forge
 ```
 
