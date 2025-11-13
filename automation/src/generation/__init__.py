@@ -13,6 +13,13 @@ from .sd_client import (
     GenerationStats,
     CostTracker,
 )
+from .multi_backend_client import MultiBackendClient, BackendStats
+from .backends import (
+    GenerationBackend,
+    LocalGPUBackend,
+    ReplicateBackend,
+    BackendConfig,
+)
 
 __all__ = [
     # Prompt generation
@@ -21,10 +28,18 @@ __all__ = [
     "PromptVariation",
     "TemplateProcessor",
     "ProcessedTemplate",
-    # Image generation
+    # Image generation (single backend)
     "StableDiffusionClient",
     "GenerationRequest",
     "GenerationResult",
     "GenerationStats",
     "CostTracker",
+    # Multi-backend generation
+    "MultiBackendClient",
+    "BackendStats",
+    # Backends
+    "GenerationBackend",
+    "LocalGPUBackend",
+    "ReplicateBackend",
+    "BackendConfig",
 ]
