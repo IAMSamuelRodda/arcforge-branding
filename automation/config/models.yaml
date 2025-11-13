@@ -1,0 +1,128 @@
+# Model Configuration for DesignForge
+# Defines endpoints, API keys, and rate limiting for AI image generation models
+#
+# IMPORTANT: Do not commit API keys to version control
+# Use environment variables or a gitignored .env file
+
+version: "1.0"
+
+# Model Definitions
+models:
+  # Stable Diffusion (Primary)
+  stable_diffusion:
+    enabled: true
+    provider: "replicate"
+    model_id: "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b"
+    api_key: "${REPLICATE_API_KEY}"  # Set via environment variable
+    parameters:
+      default_steps: 50
+      default_guidance_scale: 7.5
+      default_size: "1024x1024"
+      default_scheduler: "DPMSolverMultistep"
+    rate_limiting:
+      requests_per_minute: 10
+      requests_per_hour: 120
+      requests_per_day: 500
+    cost_per_generation: 0.008  # USD
+
+  # Flux (Alternative)
+  flux:
+    enabled: true
+    provider: "replicate"
+    model_id: "black-forest-labs/flux-schnell"
+    api_key: "${REPLICATE_API_KEY}"
+    parameters:
+      default_steps: 4  # Schnell is optimized for speed
+      default_guidance_scale: 3.5
+      default_size: "1024x1024"
+    rate_limiting:
+      requests_per_minute: 10
+      requests_per_hour: 120
+      requests_per_day: 500
+    cost_per_generation: 0.003  # USD (cheaper, faster)
+
+  # DALL-E 3 (High quality, more expensive)
+  dalle_3:
+    enabled: false  # Disabled by default (expensive)
+    provider: "openai"
+    model_id: "dall-e-3"
+    api_key: "${OPENAI_API_KEY}"
+    parameters:
+      default_size: "1024x1024"
+      default_quality: "standard"  # or "hd"
+      default_style: "vivid"  # or "natural"
+    rate_limiting:
+      requests_per_minute: 5
+      requests_per_hour: 50
+      requests_per_day: 200
+    cost_per_generation: 0.04  # USD (standard), 0.08 (hd)
+
+  # Midjourney (via unofficial API - not yet implemented)
+  midjourney:
+    enabled: false
+    provider: "midjourney-api"  # Placeholder for future integration
+    api_key: "${MIDJOURNEY_API_KEY}"
+    parameters:
+      default_version: "6"
+      default_stylization: 250
+      default_aspect_ratio: "1:1"
+    rate_limiting:
+      requests_per_minute: 5
+      requests_per_hour: 30
+      requests_per_day: 100
+    cost_per_generation: 0.05  # Estimated
+
+# Generation Strategy
+generation_strategy:
+  # Primary model for batch generation
+  primary_model: "stable_diffusion"
+
+  # Fallback models if primary fails or rate limited
+  fallback_models:
+    - "flux"
+    - "dalle_3"
+
+  # Retry configuration
+  retry:
+    max_attempts: 3
+    backoff_multiplier: 2  # Exponential backoff
+    initial_delay_seconds: 5
+
+# Budget Controls
+budget:
+  monthly_limit_usd: 60.00
+  alert_thresholds:
+    - threshold: 30.00  # 50% of budget
+      action: "log_warning"
+    - threshold: 48.00  # 80% of budget
+      action: "send_alert"
+    - threshold: 60.00  # 100% of budget
+      action: "disable_generation"
+
+  # Cost tracking
+  track_per_model: true
+  track_per_session: true
+  report_frequency: "daily"
+
+# API Configuration
+api:
+  # Timeout settings
+  timeout_seconds: 120
+
+  # Connection pooling
+  max_connections: 10
+  connection_timeout_seconds: 30
+
+  # Proxy settings (optional)
+  proxy:
+    enabled: false
+    http_proxy: "${HTTP_PROXY}"
+    https_proxy: "${HTTPS_PROXY}"
+
+# Logging
+logging:
+  log_level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  log_api_calls: true
+  log_costs: true
+  log_errors: true
+  redact_api_keys: true  # Never log API keys in plaintext
