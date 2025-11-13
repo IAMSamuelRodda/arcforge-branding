@@ -11,15 +11,22 @@ jobs:
     name: Delete Merged Feature Branch
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'feature/')
+    permissions:
+      contents: write
     steps:
       - name: Delete feature branch
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           echo "🗑️  PR #${{ github.event.pull_request.number }} was merged"
           echo "🌿 Deleting branch: ${{ github.head_ref }}"
 
-          # GitHub automatically deletes the branch if "Automatically delete head branches"
-          # is enabled in repo settings, but we'll log it here for visibility
-          echo "✅ Branch will be automatically deleted by GitHub"
+          # Delete the branch using GitHub API
+          gh api \
+            --method DELETE \
+            repos/${{ github.repository }}/git/refs/heads/${{ github.head_ref }} \
+            && echo "✅ Branch deleted successfully" \
+            || echo "⚠️  Branch may already be deleted (repo setting: delete_branch_on_merge)"
 
       - name: Log branch cleanup
         run: |

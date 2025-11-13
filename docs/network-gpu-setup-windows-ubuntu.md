@@ -35,10 +35,22 @@ Wireless LAN adapter Wi-Fi:
 1. Download portable version:
    - Visit: https://github.com/comfyanonymous/ComfyUI/releases
    - Download: `ComfyUI_windows_portable_nvidia_cu121_or_cpu.7z`
-   
-2. Extract to `C:\ComfyUI\`
+
+2. Extract to `C:\` (creates `C:\ComfyUI_windows_portable\`)
 
 3. Done! Includes Python + all dependencies
+
+**Folder structure**:
+```
+C:\ComfyUI_windows_portable\
+├── ComfyUI\              ← Main folder
+│   ├── models\
+│   │   └── checkpoints\  ← Models go here
+│   ├── output\           ← Generated images
+│   └── main.py
+├── python_embeded\       ← Python installation
+└── run_nvidia_gpu.bat    ← Startup script
+```
 
 **Option B: Manual Install**
 
@@ -69,19 +81,46 @@ pip install -r requirements.txt
 
 ### Step 3: Download Flux Schnell Model (10 min - 23.8GB)
 
+**IMPORTANT**: This model requires Hugging Face authentication.
+
+**Step 3.1: Setup Hugging Face Access** (2 min - first time only)
+
+1. **Create account**: Go to https://huggingface.co/join
+2. **Accept model terms**: Visit https://huggingface.co/black-forest-labs/FLUX.1-schnell and click "Agree and access repository"
+3. **Create access token**:
+   - Go to https://huggingface.co/settings/tokens
+   - Click "New token"
+   - Name: `comfyui-download`
+   - Type: **Read**
+   - Click "Generate a token"
+   - **Copy the token** (starts with `hf_...`)
+
+**Step 3.2: Download Model with Authentication**
+
 ```powershell
+# Set your Hugging Face token (replace with YOUR token from above)
+$env:HF_TOKEN = "hf_YOUR_TOKEN_HERE"
+
 # Navigate to models directory
-cd C:\ComfyUI\models\checkpoints
+# For PORTABLE version:
+cd C:\ComfyUI_windows_portable\ComfyUI\models\checkpoints
 
-# Download Flux Schnell (23.8GB)
-# Option A: Using PowerShell (recommended)
-Invoke-WebRequest -Uri "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/flux1-schnell.safetensors" -OutFile "flux1-schnell.safetensors"
+# For MANUAL install:
+# cd C:\ComfyUI\ComfyUI\models\checkpoints
 
-# Option B: Using browser
-# Visit: https://huggingface.co/black-forest-labs/FLUX.1-schnell/tree/main
-# Download: flux1-schnell.safetensors
-# Move to: C:\ComfyUI\models\checkpoints\
+# Download with authentication
+$headers = @{Authorization="Bearer $env:HF_TOKEN"}
+Invoke-WebRequest -Uri "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/flux1-schnell.safetensors" -OutFile "flux1-schnell.safetensors" -Headers $headers
+
+# Verify download completed (should show ~23.8GB)
+dir flux1-schnell.safetensors
 ```
+
+**Alternative: Browser Download**
+1. Visit: https://huggingface.co/black-forest-labs/FLUX.1-schnell/tree/main
+2. Click on `flux1-schnell.safetensors`
+3. Click "Download" button (must be logged in)
+4. Move to: `C:\ComfyUI_windows_portable\ComfyUI\models\checkpoints\`
 
 **Download time**: ~5-10 minutes depending on internet speed
 
@@ -117,13 +156,12 @@ Get-NetFirewallRule -DisplayName "ComfyUI API"
 ### Step 5: Start ComfyUI with Network Access (1 min)
 
 ```powershell
-# Navigate to ComfyUI directory
-cd C:\ComfyUI
-
-# If portable version:
+# For PORTABLE version:
+cd C:\ComfyUI_windows_portable
 .\run_nvidia_gpu.bat --listen 0.0.0.0 --port 8188
 
-# If manual install:
+# For MANUAL install:
+cd C:\ComfyUI\ComfyUI
 .\venv\Scripts\activate
 python main.py --listen 0.0.0.0 --port 8188
 ```
@@ -327,7 +365,11 @@ python test_gpu.py
 
 **Image will be saved on Windows PC** at:
 ```
-C:\ComfyUI\output\test_00001_.png
+# For PORTABLE version:
+C:\ComfyUI_windows_portable\ComfyUI\output\test_00001_.png
+
+# For MANUAL install:
+C:\ComfyUI\ComfyUI\output\test_00001_.png
 ```
 
 ---
@@ -337,8 +379,9 @@ C:\ComfyUI\output\test_00001_.png
 After setup, verify:
 
 - [ ] Windows IP address noted (e.g., 192.168.1.105)
-- [ ] ComfyUI installed at `C:\ComfyUI`
-- [ ] Flux Schnell model downloaded (23.8GB in `models/checkpoints/`)
+- [ ] ComfyUI installed (portable: `C:\ComfyUI_windows_portable\` or manual: `C:\ComfyUI\`)
+- [ ] Hugging Face account created and model terms accepted
+- [ ] Flux Schnell model downloaded (23.8GB in `ComfyUI\models\checkpoints\`)
 - [ ] Windows Firewall rule added for port 8188
 - [ ] ComfyUI running with `--listen 0.0.0.0 --port 8188`
 - [ ] Ubuntu can ping Windows PC
@@ -388,10 +431,14 @@ After setup, verify:
 **Solution**:
 ```powershell
 # On Windows: Verify model file exists
-dir C:\ComfyUI\models\checkpoints\flux1-schnell.safetensors
+# For PORTABLE version:
+dir C:\ComfyUI_windows_portable\ComfyUI\models\checkpoints\flux1-schnell.safetensors
+
+# For MANUAL install:
+# dir C:\ComfyUI\ComfyUI\models\checkpoints\flux1-schnell.safetensors
 
 # Should show file size: ~23.8 GB
-# If missing, re-download from Step 3
+# If missing, re-download from Step 3 (requires Hugging Face authentication)
 ```
 
 ### Problem 3: Out of Memory Error
@@ -435,15 +482,19 @@ dir C:\ComfyUI\models\checkpoints\flux1-schnell.safetensors
 ```powershell
 # On Windows: Set static IP (example)
 # 1. Open Settings → Network & Internet → WiFi
-# 2. Click your WiFi network → Hardware properties
+# 2. Click your WiFi network properties
 # 3. Click "Edit" next to IP assignment
 # 4. Change from "Automatic (DHCP)" to "Manual"
 # 5. Enable IPv4
 # 6. Set:
-#    IP address: 192.168.1.105 (your current IP)
-#    Subnet prefix: 24
-#    Gateway: 192.168.1.1 (your router)
-#    DNS: 8.8.8.8 (Google DNS)
+#    IP address:     192.168.1.105 (your current IP)
+#    Subnet mask:    255.255.255.0 (FULL format - NOT "24")
+#    Gateway:        192.168.1.1 (your router)
+#    Preferred DNS:  8.8.8.8 (Google DNS)
+#    Alternate DNS:  8.8.4.4 (Google DNS backup)
+#
+# IMPORTANT: Use full subnet mask 255.255.255.0 (NOT prefix "24")
+#            Windows 11 will show "Invalid entry" if you use prefix format
 ```
 
 ---
@@ -458,18 +509,30 @@ To avoid manually starting ComfyUI each time:
 2. Create Basic Task → Name: "ComfyUI AutoStart"
 3. Trigger: "When I log on"
 4. Action: "Start a program"
-5. Program: `C:\ComfyUI\run_nvidia_gpu.bat`
-6. Arguments: `--listen 0.0.0.0 --port 8188`
+5. **For PORTABLE**:
+   - Program: `C:\ComfyUI_windows_portable\run_nvidia_gpu.bat`
+   - Arguments: `--listen 0.0.0.0 --port 8188`
+6. **For MANUAL**:
+   - Program: `C:\ComfyUI\ComfyUI\venv\Scripts\python.exe`
+   - Arguments: `main.py --listen 0.0.0.0 --port 8188`
+   - Start in: `C:\ComfyUI\ComfyUI`
 7. Finish
 
 ### Method 2: Startup Folder
 
 ```powershell
-# Create startup script
+# For PORTABLE version:
 $script = @"
-cd C:\ComfyUI
+cd C:\ComfyUI_windows_portable
 .\run_nvidia_gpu.bat --listen 0.0.0.0 --port 8188
 "@
+
+# For MANUAL install:
+# $script = @"
+# cd C:\ComfyUI\ComfyUI
+# .\venv\Scripts\activate
+# python main.py --listen 0.0.0.0 --port 8188
+# "@
 
 $script | Out-File -FilePath "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\start_comfyui.bat"
 ```
