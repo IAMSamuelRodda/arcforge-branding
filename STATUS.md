@@ -165,7 +165,20 @@
 
 ## Recent Activity
 
-### November 13, 2025
+### November 13, 2025 (Afternoon)
+- ✅ **Documentation & Automation**: GPU Setup Guide + Branch Protection (PR #136)
+  - Added comprehensive GPU setup guide (555 lines): `docs/network-gpu-setup-windows-ubuntu.md`
+  - Step-by-step ComfyUI installation for Windows 11 → Ubuntu network access
+  - Cost optimization: RTX 4090 local GPU ($0.0002/img) vs Replicate ($0.003/img)
+  - Enabled auto-delete for feature branches after merge to dev
+  - Updated CONTRIBUTING.md with branch protection rules (ONLY dev→main PRs allowed)
+- 🔄 **In Progress**: GPU Setup (Step 3 of 9)
+  - Windows 11 Pro RTX 4090 configuration underway
+  - Currently downloading Flux Schnell model (23.8GB, ~10 min remaining)
+  - Critical for <$1/month budget constraint
+- ⏸️ **On Hold**: Feature #2.3 (Image Storage & Metadata) - Waiting for GPU setup completion
+
+### November 13, 2025 (Morning)
 - ✅ **Feature #2.1 Complete**: Prompt Generation Engine (Issue #12) - PR #133
   - PromptEngine with template processing and variable substitution
   - Prompt variation generation with uniqueness checks
@@ -212,14 +225,28 @@
   - CostTracker with budget limits
   - 93% cost reduction, 32 tests passing
 
-**Next: Feature #2.3 - Image Storage & Metadata Database (Issue #20)**
+**Next: Complete GPU Setup (In Progress - Step 3/9)**
+
+Current status: Downloading Flux Schnell model (23.8GB)
+
+Remaining steps:
+- Step 4: Open Windows Firewall (2 min)
+- Step 5: Start ComfyUI with network access (1 min)
+- Step 6: Test local access on Windows (1 min)
+- Step 7: Test network connection from Ubuntu (2 min)
+- Step 8: Update DesignForge config (2 min)
+- Step 9: Test generation from Ubuntu (2 min)
+
+Guide: `docs/network-gpu-setup-windows-ubuntu.md`
+
+**Then: Feature #2.3 - Image Storage & Metadata Database (Issue #20)**
 - SQLite database for generation metadata
 - Image storage management
 - Lineage tracking (prompt → generation → refinement)
 - Approval status and quality scores
 
 ```bash
-# Start Feature #2.3: Image Storage & Metadata Database
+# After GPU setup is complete, start Feature #2.3
 gh issue edit 20 --remove-label "status: pending" --add-label "status: in-progress" \
   --repo IAMSamuelRodda/design-forge
 
