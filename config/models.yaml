@@ -8,7 +8,26 @@ version: "1.0"
 
 # Model Definitions
 models:
-  # Stable Diffusion (Primary)
+  # Local GPU - RTX 4090 via ComfyUI (PRIMARY - FREE!)
+  local_gpu:
+    enabled: true
+    provider: "comfyui"
+    api_url: "http://192.168.1.24:8188"
+    model: "flux1-schnell.safetensors"
+    parameters:
+      default_steps: 4  # FLUX.1-schnell optimized for 4 steps
+      default_guidance_scale: 1.0
+      default_size: "1024x1024"
+      sampler_name: "euler"
+      scheduler: "simple"
+    rate_limiting:
+      concurrent_requests: 3  # RTX 4090 can handle 3-5 parallel
+      requests_per_minute: 100
+      timeout_seconds: 60
+    cost_per_generation: 0.0002  # Electricity only (~$0.10/kWh)
+    notes: "Windows 11 PC with RTX 4090, static IP 192.168.1.24"
+
+  # Stable Diffusion (Fallback)
   stable_diffusion:
     enabled: true
     provider: "replicate"
@@ -75,12 +94,13 @@ models:
 # Generation Strategy
 generation_strategy:
   # Primary model for batch generation
-  primary_model: "stable_diffusion"
+  primary_model: "local_gpu"  # FREE! Use RTX 4090 first
 
   # Fallback models if primary fails or rate limited
   fallback_models:
-    - "flux"
-    - "dalle_3"
+    - "flux"  # Replicate Flux ($0.003/image)
+    - "stable_diffusion"  # Replicate SDXL ($0.008/image)
+    - "dalle_3"  # OpenAI ($0.04/image)
 
   # Retry configuration
   retry:
@@ -90,14 +110,15 @@ generation_strategy:
 
 # Budget Controls
 budget:
-  monthly_limit_usd: 60.00
+  monthly_limit_usd: 5.00  # Reduced from $60 (using local GPU!)
   alert_thresholds:
-    - threshold: 30.00  # 50% of budget
+    - threshold: 2.50  # 50% of budget ($2.50)
       action: "log_warning"
-    - threshold: 48.00  # 80% of budget
+    - threshold: 4.00  # 80% of budget ($4.00)
       action: "send_alert"
-    - threshold: 60.00  # 100% of budget
+    - threshold: 5.00  # 100% of budget ($5.00)
       action: "disable_generation"
+  notes: "Most generation on local RTX 4090 (~$0.0002/image). Budget for fallback cloud APIs only."
 
   # Cost tracking
   track_per_model: true

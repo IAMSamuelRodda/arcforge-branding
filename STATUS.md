@@ -1,7 +1,7 @@
 # Project Status
 
 **Project**: DesignForge
-**Last Updated**: November 13, 2025
+**Last Updated**: November 14, 2025
 **Current Phase**: v1.0 Foundation & Core Pipeline
 **Overall Progress**: 25% (13/52 issues completed)
 
@@ -165,6 +165,24 @@
 
 ## Recent Activity
 
+### November 14, 2025
+- 🔄 **In Progress**: Local GPU Setup - FLUX.1-schnell Model Configuration
+  - ✅ ComfyUI portable v0.3.68 installed with CUDA 12.8 (PyTorch 2.9.0)
+  - ✅ Main model downloaded: `flux1-schnell.safetensors` (23.8GB)
+  - ✅ Network connectivity verified: Ubuntu → Windows (192.168.1.24:8188)
+  - ✅ Static IP configured on Windows PC (192.168.1.24)
+  - ✅ Windows Firewall configured for port 8188
+  - ✅ `config/models.yaml` updated with local GPU as primary backend
+  - 🔄 **Downloading FLUX dependencies** (11GB total, ~10 min):
+    - `clip_l.safetensors` (1.4GB) - CLIP text encoder
+    - `t5xxl_fp16.safetensors` (9.5GB) - T5 text encoder
+    - `ae.safetensors` (335MB) - VAE for image decoding
+  - **Blocker discovered**: FLUX.1-schnell requires CLIP encoders + VAE (not just main model)
+  - **Next**: Test generation after dependency download completes
+- ✅ **Branch Cleanup**: Removed 5 orphaned merged feature branches from remote
+- ✅ **Documentation**: Updated network GPU setup guide with correct subnet mask format (255.255.255.0)
+- ✅ **Workflow Fix**: Auto-delete branch workflow now actually deletes via GitHub API
+
 ### November 13, 2025 (Afternoon)
 - ✅ **Documentation & Automation**: GPU Setup Guide + Branch Protection (PR #136)
   - Added comprehensive GPU setup guide (555 lines): `docs/network-gpu-setup-windows-ubuntu.md`
@@ -225,17 +243,21 @@
   - CostTracker with budget limits
   - 93% cost reduction, 32 tests passing
 
-**Next: Complete GPU Setup (In Progress - Step 3/9)**
+**Next: Complete GPU Setup (In Progress - Step 9/9)**
 
-Current status: Downloading Flux Schnell model (23.8GB)
+Current status: Downloading FLUX.1-schnell dependencies (11GB total)
+- `clip_l.safetensors` (1.4GB) - CLIP text encoder
+- `t5xxl_fp16.safetensors` (9.5GB) - T5 text encoder
+- `ae.safetensors` (335MB) - VAE for image decoding
 
-Remaining steps:
-- Step 4: Open Windows Firewall (2 min)
-- Step 5: Start ComfyUI with network access (1 min)
-- Step 6: Test local access on Windows (1 min)
-- Step 7: Test network connection from Ubuntu (2 min)
-- Step 8: Update DesignForge config (2 min)
-- Step 9: Test generation from Ubuntu (2 min)
+Completed steps:
+- ✅ Step 1-3: ComfyUI installed, FLUX model downloaded (23.8GB)
+- ✅ Step 4: Windows Firewall configured (port 8188)
+- ✅ Step 5: ComfyUI running with network access
+- ✅ Step 6: Local access verified (localhost:8188)
+- ✅ Step 7: Network connection tested (Ubuntu → Windows successful)
+- ✅ Step 8: DesignForge config updated (local GPU as primary)
+- 🔄 Step 9: Awaiting dependency downloads for final generation test
 
 Guide: `docs/network-gpu-setup-windows-ubuntu.md`
 
@@ -299,7 +321,7 @@ gh issue comment 1 --body "Started epic: Project Foundation & Infrastructure" --
 | Quality Score Correlation | ρ > 0.70 | - | 🔵 Not measured |
 | Human Time/Checkpoint | <10 min | - | 🔵 Not measured |
 | Production Assets | 3-5 logos | 0 | 🔵 Not generated |
-| Monthly Cost | $30-60 | $0 | 🟢 Under budget |
+| Monthly Cost | $1-5 | $0 | 🟢 Under budget (local GPU) |
 
 ---
 
